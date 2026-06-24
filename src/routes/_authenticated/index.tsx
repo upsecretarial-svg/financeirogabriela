@@ -186,6 +186,62 @@ function Dashboard() {
         })}
       </section>
 
+      <Card className="border-border/60">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div className="flex items-center gap-2">
+            {metaAtingida ? (
+              <Trophy className="h-5 w-5 text-success" />
+            ) : (
+              <Target className="h-5 w-5 text-primary" />
+            )}
+            <CardTitle className="text-base">Meta mensal de recebimento</CardTitle>
+          </div>
+          {isAdmin && (
+            <form
+              className="flex items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const v = Number(metaDraft);
+                if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
+              }}
+            >
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder={meta ? brl(meta) : "Definir meta"}
+                value={metaDraft}
+                onChange={(e) => setMetaDraft(e.target.value)}
+                className="h-8 w-36"
+              />
+              <Button type="submit" size="sm" variant="outline" disabled={!metaDraft || saveMeta.isPending}>
+                Salvar
+              </Button>
+            </form>
+          )}
+        </CardHeader>
+        <CardContent>
+          {meta <= 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {isAdmin ? "Defina uma meta acima para acompanhar o progresso." : "Nenhuma meta definida ainda."}
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between">
+                <span className="text-2xl font-semibold">{brl(recebido)}</span>
+                <span className="text-sm text-muted-foreground">de {brl(meta)} ({progresso.toFixed(0)}%)</span>
+              </div>
+              <Progress value={progresso} className={metaAtingida ? "[&>div]:bg-success" : ""} />
+              {metaAtingida && (
+                <p className="text-sm font-medium text-success">🎉 Meta atingida — parabéns!</p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+
+
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="border-border/60">
           <CardHeader>

@@ -106,6 +106,53 @@ function Dashboard() {
     },
   });
 
+  const qc = useQueryClient();
+  const { isAdmin } = useAuth();
+  const [metaDraft, setMetaDraft] = useState<string>("");
+  const [notified, setNotified] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ["app-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("app_settings").select("meta_mensal").maybeSingle();
+      return data;
+    },
+  });
+
+  const meta = Number(settings?.meta_mensal ?? 0);
+  const recebido = stats?.recebido ?? 0;
+  const progresso = meta > 0 ? Math.min(100, (recebido / meta) * 100) : 0;
+  const metaAtingida = meta > 0 && recebido >= meta;
+
+  useEffect(() => {
+    if (!metaAtingida) return;
+    const key = `meta-notif-${new Date().toISOString().slice(0, 7)}`;
+    if (sessionStorage.getItem(key) || notified) return;
+    sessionStorage.setItem(key, "1");
+    setNotified(true);
+    toast.success("🎉 Meta mensal atingida!", {
+      description: `Você recebeu ${brl(recebido)} este mês.`,
+      duration: 6000,
+    });
+  }, [metaAtingida, recebido, notified]);
+
+  const saveMeta = useMutation({
+    mutationFn: async (valor: number) => {
+      const { error } = await supabase
+        .from("app_settings")
+        .update({ meta_mensal: valor, updated_at: new Date().toISOString() })
+        .eq("id", true);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app-settings"] });
+      toast.success("Meta atualizada.");
+      setMetaDraft("");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
+  });
+
+
   const cards = [
     { label: "Faturado no mês", value: brl(stats?.faturado), icon: TrendingUp, color: "text-primary" },
     { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, color: "text-success" },

@@ -156,17 +156,19 @@ function Page() {
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         size="sm"
-                        variant={r.nf_emitida ? "outline" : "default"}
+                        variant="outline"
                         disabled={toggleEmitida.isPending}
                         className={
                           r.nf_emitida
-                            ? "border-destructive/40 text-destructive hover:bg-destructive/10"
-                            : "bg-success text-success-foreground hover:bg-success/90"
+                            ? "h-8 gap-1.5 border-destructive/40 bg-destructive/5 text-destructive hover:bg-destructive/10"
+                            : "h-8 gap-1.5 border-success/40 bg-success/10 text-success hover:bg-success/20"
                         }
                         onClick={() => toggleEmitida.mutate(r)}
                       >
-                        {r.nf_emitida ? "Marcar pendente" : "Marcar emitida"}
+                        {r.nf_emitida ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
+                        {r.nf_emitida ? "Reabrir" : "Marcar emitida"}
                       </Button>
+
                       <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>

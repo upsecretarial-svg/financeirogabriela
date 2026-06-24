@@ -34,6 +34,7 @@ const NAV: NavItem[] = [
   { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
   { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
   { to: "/auditoria", label: "Histórico", icon: History },
+  { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {

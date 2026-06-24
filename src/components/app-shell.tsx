@@ -12,7 +12,6 @@ import {
   History,
   BarChart3,
   LogOut,
-  Stethoscope,
   Loader2,
   Trash2,
 } from "lucide-react";

@@ -239,15 +239,15 @@ export const listLoginEvents = createServerFn({ method: "GET" })
       .order("criado_em", { ascending: false })
       .limit(limit);
     if (error) throw new Error(error.message);
-    const ids = Array.from(new Set((events ?? []).map((e) => e.user_id).filter(Boolean)));
+    const ids = Array.from(new Set((events ?? []).map((e) => e.user_id).filter((id): id is string => !!id)));
     const { data: profiles } = ids.length
       ? await supabaseAdmin.from("profiles").select("id, nome, email").in("id", ids)
-      : { data: [] };
+      : { data: [] as Array<{ id: string; nome: string | null; email: string | null }> };
     const map = new Map((profiles ?? []).map((p) => [p.id, p]));
     return (events ?? []).map((e) => ({
       ...e,
-      nome: map.get(e.user_id)?.nome ?? null,
-      email: map.get(e.user_id)?.email ?? null,
+      nome: (e.user_id && map.get(e.user_id)?.nome) ?? null,
+      email: (e.user_id && map.get(e.user_id)?.email) ?? null,
     }));
   });
 

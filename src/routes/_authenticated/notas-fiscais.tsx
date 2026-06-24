@@ -75,7 +75,7 @@ function Page() {
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,numero_interno,tutor,pet,data_atendimento,valor,nf_emitida,nf_enviada,nf_numero,nf_pdf_path")
+        .select("id,numero_interno,tutor,tutor_cpf,pet,data_atendimento,valor,nf_emitida,nf_enviada,nf_numero,nf_pdf_path")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(300);

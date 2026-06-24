@@ -71,7 +71,7 @@ function Page() {
   const [filter, setFilter] = useState<"all" | "pending" | "issued">("all");
   const [edit, setEdit] = useState<Row | null>(null);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["nf-list", search, filter],
     queryFn: async () => {
       let q = supabase

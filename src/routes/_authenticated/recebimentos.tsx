@@ -169,6 +169,7 @@ function Page() {
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead className="text-right">Recebido</TableHead>
                 <TableHead>Pago em</TableHead>
+                <TableHead>Baixa por</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead></TableHead>
               </TableRow>

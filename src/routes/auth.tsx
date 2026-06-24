@@ -28,6 +28,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [nome, setNome] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recovering, setRecovering] = useState(false);
   const runBootstrap = useServerFn(bootstrapAdmin);
 
   useEffect(() => {
@@ -41,20 +42,32 @@ function AuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: `${window.location.origin}/`,
-      },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error("Falha ao enviar link", { description: error.message });
+      toast.error("Falha no login", { description: error.message });
       return;
     }
-    toast.success("Link de acesso enviado!", {
-      description: "Verifique seu e-mail e clique no link para entrar.",
+    toast.success("Bem-vinda!");
+    navigate({ to: "/" });
+  };
+
+  const handleRecover = async () => {
+    if (!email) {
+      toast.error("Digite seu e-mail no campo acima.");
+      return;
+    }
+    setRecovering(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setRecovering(false);
+    if (error) {
+      toast.error("Não foi possível enviar", { description: error.message });
+      return;
+    }
+    toast.success("E-mail enviado!", {
+      description: "Verifique sua caixa de entrada para redefinir a senha.",
     });
   };
 
@@ -110,28 +123,32 @@ function AuthPage() {
               <Label htmlFor="email">E-mail</Label>
               <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-            {mode === "bootstrap" && (
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete={mode === "bootstrap" ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === "bootstrap" ? "Criar e entrar" : "Enviar link de acesso"}
+              {mode === "bootstrap" ? "Criar e entrar" : "Entrar"}
             </Button>
             {mode === "login" && (
-              <p className="text-center text-xs text-muted-foreground">
-                Você receberá um link mágico no e-mail. Sua sessão fica salva neste dispositivo.
-              </p>
+              <Button
+                type="button"
+                variant="link"
+                className="w-full text-sm"
+                onClick={handleRecover}
+                disabled={recovering}
+              >
+                {recovering ? "Enviando…" : "Esqueci minha senha"}
+              </Button>
             )}
           </form>
         </CardContent>

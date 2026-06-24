@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Dashboard — Sistema Financeiro" }] }),
@@ -62,6 +63,39 @@ function Dashboard() {
     },
   });
 
+  const { data: chart } = useQuery({
+    queryKey: ["dashboard-chart"],
+    queryFn: async () => {
+      const start = new Date();
+      start.setMonth(start.getMonth() - 5);
+      start.setDate(1);
+      start.setHours(0, 0, 0, 0);
+      const { data } = await supabase
+        .from("appointments")
+        .select("data_atendimento, valor, valor_recebido")
+        .gte("data_atendimento", start.toISOString().slice(0, 10));
+      const buckets: Record<string, { mes: string; faturado: number; recebido: number }> = {};
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(start);
+        d.setMonth(start.getMonth() + i);
+        const key = d.toISOString().slice(0, 7);
+        buckets[key] = {
+          mes: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+          faturado: 0,
+          recebido: 0,
+        };
+      }
+      (data ?? []).forEach((a) => {
+        const key = (a.data_atendimento as string).slice(0, 7);
+        if (buckets[key]) {
+          buckets[key].faturado += Number(a.valor ?? 0);
+          buckets[key].recebido += Number(a.valor_recebido ?? 0);
+        }
+      });
+      return Object.values(buckets);
+    },
+  });
+
   const cards = [
     { label: "Faturado no mês", value: brl(stats?.faturado), icon: TrendingUp, color: "text-primary" },
     { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, color: "text-success" },
@@ -95,7 +129,38 @@ function Dashboard() {
         })}
       </section>
 
-      <section>
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="border-border/60">
+          <CardHeader>
+            <CardTitle>Faturamento × Recebido (últimos 6 meses)</CardTitle>
+          </CardHeader>
+          <CardContent className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chart ?? []}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="mes" className="text-xs" />
+                <YAxis
+                  className="text-xs"
+                  tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  formatter={(v: number) => brl(v)}
+                  contentStyle={{
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 8,
+                    color: "var(--card-foreground)",
+                  }}
+                />
+                <Bar dataKey="faturado" fill="var(--primary)" radius={[6, 6, 0, 0]}>
+                  {(chart ?? []).map((_, i) => <Cell key={i} fillOpacity={0.4} />)}
+                </Bar>
+                <Bar dataKey="recebido" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
         <Card className="border-border/60">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>

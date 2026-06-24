@@ -42,6 +42,8 @@ interface AppointmentRow {
   valor_recebido: number | null;
   data_pagamento: string | null;
   nf_numero: string | null;
+  nf_pdf_path: string | null;
+  comprovante_path: string | null;
 }
 
 function brl(n: number | null | undefined) {
@@ -100,6 +102,8 @@ function Atendimentos() {
         nf_numero: row.nf_numero || null,
         observacoes: row.observacoes || null,
         obs_financeiras: row.obs_financeiras || null,
+        nf_pdf_path: row.nf_pdf_path || null,
+        comprovante_path: row.comprovante_path || null,
       };
       if (row.id) {
         const { error } = await supabase.from("appointments").update(payload).eq("id", row.id);
@@ -328,6 +332,18 @@ function Atendimentos() {
                   <Label>Nº da NF</Label>
                   <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} />
                 </div>
+                <FileField
+                  label="PDF da Nota Fiscal"
+                  path={editing.nf_pdf_path ?? null}
+                  prefix="nf"
+                  onChange={(p) => setEditing({ ...editing, nf_pdf_path: p })}
+                />
+                <FileField
+                  label="Comprovante de pagamento"
+                  path={editing.comprovante_path ?? null}
+                  prefix="comprovante"
+                  onChange={(p) => setEditing({ ...editing, comprovante_path: p })}
+                />
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Observações</Label>
                   <Textarea value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
@@ -345,6 +361,76 @@ function Atendimentos() {
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function FileField({
+  label,
+  path,
+  prefix,
+  onChange,
+}: {
+  label: string;
+  path: string | null;
+  prefix: string;
+  onChange: (path: string | null) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      const key = `${prefix}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("notas-fiscais").upload(key, file, {
+        contentType: file.type || "application/pdf",
+        upsert: false,
+      });
+      if (error) throw error;
+      onChange(key);
+      toast.success("Arquivo enviado.");
+    } catch (e) {
+      toast.error("Erro no upload", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const view = async () => {
+    if (!path) return;
+    const { data, error } = await supabase.storage
+      .from("notas-fiscais")
+      .createSignedUrl(path, 60);
+    if (error) return toast.error("Erro ao abrir arquivo");
+    window.open(data.signedUrl, "_blank");
+  };
+
+  return (
+    <div className="space-y-2 sm:col-span-2">
+      <Label>{label}</Label>
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          type="file"
+          accept="application/pdf,image/*"
+          disabled={busy}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) upload(f);
+            e.target.value = "";
+          }}
+        />
+        {path && (
+          <>
+            <Button type="button" size="sm" variant="outline" onClick={view}>
+              Visualizar
+            </Button>
+            <Button type="button" size="sm" variant="ghost" className="text-destructive" onClick={() => onChange(null)}>
+              Remover
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -207,11 +207,20 @@ function Atendimentos() {
       pago: false,
       nf_emitida: false,
     });
+    setServiceId("");
     setOpen(true);
   };
 
-  const startEdit = (row: AppointmentRow) => {
+  const startEdit = async (row: AppointmentRow) => {
     setEditing(row);
+    const { data } = await supabase
+      .from("appointment_items")
+      .select("descricao")
+      .eq("appointment_id", row.id)
+      .eq("tipo", "servico")
+      .maybeSingle();
+    const matched = data ? services?.find((s) => s.nome === data.descricao) : null;
+    setServiceId(matched?.id ?? "");
     setOpen(true);
   };
 

@@ -220,7 +220,7 @@ function Page() {
                 </TableRow>
               ))}
               {!data?.length && (
-                <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

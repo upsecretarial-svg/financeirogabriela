@@ -177,9 +177,8 @@ export const setUserBlocked = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // ban_duration: long string for block, "none" to unblock
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
-      // @ts-expect-error ban_duration is supported by the admin API
       ban_duration: data.blocked ? "876000h" : "none",
-    });
+    } as Parameters<typeof supabaseAdmin.auth.admin.updateUserById>[1]);
     if (error) throw new Error(error.message);
     await supabaseAdmin.from("profiles").update({ ativo: !data.blocked }).eq("id", data.userId);
     return { ok: true };

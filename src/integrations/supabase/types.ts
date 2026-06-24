@@ -35,6 +35,58 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_payments: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          data_pagamento: string | null
+          id: string
+          observacao: string | null
+          payment_method_id: string
+          valor: number
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          data_pagamento?: string | null
+          id?: string
+          observacao?: string | null
+          payment_method_id: string
+          valor: number
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          data_pagamento?: string | null
+          id?: string
+          observacao?: string | null
+          payment_method_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "pendencias_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_payments_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           clinic_id: string | null

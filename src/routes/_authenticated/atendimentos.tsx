@@ -57,6 +57,9 @@ function Atendimentos() {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);
   const [open, setOpen] = useState(false);
+  const [serviceId, setServiceId] = useState<string>("");
+  const [quickServiceOpen, setQuickServiceOpen] = useState(false);
+  const [quickService, setQuickService] = useState<{ nome: string; valor: string }>({ nome: "", valor: "" });
 
   const { data: appts, isLoading } = useQuery({
     queryKey: ["appointments", search],
@@ -83,6 +86,35 @@ function Atendimentos() {
   const { data: methods } = useQuery({
     queryKey: ["payment-methods-active"],
     queryFn: async () => (await supabase.from("payment_methods").select("*").eq("ativo", true).order("nome")).data ?? [],
+  });
+  const { data: services } = useQuery({
+    queryKey: ["services-active"],
+    queryFn: async () => (await supabase.from("services").select("*").eq("ativo", true).order("nome")).data ?? [],
+  });
+
+  const createService = useMutation({
+    mutationFn: async () => {
+      if (!quickService.nome.trim()) throw new Error("Informe o nome do serviço.");
+      const valor = quickService.valor ? Number(quickService.valor) : 0;
+      const { data, error } = await supabase
+        .from("services")
+        .insert({ nome: quickService.nome.trim(), valor, valor_final: valor, ativo: true })
+        .select("*")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (s) => {
+      qc.invalidateQueries({ queryKey: ["services-active"] });
+      setServiceId(s.id);
+      if (editing && (editing.valor == null || editing.valor === 0)) {
+        setEditing({ ...editing, valor: Number(s.valor_final ?? s.valor ?? 0) });
+      }
+      setQuickService({ nome: "", valor: "" });
+      setQuickServiceOpen(false);
+      toast.success("Serviço criado.");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
   });
 
   const save = useMutation({

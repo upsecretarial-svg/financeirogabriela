@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X } from "lucide-react";
+import { Search, Pencil, Check, X, Paperclip, FileText } from "lucide-react";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notas-fiscais")({
@@ -153,7 +154,7 @@ function Page() {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Button
                         size="sm"
                         variant="outline"
@@ -168,10 +169,11 @@ function Page() {
                         {r.nf_emitida ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
                         {r.nf_emitida ? "Reabrir" : "Marcar emitida"}
                       </Button>
-
-                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                      <NfInlineFile row={r} />
+                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)} title="Editar"><Pencil className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>
+
 
                 </TableRow>
               ))}
@@ -215,6 +217,71 @@ function Page() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function NfInlineFile({ row }: { row: Row }) {
+  const qc = useQueryClient();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const openPdf = async () => {
+    if (!row.nf_pdf_path) return;
+    const { data, error } = await supabase.storage.from("notas-fiscais").createSignedUrl(row.nf_pdf_path, 60);
+    if (error) return toast.error("Erro ao abrir NF");
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const onFile = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      const key = `nf/${crypto.randomUUID()}.${ext}`;
+      const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
+      if (up.error) throw up.error;
+      const { error } = await supabase.from("appointments").update({ nf_pdf_path: key }).eq("id", row.id);
+      if (error) throw error;
+      toast.success("NF anexada.");
+      qc.invalidateQueries({ queryKey: ["nf-list"] });
+    } catch (e) {
+      toast.error("Erro ao anexar", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,image/*"
+        className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }}
+      />
+      {row.nf_pdf_path ? (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 gap-1.5"
+          onClick={openPdf}
+          title="Abrir NF"
+        >
+          <FileText className="h-3.5 w-3.5" /> Abrir
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 gap-1.5"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+          title="Anexar NF"
+        >
+          <Paperclip className="h-3.5 w-3.5" /> {busy ? "Enviando…" : "Anexar"}
+        </Button>
+      )}
+    </>
   );
 }
 

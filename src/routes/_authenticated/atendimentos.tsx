@@ -15,7 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Check, X, Trash2 } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList } from "lucide-react";
+import { TableState } from "@/components/data-state";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";

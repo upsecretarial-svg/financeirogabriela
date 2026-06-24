@@ -52,6 +52,14 @@ function brl(n: number | null | undefined) {
   return (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function formatCpf(v: string) {
+  const d = (v ?? "").replace(/\D/g, "").slice(0, 11);
+  return d
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1-$2");
+}
+
 function Atendimentos() {
   const qc = useQueryClient();
   const navigate = useNavigate();

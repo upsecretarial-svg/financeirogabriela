@@ -154,7 +154,7 @@ function Page() {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Button
                         size="sm"
                         variant="outline"
@@ -169,10 +169,11 @@ function Page() {
                         {r.nf_emitida ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
                         {r.nf_emitida ? "Reabrir" : "Marcar emitida"}
                       </Button>
-
-                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                      <NfInlineFile row={r} />
+                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)} title="Editar"><Pencil className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>
+
 
                 </TableRow>
               ))}

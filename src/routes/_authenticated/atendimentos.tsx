@@ -83,6 +83,9 @@ function Atendimentos() {
 
   const save = useMutation({
     mutationFn: async (row: Partial<AppointmentRow>) => {
+      if (!row.tutor || !row.pet || !row.data_atendimento) {
+        throw new Error("Preencha tutor, pet e data.");
+      }
       const payload = {
         tutor: row.tutor,
         pet: row.pet,

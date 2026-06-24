@@ -87,7 +87,7 @@ function Page() {
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,numero_interno,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
+        .select("id,numero_interno,tutor,tutor_cpf,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(1000);

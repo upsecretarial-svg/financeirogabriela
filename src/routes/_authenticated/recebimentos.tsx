@@ -192,10 +192,30 @@ function Page() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Recebimentos</h1>
-        <p className="text-sm text-muted-foreground">Controle de pagamentos e comprovantes.</p>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Recebimentos</h1>
+          <p className="text-sm text-muted-foreground">Histórico completo de pagamentos e comprovantes.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
+            <FileDown className="mr-2 h-4 w-4" /> CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={onPDF} disabled={!exportRows.length}>
+            <FileText className="mr-2 h-4 w-4" /> PDF
+          </Button>
+        </div>
       </header>
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Atendimentos</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{totals.qtd}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Faturado</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{brl(totals.valor)}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Recebido</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-success">{brl(totals.recebido)}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Em aberto</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-destructive">{brl(totals.aberto)}</CardContent></Card>
+      </div>
 
       <Card className="border-border/60">
         <CardHeader className="space-y-3">
@@ -209,9 +229,13 @@ function Page() {
               ))}
             </div>
           </div>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Buscar tutor ou pet…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input className="pl-9" placeholder="Buscar tutor ou pet…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="De" />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Até" />
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">

@@ -141,8 +141,13 @@ function Atendimentos() {
       if (!row.tutor || !row.pet || !row.data_atendimento) {
         throw new Error("Preencha tutor, pet e data.");
       }
+      const cpfDigits = (row.tutor_cpf ?? "").replace(/\D/g, "");
+      if (cpfDigits && cpfDigits.length !== 11) {
+        throw new Error("CPF deve conter 11 dígitos.");
+      }
       const payload = {
         tutor: row.tutor,
+        tutor_cpf: cpfDigits || null,
         pet: row.pet,
         data_atendimento: row.data_atendimento,
         clinic_id: row.clinic_id || null,

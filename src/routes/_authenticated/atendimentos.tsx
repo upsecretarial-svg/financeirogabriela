@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil } from "lucide-react";
+import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 

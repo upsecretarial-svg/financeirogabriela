@@ -357,6 +357,16 @@ function Atendimentos() {
                   <Input value={editing.tutor ?? ""} onChange={(e) => setEditing({ ...editing, tutor: e.target.value })} />
                 </div>
                 <div className="space-y-2">
+                  <Label>CPF do tutor (NF-e)</Label>
+                  <Input
+                    inputMode="numeric"
+                    maxLength={14}
+                    placeholder="000.000.000-00"
+                    value={formatCpf(editing.tutor_cpf ?? "")}
+                    onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label>Pet *</Label>
                   <Input value={editing.pet ?? ""} onChange={(e) => setEditing({ ...editing, pet: e.target.value })} />
                 </div>

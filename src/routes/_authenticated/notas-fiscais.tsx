@@ -147,12 +147,30 @@ function Page() {
                         {r.nf_enviada ? "Emitida e enviada" : "Emitida"}
                       </Badge>
                     ) : (
-                      <Badge variant="outline">Pendente</Badge>
+                      <Badge className="bg-destructive/15 text-destructive border-destructive/30" variant="outline">
+                        Pendente
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant={r.nf_emitida ? "outline" : "default"}
+                        disabled={toggleEmitida.isPending}
+                        className={
+                          r.nf_emitida
+                            ? "border-destructive/40 text-destructive hover:bg-destructive/10"
+                            : "bg-success text-success-foreground hover:bg-success/90"
+                        }
+                        onClick={() => toggleEmitida.mutate(r)}
+                      >
+                        {r.nf_emitida ? "Marcar pendente" : "Marcar emitida"}
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                    </div>
                   </TableCell>
+
                 </TableRow>
               ))}
               {!data?.length && (

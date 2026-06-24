@@ -357,7 +357,14 @@ function Atendimentos() {
                   <Textarea value={editing.obs_financeiras ?? ""} onChange={(e) => setEditing({ ...editing, obs_financeiras: e.target.value })} />
                 </div>
               </div>
-              <DialogFooter>
+
+              {editing.id && (
+                <PaymentsSection
+                  appointmentId={editing.id}
+                  methods={methods ?? []}
+                />
+              )}
+
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={save.isPending}>{save.isPending ? "Salvando…" : "Salvar"}</Button>
               </DialogFooter>

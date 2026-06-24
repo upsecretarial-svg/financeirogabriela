@@ -58,8 +58,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar md:flex">
-        <div className="flex items-center gap-3 px-5 py-5">
-          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-sm ring-1 ring-sidebar-border">
+        <div className="flex flex-col items-center gap-2 px-5 py-6 text-center">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-background shadow-sm ring-1 ring-sidebar-border">
             <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt" className="h-full w-full object-cover" />
           </div>
           <div className="leading-tight">
@@ -67,6 +67,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="text-xs text-muted-foreground">Controle Financeiro</div>
           </div>
         </div>
+
 
         <nav className="flex-1 space-y-1 px-3 py-2">
           {NAV.filter((n) => !n.adminOnly || isAdmin).map((item) => {

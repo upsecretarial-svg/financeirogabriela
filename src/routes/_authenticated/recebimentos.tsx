@@ -34,6 +34,8 @@ interface Row {
   pago: boolean;
   obs_financeiras: string | null;
   comprovante_path: string | null;
+  paid_by_name: string | null;
+  paid_at: string | null;
 }
 
 const brl = (n: number | null | undefined) =>

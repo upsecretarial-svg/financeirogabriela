@@ -75,6 +75,22 @@ function AuthPage() {
     });
   };
 
+  const handleGoogle = async () => {
+    setGoogleLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setGoogleLoading(false);
+      toast.error("Falha no login com Google", { description: (result.error as Error).message });
+      return;
+    }
+    if (result.redirected) return;
+    await logLoginEvent("login");
+    setGoogleLoading(false);
+    navigate({ to: "/" });
+  };
+
   const handleBootstrap = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

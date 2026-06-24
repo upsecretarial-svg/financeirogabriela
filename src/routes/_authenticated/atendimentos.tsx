@@ -42,6 +42,8 @@ interface AppointmentRow {
   valor_recebido: number | null;
   data_pagamento: string | null;
   nf_numero: string | null;
+  nf_pdf_path: string | null;
+  comprovante_path: string | null;
 }
 
 function brl(n: number | null | undefined) {

@@ -154,6 +154,9 @@ export type Database = {
           obs_financeiras: string | null
           observacoes: string | null
           pago: boolean
+          paid_at: string | null
+          paid_by: string | null
+          paid_by_name: string | null
           payment_method_id: string | null
           pet: string
           status: string
@@ -180,6 +183,9 @@ export type Database = {
           obs_financeiras?: string | null
           observacoes?: string | null
           pago?: boolean
+          paid_at?: string | null
+          paid_by?: string | null
+          paid_by_name?: string | null
           payment_method_id?: string | null
           pet: string
           status?: string
@@ -206,6 +212,9 @@ export type Database = {
           obs_financeiras?: string | null
           observacoes?: string | null
           pago?: boolean
+          paid_at?: string | null
+          paid_by?: string | null
+          paid_by_name?: string | null
           payment_method_id?: string | null
           pet?: string
           status?: string

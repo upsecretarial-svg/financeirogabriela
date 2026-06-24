@@ -34,6 +34,8 @@ interface Row {
   pago: boolean;
   obs_financeiras: string | null;
   comprovante_path: string | null;
+  paid_by_name: string | null;
+  paid_at: string | null;
 }
 
 const brl = (n: number | null | undefined) =>
@@ -76,7 +78,7 @@ function Page() {
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path")
+        .select("id,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(300);
@@ -167,6 +169,7 @@ function Page() {
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead className="text-right">Recebido</TableHead>
                 <TableHead>Pago em</TableHead>
+                <TableHead>Baixa por</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead></TableHead>
               </TableRow>
@@ -179,6 +182,13 @@ function Page() {
                   <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
                   <TableCell className="text-right text-sm">{brl(r.valor_recebido)}</TableCell>
                   <TableCell className="text-sm">{r.data_pagamento ?? "—"}</TableCell>
+                  <TableCell className="text-sm">
+                    {r.paid_by_name ? (
+                      <span className="font-medium">{r.paid_by_name}</span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {r.pago ? (
                       <Badge className="bg-success/15 text-success border-success/30" variant="outline"><Check className="mr-1 h-3 w-3" />Pago</Badge>
@@ -210,7 +220,7 @@ function Page() {
                 </TableRow>
               ))}
               {!data?.length && (
-                <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

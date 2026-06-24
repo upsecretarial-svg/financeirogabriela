@@ -24,7 +24,7 @@ function diasEm(date: string) {
 
 function Pendencias() {
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["pendencias-unpaid", search],
     queryFn: async () => {
       let q = supabase

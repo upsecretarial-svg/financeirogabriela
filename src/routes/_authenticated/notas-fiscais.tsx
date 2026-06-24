@@ -1,0 +1,219 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Search, Pencil } from "lucide-react";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/_authenticated/notas-fiscais")({
+  head: () => ({ meta: [{ title: "Notas Fiscais" }] }),
+  component: Page,
+});
+
+interface Row {
+  id: string;
+  numero_interno: string | null;
+  tutor: string;
+  pet: string;
+  data_atendimento: string;
+  valor: number | null;
+  nf_emitida: boolean;
+  nf_enviada: boolean;
+  nf_numero: string | null;
+  nf_pdf_path: string | null;
+}
+
+const brl = (n: number | null | undefined) =>
+  (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function Page() {
+  const qc = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "pending" | "issued">("all");
+  const [edit, setEdit] = useState<Row | null>(null);
+
+  const { data } = useQuery({
+    queryKey: ["nf-list", search, filter],
+    queryFn: async () => {
+      let q = supabase
+        .from("appointments")
+        .select("id,numero_interno,tutor,pet,data_atendimento,valor,nf_emitida,nf_enviada,nf_numero,nf_pdf_path")
+        .is("deleted_at", null)
+        .order("data_atendimento", { ascending: false })
+        .limit(300);
+      if (filter === "pending") q = q.eq("nf_emitida", false);
+      if (filter === "issued") q = q.eq("nf_emitida", true);
+      if (search) q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%,nf_numero.ilike.%${search}%`);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as Row[];
+    },
+  });
+
+  const save = useMutation({
+    mutationFn: async (row: Row) => {
+      const { error } = await supabase
+        .from("appointments")
+        .update({
+          nf_numero: row.nf_numero || null,
+          nf_emitida: row.nf_emitida,
+          nf_enviada: row.nf_enviada,
+          nf_pdf_path: row.nf_pdf_path || null,
+        })
+        .eq("id", row.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["nf-list"] });
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success("NF atualizada.");
+      setEdit(null);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <div className="space-y-6">
+      <header>
+        <h1 className="text-2xl font-semibold tracking-tight">Notas Fiscais</h1>
+        <p className="text-sm text-muted-foreground">Emissão e envio de NF dos atendimentos.</p>
+      </header>
+
+      <Card className="border-border/60">
+        <CardHeader className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <CardTitle className="text-base">Atendimentos</CardTitle>
+            <div className="flex gap-2">
+              {(["all", "pending", "issued"] as const).map((f) => (
+                <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)}>
+                  {f === "all" ? "Todos" : f === "pending" ? "Pendentes" : "Emitidas"}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input className="pl-9" placeholder="Buscar tutor, pet ou nº NF…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          </div>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Data</TableHead>
+                <TableHead>Tutor / Pet</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
+                <TableHead>Nº NF</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell className="text-sm">{r.data_atendimento}</TableCell>
+                  <TableCell className="text-sm"><div className="font-medium">{r.tutor}</div><div className="text-xs text-muted-foreground">{r.pet}</div></TableCell>
+                  <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
+                  <TableCell className="font-mono text-xs">{r.nf_numero ?? "—"}</TableCell>
+                  <TableCell>
+                    {r.nf_emitida ? (
+                      <Badge className="bg-success/15 text-success border-success/30" variant="outline">
+                        {r.nf_enviada ? "Emitida e enviada" : "Emitida"}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">Pendente</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {!data?.length && (
+                <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!edit} onOpenChange={(v) => !v && setEdit(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader><DialogTitle>NF — {edit?.tutor} / {edit?.pet}</DialogTitle></DialogHeader>
+          {edit && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Nº da NF</Label>
+                <Input value={edit.nf_numero ?? ""} onChange={(e) => setEdit({ ...edit, nf_numero: e.target.value })} />
+              </div>
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <Label>NF emitida</Label>
+                <Switch checked={edit.nf_emitida} onCheckedChange={(v) => setEdit({ ...edit, nf_emitida: v })} />
+              </div>
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <Label>NF enviada</Label>
+                <Switch checked={edit.nf_enviada} onCheckedChange={(v) => setEdit({ ...edit, nf_enviada: v })} />
+              </div>
+              <FileField
+                label="PDF da Nota Fiscal"
+                path={edit.nf_pdf_path}
+                prefix="nf"
+                onChange={(p) => setEdit({ ...edit, nf_pdf_path: p })}
+              />
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setEdit(null)}>Cancelar</Button>
+            <Button disabled={save.isPending} onClick={() => edit && save.mutate(edit)}>Salvar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function FileField({ label, path, prefix, onChange }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void }) {
+  const [busy, setBusy] = useState(false);
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      const key = `${prefix}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
+      if (error) throw error;
+      onChange(key);
+      toast.success("Arquivo enviado.");
+    } catch (e) {
+      toast.error("Erro no upload", { description: (e as Error).message });
+    } finally { setBusy(false); }
+  };
+  const view = async () => {
+    if (!path) return;
+    const { data, error } = await supabase.storage.from("notas-fiscais").createSignedUrl(path, 60);
+    if (error) return toast.error("Erro ao abrir arquivo");
+    window.open(data.signedUrl, "_blank");
+  };
+  return (
+    <div className="space-y-2 rounded-md border border-dashed p-4">
+      <Label>{label}</Label>
+      <div className="flex flex-wrap items-center gap-2">
+        <Input type="file" accept="application/pdf,image/*" disabled={busy}
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }} />
+        {path && (
+          <>
+            <Button type="button" size="sm" variant="outline" onClick={view}>Visualizar</Button>
+            <Button type="button" size="sm" variant="ghost" className="text-destructive" onClick={() => onChange(null)}>Remover</Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

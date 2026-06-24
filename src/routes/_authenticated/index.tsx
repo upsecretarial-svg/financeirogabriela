@@ -74,6 +74,7 @@ function Dashboard() {
       const { data } = await supabase
         .from("appointments")
         .select("data_atendimento, valor, valor_recebido")
+        .is("deleted_at", null)
         .gte("data_atendimento", start.toISOString().slice(0, 10));
       const buckets: Record<string, { mes: string; faturado: number; recebido: number }> = {};
       for (let i = 0; i < 6; i++) {

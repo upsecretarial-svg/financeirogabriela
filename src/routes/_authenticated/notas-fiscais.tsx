@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getStorageFile } from "@/lib/storage-file.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +36,32 @@ interface Row {
 
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
+  const byteCharacters = atob(file.base64);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let index = 0; index < byteCharacters.length; index += 1) {
+    byteNumbers[index] = byteCharacters.charCodeAt(index);
+  }
+
+  const blob = new Blob([new Uint8Array(byteNumbers)], { type: file.contentType });
+  const url = URL.createObjectURL(blob);
+
+  if (targetWindow) {
+    targetWindow.location.href = url;
+  } else {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = file.filename;
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
 
 function Page() {
   const qc = useQueryClient();
@@ -222,16 +250,21 @@ function Page() {
 
 function NfInlineFile({ row }: { row: Row }) {
   const qc = useQueryClient();
+  const getFile = useServerFn(getStorageFile);
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
   const openPdf = async () => {
     if (!row.nf_pdf_path) return;
-    const { data, error } = await supabase.storage.from("notas-fiscais").download(row.nf_pdf_path);
-    if (error || !data) return toast.error("Erro ao abrir NF");
-    const url = URL.createObjectURL(data);
-    window.open(url, "_blank");
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    const targetWindow = window.open("about:blank", "_blank");
+    if (targetWindow) targetWindow.opener = null;
+    try {
+      const file = await getFile({ data: { bucket: "notas-fiscais", path: row.nf_pdf_path } });
+      openBase64File(file, targetWindow);
+    } catch (error) {
+      targetWindow?.close();
+      toast.error("Erro ao abrir NF", { description: (error as Error).message });
+    }
   };
 
   const onFile = async (file: File) => {
@@ -288,6 +321,7 @@ function NfInlineFile({ row }: { row: Row }) {
 }
 
 function FileField({ label, path, prefix, onChange }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void }) {
+  const getFile = useServerFn(getStorageFile);
   const [busy, setBusy] = useState(false);
   const upload = async (file: File) => {
     setBusy(true);
@@ -304,11 +338,15 @@ function FileField({ label, path, prefix, onChange }: { label: string; path: str
   };
   const view = async () => {
     if (!path) return;
-    const { data, error } = await supabase.storage.from("notas-fiscais").download(path);
-    if (error || !data) return toast.error("Erro ao abrir arquivo");
-    const url = URL.createObjectURL(data);
-    window.open(url, "_blank");
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    const targetWindow = window.open("about:blank", "_blank");
+    if (targetWindow) targetWindow.opener = null;
+    try {
+      const file = await getFile({ data: { bucket: "notas-fiscais", path } });
+      openBase64File(file, targetWindow);
+    } catch (error) {
+      targetWindow?.close();
+      toast.error("Erro ao abrir arquivo", { description: (error as Error).message });
+    }
   };
   return (
     <div className="space-y-2 rounded-md border border-dashed p-4">

@@ -357,6 +357,33 @@ function Atendimentos() {
                   </Select>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Serviço realizado</Label>
+                    <Button type="button" variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => setQuickServiceOpen(true)}>
+                      <Plus className="mr-1 h-3 w-3" /> Novo serviço
+                    </Button>
+                  </div>
+                  <Select
+                    value={serviceId}
+                    onValueChange={(v) => {
+                      setServiceId(v);
+                      const svc = services?.find((s) => s.id === v);
+                      if (svc && editing && (editing.valor == null || editing.valor === 0)) {
+                        setEditing({ ...editing, valor: Number(svc.valor_final ?? svc.valor ?? 0) });
+                      }
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Selecione um serviço…" /></SelectTrigger>
+                    <SelectContent>
+                      {services?.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.nome} — {brl(Number(s.valor_final ?? s.valor ?? 0))}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
                   <Label>Valor (R$)</Label>
                   <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
                 </div>

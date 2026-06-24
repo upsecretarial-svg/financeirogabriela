@@ -14,16 +14,319 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          clinic_id: string | null
+          comprovante_path: string | null
+          created_at: string
+          created_by: string | null
+          data_atendimento: string
+          data_pagamento: string | null
+          id: string
+          nf_data_emissao: string | null
+          nf_emitida: boolean
+          nf_enviada: boolean
+          nf_numero: string | null
+          nf_pdf_path: string | null
+          numero_interno: string | null
+          obs_financeiras: string | null
+          observacoes: string | null
+          pago: boolean
+          payment_method_id: string | null
+          pet: string
+          status: string
+          tutor: string
+          updated_at: string
+          valor: number | null
+          valor_recebido: number | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          comprovante_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_atendimento: string
+          data_pagamento?: string | null
+          id?: string
+          nf_data_emissao?: string | null
+          nf_emitida?: boolean
+          nf_enviada?: boolean
+          nf_numero?: string | null
+          nf_pdf_path?: string | null
+          numero_interno?: string | null
+          obs_financeiras?: string | null
+          observacoes?: string | null
+          pago?: boolean
+          payment_method_id?: string | null
+          pet: string
+          status?: string
+          tutor: string
+          updated_at?: string
+          valor?: number | null
+          valor_recebido?: number | null
+        }
+        Update: {
+          clinic_id?: string | null
+          comprovante_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_atendimento?: string
+          data_pagamento?: string | null
+          id?: string
+          nf_data_emissao?: string | null
+          nf_emitida?: boolean
+          nf_enviada?: boolean
+          nf_numero?: string | null
+          nf_pdf_path?: string | null
+          numero_interno?: string | null
+          obs_financeiras?: string | null
+          observacoes?: string | null
+          pago?: boolean
+          payment_method_id?: string | null
+          pet?: string
+          status?: string
+          tutor?: string
+          updated_at?: string
+          valor?: number | null
+          valor_recebido?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_log: {
+        Row: {
+          acao: string
+          criado_em: string
+          diff: Json | null
+          id: string
+          ip: string | null
+          registro_id: string | null
+          tabela: string
+          user_id: string | null
+        }
+        Insert: {
+          acao: string
+          criado_em?: string
+          diff?: Json | null
+          id?: string
+          ip?: string | null
+          registro_id?: string | null
+          tabela: string
+          user_id?: string | null
+        }
+        Update: {
+          acao?: string
+          criado_em?: string
+          diff?: Json | null
+          id?: string
+          ip?: string | null
+          registro_id?: string | null
+          tabela?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      clinics: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          percentual_repasse: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          percentual_repasse?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          percentual_repasse?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      login_events: {
+        Row: {
+          criado_em: string
+          id: string
+          ip: string | null
+          tipo: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          ip?: string | null
+          tipo: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          ip?: string | null
+          tipo?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          email: string
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          email: string
+          id: string
+          nome?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      pendencias_view: {
+        Row: {
+          clinic_id: string | null
+          clinica_nome: string | null
+          comprovante_path: string | null
+          created_at: string | null
+          created_by: string | null
+          data_atendimento: string | null
+          data_pagamento: string | null
+          id: string | null
+          nf_data_emissao: string | null
+          nf_emitida: boolean | null
+          nf_enviada: boolean | null
+          nf_numero: string | null
+          nf_pdf_path: string | null
+          numero_interno: string | null
+          obs_financeiras: string | null
+          observacoes: string | null
+          pago: boolean | null
+          payment_method_id: string | null
+          pet: string | null
+          status: string | null
+          tipo_pendencia: string | null
+          tutor: string | null
+          updated_at: string | null
+          valor: number | null
+          valor_recebido: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_any_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "vet"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +453,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "vet"],
+    },
   },
 } as const

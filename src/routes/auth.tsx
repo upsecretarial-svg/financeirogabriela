@@ -99,9 +99,10 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary to-accent/40 px-4">
       <Card className="w-full max-w-md border-border/60 shadow-lg">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-background shadow-md ring-1 ring-border">
-            <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt — Medicina Veterinária" className="h-full w-full object-cover" />
+          <div className="mx-auto flex h-32 w-32 items-center justify-center">
+            <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt — Medicina Veterinária" className="h-full w-full object-contain" />
           </div>
+
           <CardTitle className="text-2xl">
             {mode === "bootstrap" ? "Criar administrador" : "Sistema Financeiro"}
           </CardTitle>

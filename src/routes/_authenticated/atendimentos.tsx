@@ -29,6 +29,7 @@ interface AppointmentRow {
   id: string;
   numero_interno: string | null;
   tutor: string;
+  tutor_cpf: string | null;
   pet: string;
   data_atendimento: string;
   valor: number | null;
@@ -49,6 +50,14 @@ interface AppointmentRow {
 
 function brl(n: number | null | undefined) {
   return (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function formatCpf(v: string) {
+  const d = (v ?? "").replace(/\D/g, "").slice(0, 11);
+  return d
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1-$2");
 }
 
 function Atendimentos() {
@@ -140,8 +149,13 @@ function Atendimentos() {
       if (!row.tutor || !row.pet || !row.data_atendimento) {
         throw new Error("Preencha tutor, pet e data.");
       }
+      const cpfDigits = (row.tutor_cpf ?? "").replace(/\D/g, "");
+      if (cpfDigits && cpfDigits.length !== 11) {
+        throw new Error("CPF deve conter 11 dígitos.");
+      }
       const payload = {
         tutor: row.tutor,
+        tutor_cpf: cpfDigits || null,
         pet: row.pet,
         data_atendimento: row.data_atendimento,
         clinic_id: row.clinic_id || null,
@@ -349,6 +363,16 @@ function Atendimentos() {
                 <div className="space-y-2">
                   <Label>Tutor *</Label>
                   <Input value={editing.tutor ?? ""} onChange={(e) => setEditing({ ...editing, tutor: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>CPF do tutor (NF-e)</Label>
+                  <Input
+                    inputMode="numeric"
+                    maxLength={14}
+                    placeholder="000.000.000-00"
+                    value={formatCpf(editing.tutor_cpf ?? "")}
+                    onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Pet *</Label>

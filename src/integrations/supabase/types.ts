@@ -161,6 +161,7 @@ export type Database = {
           pet: string
           status: string
           tutor: string
+          tutor_cpf: string | null
           updated_at: string
           valor: number | null
           valor_recebido: number | null
@@ -190,6 +191,7 @@ export type Database = {
           pet: string
           status?: string
           tutor: string
+          tutor_cpf?: string | null
           updated_at?: string
           valor?: number | null
           valor_recebido?: number | null
@@ -219,6 +221,7 @@ export type Database = {
           pet?: string
           status?: string
           tutor?: string
+          tutor_cpf?: string | null
           updated_at?: string
           valor?: number | null
           valor_recebido?: number | null

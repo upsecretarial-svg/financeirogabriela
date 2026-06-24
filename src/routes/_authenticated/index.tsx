@@ -129,7 +129,38 @@ function Dashboard() {
         })}
       </section>
 
-      <section>
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="border-border/60">
+          <CardHeader>
+            <CardTitle>Faturamento × Recebido (últimos 6 meses)</CardTitle>
+          </CardHeader>
+          <CardContent className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chart ?? []}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="mes" className="text-xs" />
+                <YAxis
+                  className="text-xs"
+                  tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  formatter={(v: number) => brl(v)}
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8,
+                  }}
+                />
+                <Bar dataKey="faturado" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]}>
+                  {(chart ?? []).map((_, i) => <Cell key={i} fillOpacity={0.45} />)}
+                </Bar>
+                <Bar dataKey="recebido" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/60">
         <Card className="border-border/60">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>

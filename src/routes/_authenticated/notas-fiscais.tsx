@@ -220,6 +220,71 @@ function Page() {
   );
 }
 
+function NfInlineFile({ row }: { row: Row }) {
+  const qc = useQueryClient();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const openPdf = async () => {
+    if (!row.nf_pdf_path) return;
+    const { data, error } = await supabase.storage.from("notas-fiscais").createSignedUrl(row.nf_pdf_path, 60);
+    if (error) return toast.error("Erro ao abrir NF");
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const onFile = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      const key = `nf/${crypto.randomUUID()}.${ext}`;
+      const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
+      if (up.error) throw up.error;
+      const { error } = await supabase.from("appointments").update({ nf_pdf_path: key }).eq("id", row.id);
+      if (error) throw error;
+      toast.success("NF anexada.");
+      qc.invalidateQueries({ queryKey: ["nf-list"] });
+    } catch (e) {
+      toast.error("Erro ao anexar", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,image/*"
+        className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }}
+      />
+      {row.nf_pdf_path ? (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 gap-1.5"
+          onClick={openPdf}
+          title="Abrir NF"
+        >
+          <FileText className="h-3.5 w-3.5" /> Abrir
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 gap-1.5"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+          title="Anexar NF"
+        >
+          <Paperclip className="h-3.5 w-3.5" /> {busy ? "Enviando…" : "Anexar"}
+        </Button>
+      )}
+    </>
+  );
+}
+
 function FileField({ label, path, prefix, onChange }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void }) {
   const [busy, setBusy] = useState(false);
   const upload = async (file: File) => {

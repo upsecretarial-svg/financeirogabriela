@@ -354,7 +354,7 @@ function Atendimentos() {
                     </TableCell>
                   </TableRow>
                 ))
-              )}
+              ) : null}
             </TableBody>
           </Table>
         </CardContent>

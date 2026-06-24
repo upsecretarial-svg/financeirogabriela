@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Stethoscope, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Entrar — Sistema Financeiro" }] }),
@@ -78,8 +79,8 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary to-accent/40 px-4">
       <Card className="w-full max-w-md border-border/60 shadow-lg">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary">
-            <Stethoscope className="h-6 w-6" />
+          <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-background shadow-md ring-1 ring-border">
+            <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt — Medicina Veterinária" className="h-full w-full object-cover" />
           </div>
           <CardTitle className="text-2xl">
             {mode === "bootstrap" ? "Criar administrador" : "Sistema Financeiro"}

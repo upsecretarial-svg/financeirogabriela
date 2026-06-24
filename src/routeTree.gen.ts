@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedUsuariosRouteImport } from './routes/_authenticated/usuarios'
+import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedPendenciasRouteImport } from './routes/_authenticated/pendencias'
 import { Route as AuthenticatedLixeiraRouteImport } from './routes/_authenticated/lixeira'
@@ -44,6 +45,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedUsuariosRoute = AuthenticatedUsuariosRouteImport.update({
   id: '/usuarios',
   path: '/usuarios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedServicosRoute = AuthenticatedServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
 }
 export interface FileRoutesByTo {
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
   '/': typeof AuthenticatedIndexRoute
 }
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/lixeira': typeof AuthenticatedLixeiraRoute
   '/_authenticated/pendencias': typeof AuthenticatedPendenciasRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/usuarios': typeof AuthenticatedUsuariosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/pendencias'
     | '/relatorios'
+    | '/servicos'
     | '/usuarios'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/lixeira'
     | '/pendencias'
     | '/relatorios'
+    | '/servicos'
     | '/usuarios'
     | '/'
   id:
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/lixeira'
     | '/_authenticated/pendencias'
     | '/_authenticated/relatorios'
+    | '/_authenticated/servicos'
     | '/_authenticated/usuarios'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
@@ -209,6 +221,13 @@ declare module '@tanstack/react-router' {
       path: '/usuarios'
       fullPath: '/usuarios'
       preLoaderRoute: typeof AuthenticatedUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/servicos': {
+      id: '/_authenticated/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof AuthenticatedServicosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/relatorios': {
@@ -271,6 +290,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLixeiraRoute: typeof AuthenticatedLixeiraRoute
   AuthenticatedPendenciasRoute: typeof AuthenticatedPendenciasRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
   AuthenticatedUsuariosRoute: typeof AuthenticatedUsuariosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
@@ -283,6 +303,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLixeiraRoute: AuthenticatedLixeiraRoute,
   AuthenticatedPendenciasRoute: AuthenticatedPendenciasRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedServicosRoute: AuthenticatedServicosRoute,
   AuthenticatedUsuariosRoute: AuthenticatedUsuariosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }

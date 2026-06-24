@@ -146,15 +146,16 @@ function Dashboard() {
                 <Tooltip
                   formatter={(v: number) => brl(v)}
                   contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
+                    background: "var(--card)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
+                    color: "var(--card-foreground)",
                   }}
                 />
-                <Bar dataKey="faturado" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]}>
-                  {(chart ?? []).map((_, i) => <Cell key={i} fillOpacity={0.45} />)}
+                <Bar dataKey="faturado" fill="var(--primary)" radius={[6, 6, 0, 0]}>
+                  {(chart ?? []).map((_, i) => <Cell key={i} fillOpacity={0.4} />)}
                 </Bar>
-                <Bar dataKey="recebido" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="recebido" fill="var(--primary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

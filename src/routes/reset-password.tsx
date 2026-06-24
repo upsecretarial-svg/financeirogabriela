@@ -22,15 +22,14 @@ function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Supabase processa o hash #access_token=... automaticamente e dispara PASSWORD_RECOVERY
+    // Apenas o evento PASSWORD_RECOVERY (disparado pelo link do e-mail) libera o formulário.
+    // Sessões pré-existentes (SIGNED_IN) NÃO devem permitir trocar a senha sem o token de recuperação.
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady(true);
+      if (event === "PASSWORD_RECOVERY") setReady(true);
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

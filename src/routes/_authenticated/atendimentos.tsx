@@ -332,6 +332,18 @@ function Atendimentos() {
                   <Label>Nº da NF</Label>
                   <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} />
                 </div>
+                <FileField
+                  label="PDF da Nota Fiscal"
+                  path={editing.nf_pdf_path ?? null}
+                  prefix="nf"
+                  onChange={(p) => setEditing({ ...editing, nf_pdf_path: p })}
+                />
+                <FileField
+                  label="Comprovante de pagamento"
+                  path={editing.comprovante_path ?? null}
+                  prefix="comprovante"
+                  onChange={(p) => setEditing({ ...editing, comprovante_path: p })}
+                />
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Observações</Label>
                   <Textarea value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />

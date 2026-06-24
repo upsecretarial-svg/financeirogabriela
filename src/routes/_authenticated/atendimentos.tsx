@@ -162,26 +162,35 @@ function Atendimentos() {
         const { error } = await supabase.from("appointments").update(payload).eq("id", row.id);
         if (error) throw error;
         await syncServiceItem(row.id, serviceId);
-        return row.id;
+        wasNewRef.current = false;
+        return { id: row.id, pago: !!row.pago };
       } else {
         const { data, error } = await supabase.from("appointments").insert(payload).select("id").single();
         if (error) throw error;
         await syncServiceItem(data.id, serviceId);
-        return data.id as string;
+        wasNewRef.current = true;
+        return { id: data.id as string, pago: !!row.pago };
       }
     },
-    onSuccess: (id) => {
+    onSuccess: ({ id, pago }) => {
       qc.invalidateQueries({ queryKey: ["appointments"] });
       qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
       qc.invalidateQueries({ queryKey: ["pendencias-recent"] });
-      toast.success("Atendimento salvo.");
-      // mantém aberto para edição se acabou de criar
-      if (editing && !editing.id) {
-        setEditing({ ...editing, id });
+      const isNew = wasNewRef.current;
+      setOpen(false);
+      setEditing(null);
+      if (isNew) {
+        if (pago) {
+          toast.success("Atendimento salvo. Enviado para Notas Fiscais.");
+          navigate({ to: "/notas-fiscais" });
+        } else {
+          toast.success("Atendimento salvo. Enviado para Pendências.");
+          navigate({ to: "/pendencias" });
+        }
       } else {
-        setOpen(false);
-        setEditing(null);
+        toast.success("Atendimento atualizado.");
       }
+      void id;
     },
     onError: (e: Error) => toast.error("Erro ao salvar", { description: e.message }),
   });

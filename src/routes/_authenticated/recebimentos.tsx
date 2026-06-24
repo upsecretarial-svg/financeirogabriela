@@ -300,9 +300,17 @@ function Page() {
 
                 </TableRow>
               ))}
-              {!data?.length && (
-                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
-              )}
+              <TableState
+                colSpan={8}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !data?.length}
+                emptyIcon={Wallet}
+                emptyTitle="Sem recebimentos no período"
+                emptyDescription="Ajuste o intervalo de datas ou os filtros para visualizar lançamentos."
+              />
             </TableBody>
           </Table>
         </CardContent>

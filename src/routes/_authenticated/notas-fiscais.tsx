@@ -12,7 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X, Paperclip, FileText } from "lucide-react";
+import { Search, Pencil, Check, X, Paperclip, FileText, FileSearch } from "lucide-react";
+import { TableState } from "@/components/data-state";
 
 import { toast } from "sonner";
 

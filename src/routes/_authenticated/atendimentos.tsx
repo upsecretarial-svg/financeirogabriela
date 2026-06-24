@@ -364,3 +364,73 @@ function Atendimentos() {
     </div>
   );
 }
+
+function FileField({
+  label,
+  path,
+  prefix,
+  onChange,
+}: {
+  label: string;
+  path: string | null;
+  prefix: string;
+  onChange: (path: string | null) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      const key = `${prefix}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("notas-fiscais").upload(key, file, {
+        contentType: file.type || "application/pdf",
+        upsert: false,
+      });
+      if (error) throw error;
+      onChange(key);
+      toast.success("Arquivo enviado.");
+    } catch (e) {
+      toast.error("Erro no upload", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const view = async () => {
+    if (!path) return;
+    const { data, error } = await supabase.storage
+      .from("notas-fiscais")
+      .createSignedUrl(path, 60);
+    if (error) return toast.error("Erro ao abrir arquivo");
+    window.open(data.signedUrl, "_blank");
+  };
+
+  return (
+    <div className="space-y-2 sm:col-span-2">
+      <Label>{label}</Label>
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          type="file"
+          accept="application/pdf,image/*"
+          disabled={busy}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) upload(f);
+            e.target.value = "";
+          }}
+        />
+        {path && (
+          <>
+            <Button type="button" size="sm" variant="outline" onClick={view}>
+              Visualizar
+            </Button>
+            <Button type="button" size="sm" variant="ghost" className="text-destructive" onClick={() => onChange(null)}>
+              Remover
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

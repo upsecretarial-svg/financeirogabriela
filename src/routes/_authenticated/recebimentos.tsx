@@ -25,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/recebimentos")({
 
 interface Row {
   id: string;
+  numero_interno: string | null;
   tutor: string;
   pet: string;
   data_atendimento: string;
@@ -37,6 +38,10 @@ interface Row {
   comprovante_path: string | null;
   paid_by_name: string | null;
   paid_at: string | null;
+  nf_numero: string | null;
+  status: string | null;
+  clinics: { nome: string } | null;
+  payment_methods: { nome: string } | null;
 }
 
 const brl = (n: number | null | undefined) =>

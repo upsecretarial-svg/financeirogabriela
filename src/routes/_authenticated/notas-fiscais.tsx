@@ -80,6 +80,24 @@ function Page() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleEmitida = useMutation({
+    mutationFn: async (row: Row) => {
+      const { error } = await supabase
+        .from("appointments")
+        .update({ nf_emitida: !row.nf_emitida })
+        .eq("id", row.id);
+      if (error) throw error;
+      return !row.nf_emitida;
+    },
+    onSuccess: (novo) => {
+      qc.invalidateQueries({ queryKey: ["nf-list"] });
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success(novo ? "NF marcada como emitida." : "NF marcada como pendente.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   return (
     <div className="space-y-6">
       <header>

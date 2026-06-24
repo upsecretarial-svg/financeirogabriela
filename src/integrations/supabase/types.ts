@@ -369,6 +369,39 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          custo: number
+          id: string
+          nome: string
+          updated_at: string
+          valor: number
+          valor_final: number
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          custo?: number
+          id?: string
+          nome: string
+          updated_at?: string
+          valor?: number
+          valor_final?: number
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          custo?: number
+          id?: string
+          nome?: string
+          updated_at?: string
+          valor?: number
+          valor_final?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

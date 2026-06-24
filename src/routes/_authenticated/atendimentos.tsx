@@ -63,6 +63,7 @@ function Atendimentos() {
       let q = supabase
         .from("appointments")
         .select("*, clinics(nome), payment_methods(nome)")
+        .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(200);
       if (search) {

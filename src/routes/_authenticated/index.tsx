@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Dashboard — Sistema Financeiro" }] }),

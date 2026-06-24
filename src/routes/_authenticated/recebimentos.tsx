@@ -122,6 +122,7 @@ function Page() {
     Numero: r.numero_interno ?? "",
     Data: r.data_atendimento,
     Tutor: r.tutor,
+    CPF: r.tutor_cpf ?? "",
     Pet: r.pet,
     Clinica: r.clinics?.nome ?? "",
     Valor: Number(r.valor ?? 0),

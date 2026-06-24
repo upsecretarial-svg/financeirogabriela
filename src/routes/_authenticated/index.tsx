@@ -14,12 +14,11 @@ import {
   Wallet,
   Clock,
   ClipboardCheck,
-  FileText,
-  AlertCircle,
   Target,
   Trophy,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/")({

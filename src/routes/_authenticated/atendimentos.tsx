@@ -53,6 +53,8 @@ function brl(n: number | null | undefined) {
 
 function Atendimentos() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const wasNewRef = useRef(false);
   const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);

@@ -170,6 +170,7 @@ function Page() {
                 <TableRow key={r.id}>
                   <TableCell className="text-sm">{r.data_atendimento}</TableCell>
                   <TableCell className="text-sm"><div className="font-medium">{r.tutor}</div><div className="text-xs text-muted-foreground">{r.pet}</div></TableCell>
+                  <TableCell className="font-mono text-xs">{r.tutor_cpf ?? "—"}</TableCell>
                   <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
                   <TableCell className="font-mono text-xs">{r.nf_numero ?? "—"}</TableCell>
                   <TableCell>

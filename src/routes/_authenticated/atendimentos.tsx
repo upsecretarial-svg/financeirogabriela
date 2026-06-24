@@ -299,11 +299,18 @@ function Atendimentos() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>
-              ) : !appts?.length ? (
-                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
-              ) : (
+              <TableState
+                colSpan={8}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !appts?.length}
+                emptyIcon={ClipboardList}
+                emptyTitle="Nenhum atendimento ainda"
+                emptyDescription="Clique em 'Novo Atendimento' para registrar o primeiro lançamento."
+              />
+              {!isLoading && !isError && appts?.length ? (
                 appts.map((a) => (
                   <TableRow key={a.id}>
                     <TableCell className="font-mono text-xs">{a.numero_interno}</TableCell>

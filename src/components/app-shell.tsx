@@ -16,6 +16,7 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
+import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import type { ReactNode } from "react";
 
 interface NavItem {

@@ -31,6 +31,7 @@ function AuthPage() {
   const [nome, setNome] = useState("");
   const [loading, setLoading] = useState(false);
   const [recovering, setRecovering] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const runBootstrap = useServerFn(bootstrapAdmin);
 
   useEffect(() => {

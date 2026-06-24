@@ -41,14 +41,21 @@ function AuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${window.location.origin}/`,
+      },
+    });
     setLoading(false);
     if (error) {
-      toast.error("Falha no login", { description: error.message });
+      toast.error("Falha ao enviar link", { description: error.message });
       return;
     }
-    toast.success("Bem-vinda!");
-    navigate({ to: "/" });
+    toast.success("Link de acesso enviado!", {
+      description: "Verifique seu e-mail e clique no link para entrar.",
+    });
   };
 
   const handleBootstrap = async (e: React.FormEvent) => {
@@ -103,22 +110,29 @@ function AuthPage() {
               <Label htmlFor="email">E-mail</Label>
               <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete={mode === "bootstrap" ? "new-password" : "current-password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-              />
-            </div>
+            {mode === "bootstrap" && (
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === "bootstrap" ? "Criar e entrar" : "Entrar"}
+              {mode === "bootstrap" ? "Criar e entrar" : "Enviar link de acesso"}
             </Button>
+            {mode === "login" && (
+              <p className="text-center text-xs text-muted-foreground">
+                Você receberá um link mágico no e-mail. Sua sessão fica salva neste dispositivo.
+              </p>
+            )}
           </form>
         </CardContent>
       </Card>

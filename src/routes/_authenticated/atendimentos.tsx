@@ -73,7 +73,7 @@ function Atendimentos() {
   const [quickServiceOpen, setQuickServiceOpen] = useState(false);
   const [quickService, setQuickService] = useState<{ nome: string; valor: string }>({ nome: "", valor: "" });
 
-  const { data: appts, isLoading } = useQuery({
+  const { data: appts, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["appointments", search],
     queryFn: async () => {
       let q = supabase

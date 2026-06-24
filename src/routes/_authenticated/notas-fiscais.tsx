@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, Pencil, Check, X, Paperclip, FileText } from "lucide-react";
-import { useRef } from "react";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notas-fiscais")({

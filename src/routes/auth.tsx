@@ -14,7 +14,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Entrar — Sistema Financeiro" }] }),
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/app" });
+    if (data.session) throw redirect({ to: "/" });
   },
   component: AuthPage,
 });
@@ -47,7 +47,7 @@ function AuthPage() {
       return;
     }
     toast.success("Bem-vinda!");
-    navigate({ to: "/app" });
+    navigate({ to: "/" });
   };
 
   const handleBootstrap = async (e: React.FormEvent) => {
@@ -58,7 +58,7 @@ function AuthPage() {
       toast.success("Administrador criado. Fazendo login...");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate({ to: "/app" });
+      navigate({ to: "/" });
     } catch (err) {
       toast.error("Erro", { description: (err as Error).message });
     } finally {

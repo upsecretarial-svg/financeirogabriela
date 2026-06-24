@@ -25,14 +25,14 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { to: "/app", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/app/atendimentos", label: "Atendimentos", icon: ClipboardList },
-  { to: "/app/pendencias", label: "Pendências", icon: AlertTriangle },
-  { to: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
-  { to: "/app/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
-  { to: "/app/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
-  { to: "/app/usuarios", label: "Usuários", icon: Users, adminOnly: true },
-  { to: "/app/auditoria", label: "Histórico", icon: History },
+  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
+  { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
+  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
+  { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
+  { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
+  { to: "/auditoria", label: "Histórico", icon: History },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="flex-1 space-y-1 px-3 py-2">
           {NAV.filter((n) => !n.adminOnly || isAdmin).map((item) => {
-            const active = path === item.to || (item.to !== "/app" && path.startsWith(item.to));
+            const active = path === item.to || (item.to !== "/" && path.startsWith(item.to));
             const Icon = item.icon;
             return (
               <Link

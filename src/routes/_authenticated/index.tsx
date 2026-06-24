@@ -105,7 +105,7 @@ function Dashboard() {
               </p>
             </div>
             <Link
-              to="/app/pendencias"
+              to="/pendencias"
               className="text-sm font-medium text-primary hover:underline"
             >
               Ver todas →

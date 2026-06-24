@@ -209,9 +209,17 @@ function Page() {
 
                 </TableRow>
               ))}
-              {!data?.length && (
-                <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
-              )}
+              <TableState
+                colSpan={7}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !data?.length}
+                emptyIcon={FileSearch}
+                emptyTitle="Nenhuma nota fiscal"
+                emptyDescription="Não há atendimentos para os filtros atuais."
+              />
             </TableBody>
           </Table>
         </CardContent>

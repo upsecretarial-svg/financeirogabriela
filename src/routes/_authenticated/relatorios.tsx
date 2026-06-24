@@ -52,11 +52,59 @@ function Relatorios() {
     { faturado: 0, recebido: 0, repasse: 0, qtd: 0 },
   );
 
+  const rows = (data ?? []).map((a: any) => {
+    const recebido = Number(a.valor_recebido ?? 0);
+    const pct = Number(a.clinics?.percentual_repasse ?? 0);
+    return {
+      Numero: a.numero_interno,
+      Data: a.data_atendimento,
+      Tutor: a.tutor,
+      Pet: a.pet,
+      Clinica: a.clinics?.nome ?? "",
+      Valor: Number(a.valor ?? 0),
+      Recebido: recebido,
+      Repasse: (recebido * pct) / 100,
+      Status: a.status,
+      NF: a.nf_numero ?? "",
+    };
+  });
+
+  const filename = `relatorio_${from}_a_${to}`;
+  const summary = {
+    Período: `${from} → ${to}`,
+    Atendimentos: String(totals.qtd),
+    Faturado: brl(totals.faturado),
+    Recebido: brl(totals.recebido),
+    "Repasse devido": brl(totals.repasse),
+  };
+
+  const onPDF = () =>
+    exportPDF(
+      filename,
+      "Relatório financeiro",
+      ["Nº", "Data", "Tutor/Pet", "Clínica", "Valor", "Recebido", "Repasse"],
+      rows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), brl(r.Repasse)]),
+      summary,
+    );
+
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Relatórios</h1>
-        <p className="text-sm text-muted-foreground">Faturamento e repasses por período.</p>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Relatórios</h1>
+          <p className="text-sm text-muted-foreground">Faturamento e repasses por período.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => exportCSV(filename, rows)} disabled={!rows.length}>
+            <FileDown className="mr-2 h-4 w-4" /> CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => exportXLSX(filename, rows)} disabled={!rows.length}>
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={onPDF} disabled={!rows.length}>
+            <FileText className="mr-2 h-4 w-4" /> PDF
+          </Button>
+        </div>
       </header>
 
       <Card className="border-border/60">

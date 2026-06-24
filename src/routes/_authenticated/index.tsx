@@ -35,6 +35,7 @@ function Dashboard() {
       const { data: mes } = await supabase
         .from("appointments")
         .select("valor, valor_recebido, pago, nf_emitida")
+        .is("deleted_at", null)
         .gte("data_atendimento", inicio);
 
       const { count: pendCount } = await supabase

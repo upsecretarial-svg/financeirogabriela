@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   ClipboardList,
+  Stethoscope,
   AlertTriangle,
   Building2,
   CreditCard,
@@ -55,6 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Cadastros",
     items: [
       { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
+      { to: "/servicos", label: "Serviços", icon: Stethoscope },
       { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
     ],
   },

@@ -407,6 +407,41 @@ function Atendimentos() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={quickServiceOpen} onOpenChange={setQuickServiceOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Novo serviço</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div className="space-y-2">
+              <Label>Nome *</Label>
+              <Input
+                value={quickService.nome}
+                onChange={(e) => setQuickService({ ...quickService, nome: e.target.value })}
+                placeholder="Ex: Consulta clínica"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Valor (R$)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={quickService.valor}
+                onChange={(e) => setQuickService({ ...quickService, valor: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setQuickServiceOpen(false)}>Cancelar</Button>
+            <Button disabled={createService.isPending} onClick={() => createService.mutate()}>
+              {createService.isPending ? "Criando…" : "Criar e selecionar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

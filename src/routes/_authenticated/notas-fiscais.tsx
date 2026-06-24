@@ -37,7 +37,7 @@ interface Row {
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-function openBase64File(file: { base64: string; contentType: string; filename: string }) {
+function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
   const byteCharacters = atob(file.base64);
   const byteNumbers = new Array(byteCharacters.length);
 
@@ -47,9 +47,10 @@ function openBase64File(file: { base64: string; contentType: string; filename: s
 
   const blob = new Blob([new Uint8Array(byteNumbers)], { type: file.contentType });
   const url = URL.createObjectURL(blob);
-  const opened = window.open(url, "_blank", "noopener,noreferrer");
 
-  if (!opened) {
+  if (targetWindow) {
+    targetWindow.location.href = url;
+  } else {
     const link = document.createElement("a");
     link.href = url;
     link.download = file.filename;
@@ -255,10 +256,13 @@ function NfInlineFile({ row }: { row: Row }) {
 
   const openPdf = async () => {
     if (!row.nf_pdf_path) return;
+    const targetWindow = window.open("about:blank", "_blank");
+    if (targetWindow) targetWindow.opener = null;
     try {
       const file = await getFile({ data: { bucket: "notas-fiscais", path: row.nf_pdf_path } });
-      openBase64File(file);
+      openBase64File(file, targetWindow);
     } catch (error) {
+      targetWindow?.close();
       toast.error("Erro ao abrir NF", { description: (error as Error).message });
     }
   };
@@ -334,10 +338,13 @@ function FileField({ label, path, prefix, onChange }: { label: string; path: str
   };
   const view = async () => {
     if (!path) return;
+    const targetWindow = window.open("about:blank", "_blank");
+    if (targetWindow) targetWindow.opener = null;
     try {
       const file = await getFile({ data: { bucket: "notas-fiscais", path } });
-      openBase64File(file);
+      openBase64File(file, targetWindow);
     } catch (error) {
+      targetWindow?.close();
       toast.error("Erro ao abrir arquivo", { description: (error as Error).message });
     }
   };

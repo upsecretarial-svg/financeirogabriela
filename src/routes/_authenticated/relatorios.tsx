@@ -31,6 +31,7 @@ function Relatorios() {
       const { data } = await supabase
         .from("appointments")
         .select("*, clinics(nome, percentual_repasse)")
+        .is("deleted_at", null)
         .gte("data_atendimento", from)
         .lte("data_atendimento", to)
         .order("data_atendimento", { ascending: false });

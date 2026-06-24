@@ -117,6 +117,22 @@ function Atendimentos() {
     onError: (e: Error) => toast.error("Erro", { description: e.message }),
   });
 
+  const syncServiceItem = async (appointmentId: string, svcId: string) => {
+    await supabase.from("appointment_items").delete().eq("appointment_id", appointmentId).eq("tipo", "servico");
+    if (!svcId) return;
+    const svc = services?.find((s) => s.id === svcId);
+    if (!svc) return;
+    const valor = Number(svc.valor_final ?? svc.valor ?? 0);
+    await supabase.from("appointment_items").insert({
+      appointment_id: appointmentId,
+      tipo: "servico",
+      descricao: svc.nome,
+      quantidade: 1,
+      valor_unitario: valor,
+      valor_total: valor,
+    });
+  };
+
   const save = useMutation({
     mutationFn: async (row: Partial<AppointmentRow>) => {
       if (!row.tutor || !row.pet || !row.data_atendimento) {

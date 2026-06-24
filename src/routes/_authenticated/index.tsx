@@ -161,7 +161,6 @@ function Dashboard() {
         </Card>
 
         <Card className="border-border/60">
-        <Card className="border-border/60">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Pendências recentes</CardTitle>

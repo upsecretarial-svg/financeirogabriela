@@ -152,204 +152,278 @@ function Dashboard() {
   });
 
 
-  const heroCards = [
+  const now = new Date();
+  const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+
+  const kpis = [
     {
-      label: "Faturado no mês",
+      label: "Faturado Mês",
       value: brl(stats?.faturado),
       icon: TrendingUp,
-      accent: "from-primary/20 to-primary/5",
-      iconBg: "bg-primary/15 text-primary",
+      tone: "default" as const,
+      sub: `${stats?.qtd ?? 0} atendimentos`,
     },
     {
       label: "Recebido",
       value: brl(stats?.recebido),
       icon: Wallet,
-      accent: "from-success/25 to-success/5",
-      iconBg: "bg-success/15 text-success",
+      tone: "primary" as const,
+      sub: stats?.faturado
+        ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado`
+        : "—",
     },
     {
-      label: "A receber",
+      label: "Em Aberto",
       value: brl(stats?.pendente),
       icon: Clock,
-      accent: "from-warning/25 to-warning/5",
-      iconBg: "bg-warning/20 text-warning-foreground",
+      tone: "default" as const,
+      sub: `${stats?.nfPendentes ?? 0} NF pendentes`,
     },
     {
-      label: "Atendimentos",
-      value: String(stats?.qtd ?? 0),
+      label: "Pendências",
+      value: String(stats?.pendencias ?? 0),
       icon: ClipboardCheck,
-      accent: "from-accent/60 to-accent/10",
-      iconBg: "bg-accent text-accent-foreground",
-      sub: `${stats?.nfPendentes ?? 0} NF pend. · ${stats?.pendencias ?? 0} pendências`,
+      tone: "danger" as const,
+      sub: "Atendimentos sem baixa",
     },
   ];
 
-  const now = new Date();
-  const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const maxBar = Math.max(1, ...((chart ?? []).flatMap((c) => [c.faturado, c.recebido])));
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Painel executivo</p>
-          <h1 className="text-3xl font-bold tracking-tight">Olá, Dra. Gabriela</h1>
-          <p className="mt-1 text-sm capitalize text-muted-foreground">{mesAtual}</p>
+      {/* Header executivo */}
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-6">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Painel Executivo
+          </p>
+          <h1
+            className="mt-1 text-3xl font-semibold tracking-tight text-primary"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Performance Financeira
+          </h1>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground">Referência</p>
+          <p className="text-sm font-medium capitalize text-foreground">{mesAtual}</p>
         </div>
       </header>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {heroCards.map((c) => {
+      {/* KPIs */}
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((c) => {
           const Icon = c.icon;
+          const dark = c.tone === "primary";
           return (
-            <Card key={c.label} className={`relative overflow-hidden border-border/60 bg-gradient-to-br ${c.accent} transition-shadow hover:shadow-md`}>
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{c.label}</p>
-                    <p className="mt-2 text-2xl font-bold tracking-tight">{isLoading ? "—" : c.value}</p>
-                    {c.sub && <p className="mt-1 text-[11px] text-muted-foreground">{c.sub}</p>}
-                  </div>
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${c.iconBg}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
+            <Card
+              key={c.label}
+              className={
+                dark
+                  ? "rounded-sm border-transparent bg-primary text-primary-foreground shadow-lg"
+                  : "rounded-sm border-border bg-card shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]"
+              }
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <p
+                    className={`text-[10px] font-bold uppercase tracking-[0.18em] ${
+                      dark ? "text-primary-foreground/70" : "text-muted-foreground"
+                    }`}
+                  >
+                    {c.label}
+                  </p>
+                  <Icon
+                    className={`h-4 w-4 shrink-0 ${
+                      dark ? "text-primary-foreground/60" : "text-muted-foreground/60"
+                    }`}
+                  />
                 </div>
+                <p
+                  className={`mt-4 text-2xl font-bold tracking-tight ${
+                    c.tone === "danger" ? "text-destructive" : dark ? "" : "text-primary"
+                  }`}
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {isLoading ? "—" : c.value}
+                </p>
+                <p
+                  className={`mt-2 text-[11px] ${
+                    dark ? "text-primary-foreground/70" : "text-muted-foreground"
+                  }`}
+                >
+                  {c.sub}
+                </p>
               </CardContent>
             </Card>
           );
         })}
       </section>
 
-
-      <Card className="border-border/60">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <div className="flex items-center gap-2">
-            {metaAtingida ? (
-              <Trophy className="h-5 w-5 text-success" />
-            ) : (
-              <Target className="h-5 w-5 text-primary" />
-            )}
-            <CardTitle className="text-base">Meta mensal de recebimento</CardTitle>
-          </div>
-          {isAdmin && (
-            <form
-              className="flex items-center gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const v = Number(metaDraft);
-                if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
-              }}
-            >
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder={meta ? brl(meta) : "Definir meta"}
-                value={metaDraft}
-                onChange={(e) => setMetaDraft(e.target.value)}
-                className="h-8 w-36"
-              />
-              <Button type="submit" size="sm" variant="outline" disabled={!metaDraft || saveMeta.isPending}>
-                Salvar
-              </Button>
-            </form>
-          )}
-        </CardHeader>
-        <CardContent>
-          {meta <= 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {isAdmin ? "Defina uma meta acima para acompanhar o progresso." : "Nenhuma meta definida ainda."}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-semibold">{brl(recebido)}</span>
-                <span className="text-sm text-muted-foreground">de {brl(meta)} ({progresso.toFixed(0)}%)</span>
+      {/* Gráfico + Meta */}
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="rounded-sm border-border bg-card shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
+            <CardTitle className="text-sm font-semibold tracking-tight">
+              Faturamento vs Recebido (6 meses)
+            </CardTitle>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">
+                  Faturado
+                </span>
               </div>
-              <Progress value={progresso} className={metaAtingida ? "[&>div]:bg-success" : ""} />
-              {metaAtingida && (
-                <p className="text-sm font-medium text-success">🎉 Meta atingida — parabéns!</p>
-              )}
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-muted" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">
+                  Recebido
+                </span>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-
-
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="border-border/60">
-          <CardHeader>
-            <CardTitle>Faturamento × Recebido (últimos 6 meses)</CardTitle>
           </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chart ?? []}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="mes" className="text-xs" />
-                <YAxis
-                  className="text-xs"
-                  tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`}
-                />
-                <Tooltip
-                  formatter={(v: number) => brl(v)}
-                  contentStyle={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderRadius: 8,
-                    color: "var(--card-foreground)",
-                  }}
-                />
-                <Bar dataKey="faturado" fill="var(--primary)" radius={[6, 6, 0, 0]}>
-                  {(chart ?? []).map((_, i) => <Cell key={i} fillOpacity={0.4} />)}
-                </Bar>
-                <Bar dataKey="recebido" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <CardContent>
+            <div className="flex h-48 items-end justify-between gap-3 px-2">
+              {(chart ?? []).map((c, idx) => {
+                const isLast = idx === (chart ?? []).length - 1;
+                const hF = `${Math.max(4, (c.faturado / maxBar) * 100)}%`;
+                const hR = `${Math.max(4, (c.recebido / maxBar) * 100)}%`;
+                return (
+                  <div key={idx} className="flex w-full flex-col items-center gap-2">
+                    <div className="flex h-32 w-full items-end gap-1" title={`${brl(c.faturado)} / ${brl(c.recebido)}`}>
+                      <div
+                        className={`w-1/2 rounded-t-sm bg-primary ${isLast ? "" : "opacity-60"}`}
+                        style={{ height: hF }}
+                      />
+                      <div className="w-1/2 rounded-t-sm bg-muted" style={{ height: hR }} />
+                    </div>
+                    <span
+                      className={`text-[10px] uppercase ${
+                        isLast ? "font-bold text-primary" : "text-muted-foreground"
+                      }`}
+                    >
+                      {c.mes}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border-border/60">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Pendências recentes</CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Atendimentos que precisam de atenção financeira ou fiscal.
+        {/* Meta Mensal */}
+        <Card className="relative overflow-hidden rounded-sm border-transparent bg-primary text-primary-foreground shadow-lg">
+          <CardContent className="flex h-full flex-col justify-between gap-8 p-8">
+            <div className="relative z-10 flex items-center gap-2">
+              {metaAtingida ? (
+                <Trophy className="h-4 w-4 text-primary-foreground/80" />
+              ) : (
+                <Target className="h-4 w-4 text-primary-foreground/80" />
+              )}
+              <h3 className="text-sm font-semibold text-primary-foreground/80">Meta Mensal</h3>
+            </div>
+
+            <div className="relative z-10">
+              <p
+                className="text-4xl font-bold"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
+              </p>
+              <p className="mt-2 text-xs text-primary-foreground/70">
+                {meta > 0
+                  ? `${brl(recebido)} de ${brl(meta)}`
+                  : isAdmin
+                    ? "Defina uma meta abaixo"
+                    : "Nenhuma meta definida"}
               </p>
             </div>
-            <Link
-              to="/pendencias"
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              Ver todas →
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {!pendencias?.length ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Nenhuma pendência. 🎉
-              </p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {pendencias.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between py-3">
-                    <div>
-                      <div className="text-sm font-medium">
-                        {p.numero_interno} — {p.tutor} / {p.pet}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {p.data_atendimento} · {brl(Number(p.valor))}
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="capitalize">
-                      {p.tipo_pendencia?.replaceAll("_", " ")}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-            )}
+
+            <div className="relative z-10 space-y-3">
+              {meta > 0 && (
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary-foreground/15">
+                  <div
+                    className="h-full rounded-full bg-primary-foreground shadow-[0_0_8px_rgba(255,255,255,0.4)] transition-all"
+                    style={{ width: `${progresso}%` }}
+                  />
+                </div>
+              )}
+              {isAdmin && (
+                <form
+                  className="flex items-center gap-2 pt-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const v = Number(metaDraft);
+                    if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
+                  }}
+                >
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder={meta ? brl(meta) : "Definir meta"}
+                    value={metaDraft}
+                    onChange={(e) => setMetaDraft(e.target.value)}
+                    className="h-8 border-primary-foreground/20 bg-primary-foreground/10 text-xs text-primary-foreground placeholder:text-primary-foreground/50"
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="secondary"
+                    disabled={!metaDraft || saveMeta.isPending}
+                    className="h-8"
+                  >
+                    Salvar
+                  </Button>
+                </form>
+              )}
+            </div>
+
+            <div className="pointer-events-none absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-primary-foreground/[0.04]" />
           </CardContent>
         </Card>
       </section>
+
+      {/* Pendências recentes */}
+      <Card className="rounded-sm border-border bg-card shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-sm font-semibold tracking-tight">
+              Pendências recentes
+            </CardTitle>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Atendimentos que precisam de atenção financeira ou fiscal.
+            </p>
+          </div>
+          <Link to="/pendencias" className="text-xs font-medium text-primary hover:underline">
+            Ver todas →
+          </Link>
+        </CardHeader>
+        <CardContent>
+          {!pendencias?.length ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma pendência. 🎉</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {pendencias.map((p) => (
+                <li key={p.id} className="flex items-center justify-between py-3">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">
+                      {p.numero_interno} — {p.tutor} / {p.pet}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {p.data_atendimento} · {brl(Number(p.valor))}
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="shrink-0 capitalize">
+                    {p.tipo_pendencia?.replaceAll("_", " ")}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

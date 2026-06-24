@@ -25,17 +25,48 @@ interface NavItem {
   adminOnly?: boolean;
 }
 
-const NAV: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
-  { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
-  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
-  { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
-  { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
-  { to: "/auditoria", label: "Histórico", icon: History },
-  { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Visão geral",
+    items: [
+      { to: "/", label: "Painel", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Operação",
+    items: [
+      { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
+      { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
+    ],
+  },
+  {
+    label: "Financeiro",
+    items: [
+      { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+      { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
+    ],
+  },
+  {
+    label: "Cadastros",
+    items: [
+      { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
+      { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
+    ],
+  },
+  {
+    label: "Administração",
+    items: [
+      { to: "/auditoria", label: "Histórico", icon: History },
+      { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
+    ],
+  },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { loading, user, isAdmin, signOut } = useAuth();

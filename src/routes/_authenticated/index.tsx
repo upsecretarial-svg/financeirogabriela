@@ -63,6 +63,39 @@ function Dashboard() {
     },
   });
 
+  const { data: chart } = useQuery({
+    queryKey: ["dashboard-chart"],
+    queryFn: async () => {
+      const start = new Date();
+      start.setMonth(start.getMonth() - 5);
+      start.setDate(1);
+      start.setHours(0, 0, 0, 0);
+      const { data } = await supabase
+        .from("appointments")
+        .select("data_atendimento, valor, valor_recebido")
+        .gte("data_atendimento", start.toISOString().slice(0, 10));
+      const buckets: Record<string, { mes: string; faturado: number; recebido: number }> = {};
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(start);
+        d.setMonth(start.getMonth() + i);
+        const key = d.toISOString().slice(0, 7);
+        buckets[key] = {
+          mes: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+          faturado: 0,
+          recebido: 0,
+        };
+      }
+      (data ?? []).forEach((a) => {
+        const key = (a.data_atendimento as string).slice(0, 7);
+        if (buckets[key]) {
+          buckets[key].faturado += Number(a.valor ?? 0);
+          buckets[key].recebido += Number(a.valor_recebido ?? 0);
+        }
+      });
+      return Object.values(buckets);
+    },
+  });
+
   const cards = [
     { label: "Faturado no mês", value: brl(stats?.faturado), icon: TrendingUp, color: "text-primary" },
     { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, color: "text-success" },

@@ -49,6 +49,7 @@ function AuthPage() {
       toast.error("Falha no login", { description: error.message });
       return;
     }
+    await logLoginEvent("login");
     toast.success("Bem-vinda!");
     navigate({ to: "/" });
   };

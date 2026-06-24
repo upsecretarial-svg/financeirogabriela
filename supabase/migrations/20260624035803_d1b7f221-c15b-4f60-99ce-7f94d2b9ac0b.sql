@@ -1,0 +1,1 @@
+ALTER VIEW public.pendencias_view SET (security_invoker = true);

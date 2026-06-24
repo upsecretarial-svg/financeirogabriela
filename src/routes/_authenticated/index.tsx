@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import {
   TrendingUp,
   Wallet,
@@ -10,6 +16,8 @@ import {
   ClipboardCheck,
   FileText,
   AlertCircle,
+  Target,
+  Trophy,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from "recharts";
@@ -35,6 +43,7 @@ function Dashboard() {
       const { data: mes } = await supabase
         .from("appointments")
         .select("valor, valor_recebido, pago, nf_emitida")
+        .is("deleted_at", null)
         .gte("data_atendimento", inicio);
 
       const { count: pendCount } = await supabase
@@ -73,6 +82,7 @@ function Dashboard() {
       const { data } = await supabase
         .from("appointments")
         .select("data_atendimento, valor, valor_recebido")
+        .is("deleted_at", null)
         .gte("data_atendimento", start.toISOString().slice(0, 10));
       const buckets: Record<string, { mes: string; faturado: number; recebido: number }> = {};
       for (let i = 0; i < 6; i++) {
@@ -95,6 +105,53 @@ function Dashboard() {
       return Object.values(buckets);
     },
   });
+
+  const qc = useQueryClient();
+  const { isAdmin } = useAuth();
+  const [metaDraft, setMetaDraft] = useState<string>("");
+  const [notified, setNotified] = useState(false);
+
+  const { data: settings } = useQuery({
+    queryKey: ["app-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("app_settings").select("meta_mensal").maybeSingle();
+      return data;
+    },
+  });
+
+  const meta = Number(settings?.meta_mensal ?? 0);
+  const recebido = stats?.recebido ?? 0;
+  const progresso = meta > 0 ? Math.min(100, (recebido / meta) * 100) : 0;
+  const metaAtingida = meta > 0 && recebido >= meta;
+
+  useEffect(() => {
+    if (!metaAtingida) return;
+    const key = `meta-notif-${new Date().toISOString().slice(0, 7)}`;
+    if (sessionStorage.getItem(key) || notified) return;
+    sessionStorage.setItem(key, "1");
+    setNotified(true);
+    toast.success("🎉 Meta mensal atingida!", {
+      description: `Você recebeu ${brl(recebido)} este mês.`,
+      duration: 6000,
+    });
+  }, [metaAtingida, recebido, notified]);
+
+  const saveMeta = useMutation({
+    mutationFn: async (valor: number) => {
+      const { error } = await supabase
+        .from("app_settings")
+        .update({ meta_mensal: valor, updated_at: new Date().toISOString() })
+        .eq("id", true);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app-settings"] });
+      toast.success("Meta atualizada.");
+      setMetaDraft("");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
+  });
+
 
   const cards = [
     { label: "Faturado no mês", value: brl(stats?.faturado), icon: TrendingUp, color: "text-primary" },
@@ -128,6 +185,62 @@ function Dashboard() {
           );
         })}
       </section>
+
+      <Card className="border-border/60">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div className="flex items-center gap-2">
+            {metaAtingida ? (
+              <Trophy className="h-5 w-5 text-success" />
+            ) : (
+              <Target className="h-5 w-5 text-primary" />
+            )}
+            <CardTitle className="text-base">Meta mensal de recebimento</CardTitle>
+          </div>
+          {isAdmin && (
+            <form
+              className="flex items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const v = Number(metaDraft);
+                if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
+              }}
+            >
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder={meta ? brl(meta) : "Definir meta"}
+                value={metaDraft}
+                onChange={(e) => setMetaDraft(e.target.value)}
+                className="h-8 w-36"
+              />
+              <Button type="submit" size="sm" variant="outline" disabled={!metaDraft || saveMeta.isPending}>
+                Salvar
+              </Button>
+            </form>
+          )}
+        </CardHeader>
+        <CardContent>
+          {meta <= 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {isAdmin ? "Defina uma meta acima para acompanhar o progresso." : "Nenhuma meta definida ainda."}
+            </p>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between">
+                <span className="text-2xl font-semibold">{brl(recebido)}</span>
+                <span className="text-sm text-muted-foreground">de {brl(meta)} ({progresso.toFixed(0)}%)</span>
+              </div>
+              <Progress value={progresso} className={metaAtingida ? "[&>div]:bg-success" : ""} />
+              {metaAtingida && (
+                <p className="text-sm font-medium text-success">🎉 Meta atingida — parabéns!</p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="border-border/60">

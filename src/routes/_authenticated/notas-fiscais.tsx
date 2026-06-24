@@ -227,9 +227,11 @@ function NfInlineFile({ row }: { row: Row }) {
 
   const openPdf = async () => {
     if (!row.nf_pdf_path) return;
-    const { data, error } = await supabase.storage.from("notas-fiscais").createSignedUrl(row.nf_pdf_path, 60);
-    if (error) return toast.error("Erro ao abrir NF");
-    window.open(data.signedUrl, "_blank");
+    const { data, error } = await supabase.storage.from("notas-fiscais").download(row.nf_pdf_path);
+    if (error || !data) return toast.error("Erro ao abrir NF");
+    const url = URL.createObjectURL(data);
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
   const onFile = async (file: File) => {

@@ -12,6 +12,8 @@ import {
   Users,
   History,
   BarChart3,
+  FileText,
+  Wallet,
   LogOut,
   Loader2,
   Trash2,
@@ -48,6 +50,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Financeiro",
     items: [
+      { to: "/notas-fiscais", label: "Notas Fiscais", icon: FileText },
+      { to: "/recebimentos", label: "Recebimentos", icon: Wallet },
       { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
       { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
     ],

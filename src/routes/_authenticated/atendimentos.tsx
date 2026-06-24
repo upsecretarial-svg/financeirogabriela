@@ -12,12 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Check, X, FileText, Wallet, Stethoscope, Package } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2 } from "lucide-react";
+
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -275,121 +274,45 @@ function Atendimentos() {
             <DialogTitle>{editing?.id ? `Atendimento ${(editing as AppointmentRow).numero_interno ?? ""}` : "Novo atendimento"}</DialogTitle>
           </DialogHeader>
           {editing && (
-            <Tabs defaultValue="dados" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="dados"><Stethoscope className="mr-1.5 h-4 w-4" />Dados</TabsTrigger>
-                <TabsTrigger value="itens" disabled={!editing.id}><Package className="mr-1.5 h-4 w-4" />Serviços</TabsTrigger>
-                <TabsTrigger value="nf"><FileText className="mr-1.5 h-4 w-4" />NF</TabsTrigger>
-                <TabsTrigger value="recebimento"><Wallet className="mr-1.5 h-4 w-4" />Recebimento</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="dados" className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Tutor *</Label>
-                    <Input value={editing.tutor ?? ""} onChange={(e) => setEditing({ ...editing, tutor: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Pet *</Label>
-                    <Input value={editing.pet ?? ""} onChange={(e) => setEditing({ ...editing, pet: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Data do atendimento *</Label>
-                    <Input type="date" value={editing.data_atendimento ?? ""} onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Clínica</Label>
-                    <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
-                      <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-                      <SelectContent>
-                        {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label>Observações clínicas</Label>
-                    <Textarea rows={3} value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
-                  </div>
-                </div>
-                {!editing.id && (
-                  <p className="rounded-md bg-accent/40 p-3 text-xs text-muted-foreground">
-                    Salve os dados para liberar as abas de <strong>Serviços/Materiais</strong>, <strong>NF</strong> e <strong>Recebimento</strong>.
-                  </p>
-                )}
-              </TabsContent>
-
-              <TabsContent value="itens" className="pt-4">
-                {editing.id && <ItemsSection appointmentId={editing.id} />}
-              </TabsContent>
-
-              <TabsContent value="nf" className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Nº da NF</Label>
-                    <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} />
-                  </div>
-                  <div className="flex items-center justify-between rounded-md border border-border p-3">
-                    <Label htmlFor="nf">NF emitida</Label>
-                    <Switch id="nf" checked={!!editing.nf_emitida} onCheckedChange={(v) => setEditing({ ...editing, nf_emitida: v })} />
-                  </div>
-                  <div className="flex items-center justify-between rounded-md border border-border p-3 sm:col-span-2">
-                    <Label htmlFor="nfen">NF enviada ao tutor/clínica</Label>
-                    <Switch id="nfen" checked={!!editing.nf_enviada} onCheckedChange={(v) => setEditing({ ...editing, nf_enviada: v })} />
-                  </div>
-                </div>
-                <FileField
-                  label="PDF da Nota Fiscal"
-                  path={editing.nf_pdf_path ?? null}
-                  prefix="nf"
-                  onChange={(p) => setEditing({ ...editing, nf_pdf_path: p })}
-                />
-              </TabsContent>
-
-              <TabsContent value="recebimento" className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>Valor total (R$)</Label>
-                    <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Valor recebido (R$)</Label>
-                    <Input type="number" step="0.01" min="0" value={editing.valor_recebido ?? ""} onChange={(e) => setEditing({ ...editing, valor_recebido: e.target.value ? Number(e.target.value) : null })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Forma principal</Label>
-                    <Select value={editing.payment_method_id ?? ""} onValueChange={(v) => setEditing({ ...editing, payment_method_id: v })}>
-                      <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-                      <SelectContent>
-                        {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Data de pagamento</Label>
-                    <Input type="date" value={editing.data_pagamento ?? ""} onChange={(e) => setEditing({ ...editing, data_pagamento: e.target.value })} />
-                  </div>
-                  <div className="flex items-center justify-between rounded-md border border-border p-3 sm:col-span-2">
-                    <Label htmlFor="pago" className="text-base">Pago</Label>
-                    <Switch id="pago" checked={!!editing.pago} onCheckedChange={(v) => setEditing({ ...editing, pago: v })} />
-                  </div>
-                </div>
-
-                {editing.id && <PaymentsSection appointmentId={editing.id} methods={methods ?? []} />}
-
-                <FileField
-                  label="Comprovante de pagamento"
-                  path={editing.comprovante_path ?? null}
-                  prefix="comprovante"
-                  onChange={(p) => setEditing({ ...editing, comprovante_path: p })}
-                />
-
+            <div className="space-y-4 pt-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Observações financeiras</Label>
-                  <Textarea rows={2} value={editing.obs_financeiras ?? ""} onChange={(e) => setEditing({ ...editing, obs_financeiras: e.target.value })} />
+                  <Label>Tutor *</Label>
+                  <Input value={editing.tutor ?? ""} onChange={(e) => setEditing({ ...editing, tutor: e.target.value })} />
                 </div>
-              </TabsContent>
-            </Tabs>
+                <div className="space-y-2">
+                  <Label>Pet *</Label>
+                  <Input value={editing.pet ?? ""} onChange={(e) => setEditing({ ...editing, pet: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Data *</Label>
+                  <Input type="date" value={editing.data_atendimento ?? ""} onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Clínica</Label>
+                  <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
+                    <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+                    <SelectContent>
+                      {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label>Valor (R$)</Label>
+                  <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label>Observações</Label>
+                  <Textarea rows={3} value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
+                </div>
+              </div>
+              <p className="rounded-md bg-accent/40 p-3 text-xs text-muted-foreground">
+                Notas fiscais e recebimentos deste atendimento são gerenciados nas páginas
+                <strong> Notas Fiscais</strong> e <strong>Recebimentos</strong> no menu lateral.
+              </p>
+            </div>
           )}
+
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Fechar</Button>
             <Button type="button" disabled={save.isPending} onClick={() => editing && save.mutate(editing)}>

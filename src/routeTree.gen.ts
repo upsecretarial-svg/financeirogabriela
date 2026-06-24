@@ -16,7 +16,9 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedUsuariosRouteImport } from './routes/_authenticated/usuarios'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedRecebimentosRouteImport } from './routes/_authenticated/recebimentos'
 import { Route as AuthenticatedPendenciasRouteImport } from './routes/_authenticated/pendencias'
+import { Route as AuthenticatedNotasFiscaisRouteImport } from './routes/_authenticated/notas-fiscais'
 import { Route as AuthenticatedLixeiraRouteImport } from './routes/_authenticated/lixeira'
 import { Route as AuthenticatedFormasPagamentoRouteImport } from './routes/_authenticated/formas-pagamento'
 import { Route as AuthenticatedClinicasRouteImport } from './routes/_authenticated/clinicas'
@@ -57,11 +59,23 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecebimentosRoute =
+  AuthenticatedRecebimentosRouteImport.update({
+    id: '/recebimentos',
+    path: '/recebimentos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPendenciasRoute = AuthenticatedPendenciasRouteImport.update({
   id: '/pendencias',
   path: '/pendencias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotasFiscaisRoute =
+  AuthenticatedNotasFiscaisRouteImport.update({
+    id: '/notas-fiscais',
+    path: '/notas-fiscais',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLixeiraRoute = AuthenticatedLixeiraRouteImport.update({
   id: '/lixeira',
   path: '/lixeira',
@@ -99,7 +113,9 @@ export interface FileRoutesByFullPath {
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
+  '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
+  '/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
@@ -112,7 +128,9 @@ export interface FileRoutesByTo {
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
+  '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
+  '/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
@@ -128,7 +146,9 @@ export interface FileRoutesById {
   '/_authenticated/clinicas': typeof AuthenticatedClinicasRoute
   '/_authenticated/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/_authenticated/lixeira': typeof AuthenticatedLixeiraRoute
+  '/_authenticated/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/_authenticated/pendencias': typeof AuthenticatedPendenciasRoute
+  '/_authenticated/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/usuarios': typeof AuthenticatedUsuariosRoute
@@ -145,7 +165,9 @@ export interface FileRouteTypes {
     | '/clinicas'
     | '/formas-pagamento'
     | '/lixeira'
+    | '/notas-fiscais'
     | '/pendencias'
+    | '/recebimentos'
     | '/relatorios'
     | '/servicos'
     | '/usuarios'
@@ -158,7 +180,9 @@ export interface FileRouteTypes {
     | '/clinicas'
     | '/formas-pagamento'
     | '/lixeira'
+    | '/notas-fiscais'
     | '/pendencias'
+    | '/recebimentos'
     | '/relatorios'
     | '/servicos'
     | '/usuarios'
@@ -173,7 +197,9 @@ export interface FileRouteTypes {
     | '/_authenticated/clinicas'
     | '/_authenticated/formas-pagamento'
     | '/_authenticated/lixeira'
+    | '/_authenticated/notas-fiscais'
     | '/_authenticated/pendencias'
+    | '/_authenticated/recebimentos'
     | '/_authenticated/relatorios'
     | '/_authenticated/servicos'
     | '/_authenticated/usuarios'
@@ -237,11 +263,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recebimentos': {
+      id: '/_authenticated/recebimentos'
+      path: '/recebimentos'
+      fullPath: '/recebimentos'
+      preLoaderRoute: typeof AuthenticatedRecebimentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pendencias': {
       id: '/_authenticated/pendencias'
       path: '/pendencias'
       fullPath: '/pendencias'
       preLoaderRoute: typeof AuthenticatedPendenciasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notas-fiscais': {
+      id: '/_authenticated/notas-fiscais'
+      path: '/notas-fiscais'
+      fullPath: '/notas-fiscais'
+      preLoaderRoute: typeof AuthenticatedNotasFiscaisRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/lixeira': {
@@ -288,7 +328,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClinicasRoute: typeof AuthenticatedClinicasRoute
   AuthenticatedFormasPagamentoRoute: typeof AuthenticatedFormasPagamentoRoute
   AuthenticatedLixeiraRoute: typeof AuthenticatedLixeiraRoute
+  AuthenticatedNotasFiscaisRoute: typeof AuthenticatedNotasFiscaisRoute
   AuthenticatedPendenciasRoute: typeof AuthenticatedPendenciasRoute
+  AuthenticatedRecebimentosRoute: typeof AuthenticatedRecebimentosRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
   AuthenticatedUsuariosRoute: typeof AuthenticatedUsuariosRoute
@@ -301,7 +343,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClinicasRoute: AuthenticatedClinicasRoute,
   AuthenticatedFormasPagamentoRoute: AuthenticatedFormasPagamentoRoute,
   AuthenticatedLixeiraRoute: AuthenticatedLixeiraRoute,
+  AuthenticatedNotasFiscaisRoute: AuthenticatedNotasFiscaisRoute,
   AuthenticatedPendenciasRoute: AuthenticatedPendenciasRoute,
+  AuthenticatedRecebimentosRoute: AuthenticatedRecebimentosRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,
   AuthenticatedUsuariosRoute: AuthenticatedUsuariosRoute,

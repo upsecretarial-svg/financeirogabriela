@@ -81,6 +81,7 @@ function AuthPage() {
       toast.success("Administrador criado. Fazendo login...");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      await logLoginEvent("bootstrap");
       navigate({ to: "/" });
     } catch (err) {
       toast.error("Erro", { description: (err as Error).message });

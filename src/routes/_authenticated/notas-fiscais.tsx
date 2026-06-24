@@ -12,7 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X, Paperclip, FileText } from "lucide-react";
+import { Search, Pencil, Check, X, Paperclip, FileText, FileSearch } from "lucide-react";
+import { TableState } from "@/components/data-state";
 
 import { toast } from "sonner";
 
@@ -70,7 +71,7 @@ function Page() {
   const [filter, setFilter] = useState<"all" | "pending" | "issued">("all");
   const [edit, setEdit] = useState<Row | null>(null);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["nf-list", search, filter],
     queryFn: async () => {
       let q = supabase
@@ -208,9 +209,17 @@ function Page() {
 
                 </TableRow>
               ))}
-              {!data?.length && (
-                <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
-              )}
+              <TableState
+                colSpan={7}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !data?.length}
+                emptyIcon={FileSearch}
+                emptyTitle="Nenhuma nota fiscal"
+                emptyDescription="Não há atendimentos para os filtros atuais."
+              />
             </TableBody>
           </Table>
         </CardContent>

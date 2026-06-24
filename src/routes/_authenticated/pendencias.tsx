@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, AlertCircle } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { TableState } from "@/components/data-state";
 
 export const Route = createFileRoute("/_authenticated/pendencias")({
   head: () => ({ meta: [{ title: "Centro de Pendências" }] }),
@@ -23,7 +24,7 @@ function diasEm(date: string) {
 
 function Pendencias() {
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["pendencias-unpaid", search],
     queryFn: async () => {
       let q = supabase
@@ -87,10 +88,18 @@ function Pendencias() {
             </TableHeader>
             <TableBody>
               {isLoading && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
-              {!isLoading && !data?.length && (
-                <TableRow><TableCell colSpan={6} className="py-12 text-center text-muted-foreground">Nenhuma pendência. 🎉</TableCell></TableRow>
-              )}
-              {data?.map((p: any) => {
+              <TableState
+                colSpan={6}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !data?.length}
+                emptyIcon={CheckCircle2}
+                emptyTitle="Nenhuma pendência"
+                emptyDescription="Todos os atendimentos estão devidamente quitados. 🎉"
+              />
+              {!isLoading && data?.map((p: any) => {
                 const dias = diasEm(p.data_atendimento);
                 return (
                   <TableRow key={p.id}>

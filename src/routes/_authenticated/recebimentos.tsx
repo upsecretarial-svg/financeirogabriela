@@ -14,7 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText } from "lucide-react";
+import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet } from "lucide-react";
+import { TableState } from "@/components/data-state";
 import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
 import { toast } from "sonner";
 
@@ -82,7 +83,7 @@ function Page() {
   const [to, setTo] = useState("");
   const [edit, setEdit] = useState<Row | null>(null);
 
-  const { data } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["receb-list", search, filter, from, to],
     queryFn: async () => {
       let q = supabase
@@ -299,9 +300,17 @@ function Page() {
 
                 </TableRow>
               ))}
-              {!data?.length && (
-                <TableRow><TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
-              )}
+              <TableState
+                colSpan={8}
+                isLoading={isLoading}
+                isError={isError}
+                error={error as Error | null}
+                onRetry={() => refetch()}
+                isEmpty={!isLoading && !isError && !data?.length}
+                emptyIcon={Wallet}
+                emptyTitle="Sem recebimentos no período"
+                emptyDescription="Ajuste o intervalo de datas ou os filtros para visualizar lançamentos."
+              />
             </TableBody>
           </Table>
         </CardContent>

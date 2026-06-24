@@ -59,9 +59,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar md:flex">
-        <div className="flex items-center gap-2 px-5 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Stethoscope className="h-5 w-5" />
+        <div className="flex items-center gap-3 px-5 py-5">
+          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-sm ring-1 ring-sidebar-border">
+            <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt" className="h-full w-full object-cover" />
           </div>
           <div className="leading-tight">
             <div className="text-sm font-semibold text-sidebar-foreground">Dra. Gabriela</div>

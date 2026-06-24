@@ -77,23 +77,27 @@ function Page() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "open" | "paid">("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [edit, setEdit] = useState<Row | null>(null);
 
   const { data } = useQuery({
-    queryKey: ["receb-list", search, filter],
+    queryKey: ["receb-list", search, filter, from, to],
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at")
+        .select("id,numero_interno,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
-        .limit(300);
+        .limit(1000);
       if (filter === "open") q = q.eq("pago", false);
       if (filter === "paid") q = q.eq("pago", true);
+      if (from) q = q.gte("data_atendimento", from);
+      if (to) q = q.lte("data_atendimento", to);
       if (search) q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%`);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as Row[];
+      return (data ?? []) as unknown as Row[];
     },
   });
 
@@ -101,6 +105,50 @@ function Page() {
     queryKey: ["payment-methods-active"],
     queryFn: async () => (await supabase.from("payment_methods").select("*").eq("ativo", true).order("nome")).data ?? [],
   });
+
+  const totals = (data ?? []).reduce(
+    (acc, r) => {
+      acc.qtd += 1;
+      acc.valor += Number(r.valor ?? 0);
+      acc.recebido += Number(r.valor_recebido ?? 0);
+      if (!r.pago) acc.aberto += Number(r.valor ?? 0);
+      return acc;
+    },
+    { qtd: 0, valor: 0, recebido: 0, aberto: 0 },
+  );
+
+  const exportRows = (data ?? []).map((r) => ({
+    Numero: r.numero_interno ?? "",
+    Data: r.data_atendimento,
+    Tutor: r.tutor,
+    Pet: r.pet,
+    Clinica: r.clinics?.nome ?? "",
+    Valor: Number(r.valor ?? 0),
+    Recebido: Number(r.valor_recebido ?? 0),
+    "Forma de pagamento": r.payment_methods?.nome ?? "",
+    "Data pagamento": r.data_pagamento ?? "",
+    "Baixa por": r.paid_by_name ?? "",
+    "Baixa em": r.paid_at ?? "",
+    Status: r.pago ? "Pago" : "Em aberto",
+    NF: r.nf_numero ?? "",
+    Observacoes: r.obs_financeiras ?? "",
+  }));
+
+  const filename = `recebimentos_${from || "todos"}_a_${to || "hoje"}`;
+  const onPDF = () => exportPDF(
+    filename,
+    "Histórico de recebimentos",
+    ["Nº", "Data", "Tutor/Pet", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
+    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
+    {
+      Período: `${from || "—"} → ${to || "—"}`,
+      Atendimentos: String(totals.qtd),
+      Faturado: brl(totals.valor),
+      Recebido: brl(totals.recebido),
+      "Em aberto": brl(totals.aberto),
+    },
+  );
+
 
   const save = useMutation({
     mutationFn: async (row: Row) => {

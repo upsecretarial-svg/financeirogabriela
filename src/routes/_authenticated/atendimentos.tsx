@@ -143,10 +143,12 @@ function Atendimentos() {
       if (row.id) {
         const { error } = await supabase.from("appointments").update(payload).eq("id", row.id);
         if (error) throw error;
+        await syncServiceItem(row.id, serviceId);
         return row.id;
       } else {
         const { data, error } = await supabase.from("appointments").insert(payload).select("id").single();
         if (error) throw error;
+        await syncServiceItem(data.id, serviceId);
         return data.id as string;
       }
     },

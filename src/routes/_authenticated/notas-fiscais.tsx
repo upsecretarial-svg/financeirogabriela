@@ -158,6 +158,7 @@ function Page() {
               <TableRow>
                 <TableHead>Data</TableHead>
                 <TableHead>Tutor / Pet</TableHead>
+                <TableHead>CPF</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead>Nº NF</TableHead>
                 <TableHead>Status</TableHead>

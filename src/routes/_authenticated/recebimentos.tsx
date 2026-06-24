@@ -140,8 +140,8 @@ function Page() {
   const onPDF = () => exportPDF(
     filename,
     "Histórico de recebimentos",
-    ["Nº", "Data", "Tutor/Pet", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
-    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
+    ["Nº", "Data", "Tutor/Pet", "CPF", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
+    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.CPF, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
     {
       Período: `${from || "—"} → ${to || "—"}`,
       Atendimentos: String(totals.qtd),

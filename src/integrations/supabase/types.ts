@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          id: boolean
+          meta_mensal: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: boolean
+          meta_mensal?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: boolean
+          meta_mensal?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           clinic_id: string | null
@@ -22,6 +43,7 @@ export type Database = {
           created_by: string | null
           data_atendimento: string
           data_pagamento: string | null
+          deleted_at: string | null
           id: string
           nf_data_emissao: string | null
           nf_emitida: boolean
@@ -47,6 +69,7 @@ export type Database = {
           created_by?: string | null
           data_atendimento: string
           data_pagamento?: string | null
+          deleted_at?: string | null
           id?: string
           nf_data_emissao?: string | null
           nf_emitida?: boolean
@@ -72,6 +95,7 @@ export type Database = {
           created_by?: string | null
           data_atendimento?: string
           data_pagamento?: string | null
+          deleted_at?: string | null
           id?: string
           nf_data_emissao?: string | null
           nf_emitida?: boolean
@@ -271,30 +295,42 @@ export type Database = {
       pendencias_view: {
         Row: {
           clinic_id: string | null
-          clinica_nome: string | null
           comprovante_path: string | null
-          created_at: string | null
-          created_by: string | null
           data_atendimento: string | null
-          data_pagamento: string | null
           id: string | null
-          nf_data_emissao: string | null
           nf_emitida: boolean | null
-          nf_enviada: boolean | null
-          nf_numero: string | null
-          nf_pdf_path: string | null
           numero_interno: string | null
-          obs_financeiras: string | null
-          observacoes: string | null
           pago: boolean | null
-          payment_method_id: string | null
           pet: string | null
-          status: string | null
           tipo_pendencia: string | null
           tutor: string | null
-          updated_at: string | null
           valor: number | null
-          valor_recebido: number | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          comprovante_path?: string | null
+          data_atendimento?: string | null
+          id?: string | null
+          nf_emitida?: boolean | null
+          numero_interno?: string | null
+          pago?: boolean | null
+          pet?: string | null
+          tipo_pendencia?: never
+          tutor?: string | null
+          valor?: number | null
+        }
+        Update: {
+          clinic_id?: string | null
+          comprovante_path?: string | null
+          data_atendimento?: string | null
+          id?: string | null
+          nf_emitida?: boolean | null
+          numero_interno?: string | null
+          pago?: boolean | null
+          pet?: string | null
+          tipo_pendencia?: never
+          tutor?: string | null
+          valor?: number | null
         }
         Relationships: [
           {
@@ -302,13 +338,6 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_payment_method_id_fkey"
-            columns: ["payment_method_id"]
-            isOneToOne: false
-            referencedRelation: "payment_methods"
             referencedColumns: ["id"]
           },
         ]

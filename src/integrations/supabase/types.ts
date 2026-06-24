@@ -35,6 +35,54 @@ export type Database = {
         }
         Relationships: []
       }
+      appointment_items: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          descricao: string
+          id: string
+          quantidade: number
+          tipo: string
+          valor_total: number | null
+          valor_unitario: number
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          descricao: string
+          id?: string
+          quantidade?: number
+          tipo: string
+          valor_total?: number | null
+          valor_unitario?: number
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          descricao?: string
+          id?: string
+          quantidade?: number
+          tipo?: string
+          valor_total?: number | null
+          valor_unitario?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_items_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_items_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "pendencias_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointment_payments: {
         Row: {
           appointment_id: string

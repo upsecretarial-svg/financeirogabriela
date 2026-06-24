@@ -25,17 +25,48 @@ interface NavItem {
   adminOnly?: boolean;
 }
 
-const NAV: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
-  { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
-  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
-  { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
-  { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
-  { to: "/auditoria", label: "Histórico", icon: History },
-  { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Visão geral",
+    items: [
+      { to: "/", label: "Painel", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Operação",
+    items: [
+      { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
+      { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
+    ],
+  },
+  {
+    label: "Financeiro",
+    items: [
+      { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+      { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
+    ],
+  },
+  {
+    label: "Cadastros",
+    items: [
+      { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
+      { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
+    ],
+  },
+  {
+    label: "Administração",
+    items: [
+      { to: "/auditoria", label: "Histórico", icon: History },
+      { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
+    ],
+  },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { loading, user, isAdmin, signOut } = useAuth();
@@ -70,27 +101,39 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
 
 
-        <nav className="flex-1 space-y-1 px-3 py-2">
-          {NAV.filter((n) => !n.adminOnly || isAdmin).map((item) => {
-            const active = path === item.to || (item.to !== "/" && path.startsWith(item.to));
-            const Icon = item.icon;
+        <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-2">
+          {NAV_GROUPS.map((group) => {
+            const items = group.items.filter((n) => !n.adminOnly || isAdmin);
+            if (!items.length) return null;
             return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
+              <div key={group.label} className="space-y-1">
+                <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {group.label}
+                </div>
+                {items.map((item) => {
+                  const active = path === item.to || (item.to !== "/" && path.startsWith(item.to));
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        active
+                          ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>
+
 
         <div className="border-t border-sidebar-border p-3">
           <div className="mb-2 px-2 text-xs">

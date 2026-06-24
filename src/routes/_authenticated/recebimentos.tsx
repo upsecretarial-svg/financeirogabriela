@@ -14,7 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText } from "lucide-react";
+import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet } from "lucide-react";
+import { TableState } from "@/components/data-state";
 import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
 import { toast } from "sonner";
 

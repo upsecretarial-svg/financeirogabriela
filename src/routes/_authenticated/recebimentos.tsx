@@ -87,6 +87,25 @@ function Page() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const togglePago = useMutation({
+    mutationFn: async (row: Row) => {
+      const novo = !row.pago;
+      const { error } = await supabase.from("appointments").update({
+        pago: novo,
+        valor_recebido: novo ? (row.valor_recebido ?? row.valor) : row.valor_recebido,
+        data_pagamento: novo ? (row.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
+      }).eq("id", row.id);
+      if (error) throw error;
+      return novo;
+    },
+    onSuccess: (novo) => {
+      qc.invalidateQueries({ queryKey: ["receb-list"] });
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      toast.success(novo ? "Marcado como pago." : "Marcado como em aberto.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-6">
       <header>

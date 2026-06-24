@@ -127,7 +127,10 @@ function Atendimentos() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("appointments").delete().eq("id", id);
+      const { error } = await supabase
+        .from("appointments")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

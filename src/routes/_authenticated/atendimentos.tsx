@@ -57,6 +57,9 @@ function Atendimentos() {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);
   const [open, setOpen] = useState(false);
+  const [serviceId, setServiceId] = useState<string>("");
+  const [quickServiceOpen, setQuickServiceOpen] = useState(false);
+  const [quickService, setQuickService] = useState<{ nome: string; valor: string }>({ nome: "", valor: "" });
 
   const { data: appts, isLoading } = useQuery({
     queryKey: ["appointments", search],
@@ -84,6 +87,51 @@ function Atendimentos() {
     queryKey: ["payment-methods-active"],
     queryFn: async () => (await supabase.from("payment_methods").select("*").eq("ativo", true).order("nome")).data ?? [],
   });
+  const { data: services } = useQuery({
+    queryKey: ["services-active"],
+    queryFn: async () => (await supabase.from("services").select("*").eq("ativo", true).order("nome")).data ?? [],
+  });
+
+  const createService = useMutation({
+    mutationFn: async () => {
+      if (!quickService.nome.trim()) throw new Error("Informe o nome do serviço.");
+      const valor = quickService.valor ? Number(quickService.valor) : 0;
+      const { data, error } = await supabase
+        .from("services")
+        .insert({ nome: quickService.nome.trim(), valor, valor_final: valor, ativo: true })
+        .select("*")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (s) => {
+      qc.invalidateQueries({ queryKey: ["services-active"] });
+      setServiceId(s.id);
+      if (editing && (editing.valor == null || editing.valor === 0)) {
+        setEditing({ ...editing, valor: Number(s.valor_final ?? s.valor ?? 0) });
+      }
+      setQuickService({ nome: "", valor: "" });
+      setQuickServiceOpen(false);
+      toast.success("Serviço criado.");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
+  });
+
+  const syncServiceItem = async (appointmentId: string, svcId: string) => {
+    await supabase.from("appointment_items").delete().eq("appointment_id", appointmentId).eq("tipo", "servico");
+    if (!svcId) return;
+    const svc = services?.find((s) => s.id === svcId);
+    if (!svc) return;
+    const valor = Number(svc.valor_final ?? svc.valor ?? 0);
+    await supabase.from("appointment_items").insert({
+      appointment_id: appointmentId,
+      tipo: "servico",
+      descricao: svc.nome,
+      quantidade: 1,
+      valor_unitario: valor,
+      valor_total: valor,
+    });
+  };
 
   const save = useMutation({
     mutationFn: async (row: Partial<AppointmentRow>) => {
@@ -111,10 +159,12 @@ function Atendimentos() {
       if (row.id) {
         const { error } = await supabase.from("appointments").update(payload).eq("id", row.id);
         if (error) throw error;
+        await syncServiceItem(row.id, serviceId);
         return row.id;
       } else {
         const { data, error } = await supabase.from("appointments").insert(payload).select("id").single();
         if (error) throw error;
+        await syncServiceItem(data.id, serviceId);
         return data.id as string;
       }
     },
@@ -157,11 +207,20 @@ function Atendimentos() {
       pago: false,
       nf_emitida: false,
     });
+    setServiceId("");
     setOpen(true);
   };
 
-  const startEdit = (row: AppointmentRow) => {
+  const startEdit = async (row: AppointmentRow) => {
     setEditing(row);
+    const { data } = await supabase
+      .from("appointment_items")
+      .select("descricao")
+      .eq("appointment_id", row.id)
+      .eq("tipo", "servico")
+      .maybeSingle();
+    const matched = data ? services?.find((s) => s.nome === data.descricao) : null;
+    setServiceId(matched?.id ?? "");
     setOpen(true);
   };
 
@@ -298,6 +357,33 @@ function Atendimentos() {
                   </Select>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Serviço realizado</Label>
+                    <Button type="button" variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => setQuickServiceOpen(true)}>
+                      <Plus className="mr-1 h-3 w-3" /> Novo serviço
+                    </Button>
+                  </div>
+                  <Select
+                    value={serviceId}
+                    onValueChange={(v) => {
+                      setServiceId(v);
+                      const svc = services?.find((s) => s.id === v);
+                      if (svc && editing && (editing.valor == null || editing.valor === 0)) {
+                        setEditing({ ...editing, valor: Number(svc.valor_final ?? svc.valor ?? 0) });
+                      }
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="Selecione um serviço…" /></SelectTrigger>
+                    <SelectContent>
+                      {services?.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.nome} — {brl(Number(s.valor_final ?? s.valor ?? 0))}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
                   <Label>Valor (R$)</Label>
                   <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
                 </div>
@@ -317,6 +403,41 @@ function Atendimentos() {
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Fechar</Button>
             <Button type="button" disabled={save.isPending} onClick={() => editing && save.mutate(editing)}>
               {save.isPending ? "Salvando…" : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={quickServiceOpen} onOpenChange={setQuickServiceOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Novo serviço</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <div className="space-y-2">
+              <Label>Nome *</Label>
+              <Input
+                value={quickService.nome}
+                onChange={(e) => setQuickService({ ...quickService, nome: e.target.value })}
+                placeholder="Ex: Consulta clínica"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Valor (R$)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                value={quickService.valor}
+                onChange={(e) => setQuickService({ ...quickService, valor: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setQuickServiceOpen(false)}>Cancelar</Button>
+            <Button disabled={createService.isPending} onClick={() => createService.mutate()}>
+              {createService.isPending ? "Criando…" : "Criar e selecionar"}
             </Button>
           </DialogFooter>
         </DialogContent>

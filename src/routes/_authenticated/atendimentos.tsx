@@ -364,10 +364,11 @@ function Atendimentos() {
                   methods={methods ?? []}
                 />
               )}
-
+              <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={save.isPending}>{save.isPending ? "Salvando…" : "Salvar"}</Button>
               </DialogFooter>
+
             </form>
           )}
         </DialogContent>

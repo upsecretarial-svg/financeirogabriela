@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil } from "lucide-react";
+import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -357,10 +357,18 @@ function Atendimentos() {
                   <Textarea value={editing.obs_financeiras ?? ""} onChange={(e) => setEditing({ ...editing, obs_financeiras: e.target.value })} />
                 </div>
               </div>
+
+              {editing.id && (
+                <PaymentsSection
+                  appointmentId={editing.id}
+                  methods={methods ?? []}
+                />
+              )}
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={save.isPending}>{save.isPending ? "Salvando…" : "Salvar"}</Button>
               </DialogFooter>
+
             </form>
           )}
         </DialogContent>
@@ -438,3 +446,107 @@ function FileField({
     </div>
   );
 }
+
+interface PaymentMethod { id: string; nome: string }
+interface AppointmentPayment {
+  id: string;
+  payment_method_id: string;
+  valor: number;
+  data_pagamento: string | null;
+  observacao: string | null;
+  payment_methods?: { nome: string } | null;
+}
+
+function PaymentsSection({ appointmentId, methods }: { appointmentId: string; methods: PaymentMethod[] }) {
+  const qc = useQueryClient();
+  const [methodId, setMethodId] = useState("");
+  const [valor, setValor] = useState("");
+  const [data, setData] = useState(new Date().toISOString().slice(0, 10));
+
+  const { data: payments } = useQuery({
+    queryKey: ["appointment-payments", appointmentId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointment_payments")
+        .select("*, payment_methods(nome)")
+        .eq("appointment_id", appointmentId)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as AppointmentPayment[];
+    },
+  });
+
+  const add = useMutation({
+    mutationFn: async () => {
+      if (!methodId) throw new Error("Selecione uma forma de pagamento.");
+      const v = Number(valor);
+      if (!v || v <= 0) throw new Error("Informe um valor válido.");
+      const { error } = await supabase.from("appointment_payments").insert({
+        appointment_id: appointmentId,
+        payment_method_id: methodId,
+        valor: v,
+        data_pagamento: data || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["appointment-payments", appointmentId] });
+      setMethodId(""); setValor("");
+      toast.success("Pagamento adicionado.");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("appointment_payments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["appointment-payments", appointmentId] }),
+  });
+
+  const total = (payments ?? []).reduce((s, p) => s + Number(p.valor), 0);
+
+  return (
+    <div className="space-y-3 rounded-md border border-border/60 p-4">
+      <div className="flex items-center justify-between">
+        <Label className="text-sm font-semibold">Pagamentos (múltiplas formas)</Label>
+        <span className="text-sm text-muted-foreground">Total: <strong>{brl(total)}</strong></span>
+      </div>
+
+      {payments?.length ? (
+        <div className="space-y-1">
+          {payments.map((p) => (
+            <div key={p.id} className="flex items-center justify-between rounded border border-border/40 px-3 py-2 text-sm">
+              <div>
+                <span className="font-medium">{p.payment_methods?.nome ?? "—"}</span>
+                <span className="ml-2 text-muted-foreground">{p.data_pagamento ?? ""}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-mono">{brl(Number(p.valor))}</span>
+                <Button type="button" size="icon" variant="ghost" onClick={() => remove.mutate(p.id)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">Nenhum pagamento registrado.</p>
+      )}
+
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_120px_140px_auto]">
+        <Select value={methodId} onValueChange={setMethodId}>
+          <SelectTrigger><SelectValue placeholder="Forma…" /></SelectTrigger>
+          <SelectContent>
+            {methods.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Input type="number" step="0.01" min="0" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} />
+        <Input type="date" value={data} onChange={(e) => setData(e.target.value)} />
+        <Button type="button" onClick={() => add.mutate()} disabled={add.isPending}>Adicionar</Button>
+      </div>
+    </div>
+  );
+}
+

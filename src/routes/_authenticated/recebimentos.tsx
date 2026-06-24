@@ -155,12 +155,28 @@ function Page() {
                     {r.pago ? (
                       <Badge className="bg-success/15 text-success border-success/30" variant="outline"><Check className="mr-1 h-3 w-3" />Pago</Badge>
                     ) : (
-                      <Badge variant="outline"><X className="mr-1 h-3 w-3" />Em aberto</Badge>
+                      <Badge className="bg-destructive/15 text-destructive border-destructive/30" variant="outline"><X className="mr-1 h-3 w-3" />Em aberto</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant={r.pago ? "outline" : "default"}
+                        disabled={togglePago.isPending}
+                        className={
+                          r.pago
+                            ? "border-destructive/40 text-destructive hover:bg-destructive/10"
+                            : "bg-success text-success-foreground hover:bg-success/90"
+                        }
+                        onClick={() => togglePago.mutate(r)}
+                      >
+                        {r.pago ? "Marcar em aberto" : "Marcar pago"}
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                    </div>
                   </TableCell>
+
                 </TableRow>
               ))}
               {!data?.length && (

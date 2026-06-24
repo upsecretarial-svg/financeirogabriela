@@ -14,7 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X } from "lucide-react";
+import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText } from "lucide-react";
+import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/recebimentos")({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/recebimentos")({
 
 interface Row {
   id: string;
+  numero_interno: string | null;
   tutor: string;
   pet: string;
   data_atendimento: string;
@@ -36,6 +38,10 @@ interface Row {
   comprovante_path: string | null;
   paid_by_name: string | null;
   paid_at: string | null;
+  nf_numero: string | null;
+  status: string | null;
+  clinics: { nome: string } | null;
+  payment_methods: { nome: string } | null;
 }
 
 const brl = (n: number | null | undefined) =>
@@ -71,23 +77,27 @@ function Page() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "open" | "paid">("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [edit, setEdit] = useState<Row | null>(null);
 
   const { data } = useQuery({
-    queryKey: ["receb-list", search, filter],
+    queryKey: ["receb-list", search, filter, from, to],
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at")
+        .select("id,numero_interno,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
-        .limit(300);
+        .limit(1000);
       if (filter === "open") q = q.eq("pago", false);
       if (filter === "paid") q = q.eq("pago", true);
+      if (from) q = q.gte("data_atendimento", from);
+      if (to) q = q.lte("data_atendimento", to);
       if (search) q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%`);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as Row[];
+      return (data ?? []) as unknown as Row[];
     },
   });
 
@@ -95,6 +105,50 @@ function Page() {
     queryKey: ["payment-methods-active"],
     queryFn: async () => (await supabase.from("payment_methods").select("*").eq("ativo", true).order("nome")).data ?? [],
   });
+
+  const totals = (data ?? []).reduce(
+    (acc, r) => {
+      acc.qtd += 1;
+      acc.valor += Number(r.valor ?? 0);
+      acc.recebido += Number(r.valor_recebido ?? 0);
+      if (!r.pago) acc.aberto += Number(r.valor ?? 0);
+      return acc;
+    },
+    { qtd: 0, valor: 0, recebido: 0, aberto: 0 },
+  );
+
+  const exportRows = (data ?? []).map((r) => ({
+    Numero: r.numero_interno ?? "",
+    Data: r.data_atendimento,
+    Tutor: r.tutor,
+    Pet: r.pet,
+    Clinica: r.clinics?.nome ?? "",
+    Valor: Number(r.valor ?? 0),
+    Recebido: Number(r.valor_recebido ?? 0),
+    "Forma de pagamento": r.payment_methods?.nome ?? "",
+    "Data pagamento": r.data_pagamento ?? "",
+    "Baixa por": r.paid_by_name ?? "",
+    "Baixa em": r.paid_at ?? "",
+    Status: r.pago ? "Pago" : "Em aberto",
+    NF: r.nf_numero ?? "",
+    Observacoes: r.obs_financeiras ?? "",
+  }));
+
+  const filename = `recebimentos_${from || "todos"}_a_${to || "hoje"}`;
+  const onPDF = () => exportPDF(
+    filename,
+    "Histórico de recebimentos",
+    ["Nº", "Data", "Tutor/Pet", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
+    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
+    {
+      Período: `${from || "—"} → ${to || "—"}`,
+      Atendimentos: String(totals.qtd),
+      Faturado: brl(totals.valor),
+      Recebido: brl(totals.recebido),
+      "Em aberto": brl(totals.aberto),
+    },
+  );
+
 
   const save = useMutation({
     mutationFn: async (row: Row) => {
@@ -138,10 +192,30 @@ function Page() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Recebimentos</h1>
-        <p className="text-sm text-muted-foreground">Controle de pagamentos e comprovantes.</p>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Recebimentos</h1>
+          <p className="text-sm text-muted-foreground">Histórico completo de pagamentos e comprovantes.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
+            <FileDown className="mr-2 h-4 w-4" /> CSV
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={onPDF} disabled={!exportRows.length}>
+            <FileText className="mr-2 h-4 w-4" /> PDF
+          </Button>
+        </div>
       </header>
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Atendimentos</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{totals.qtd}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Faturado</CardTitle></CardHeader><CardContent className="text-2xl font-semibold">{brl(totals.valor)}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Recebido</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-success">{brl(totals.recebido)}</CardContent></Card>
+        <Card className="border-border/60"><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Em aberto</CardTitle></CardHeader><CardContent className="text-2xl font-semibold text-destructive">{brl(totals.aberto)}</CardContent></Card>
+      </div>
 
       <Card className="border-border/60">
         <CardHeader className="space-y-3">
@@ -155,9 +229,13 @@ function Page() {
               ))}
             </div>
           </div>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Buscar tutor ou pet…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input className="pl-9" placeholder="Buscar tutor ou pet…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="De" />
+            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Até" />
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">

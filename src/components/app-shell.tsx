@@ -43,7 +43,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Operação",
     items: [
-      { to: "/atendimentos", label: "Atendimentos", icon: ClipboardList },
+      { to: "/atendimentos", label: "Novo Atendimento", icon: ClipboardList },
       { to: "/pendencias", label: "Pendências", icon: AlertTriangle },
     ],
   },

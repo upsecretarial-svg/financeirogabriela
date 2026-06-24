@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapAdmin } from "@/lib/admin.functions";
+import { logLoginEvent } from "@/lib/log-login-event";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +49,7 @@ function AuthPage() {
       toast.error("Falha no login", { description: error.message });
       return;
     }
+    await logLoginEvent("login");
     toast.success("Bem-vinda!");
     navigate({ to: "/" });
   };
@@ -79,6 +81,7 @@ function AuthPage() {
       toast.success("Administrador criado. Fazendo login...");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      await logLoginEvent("bootstrap");
       navigate({ to: "/" });
     } catch (err) {
       toast.error("Erro", { description: (err as Error).message });

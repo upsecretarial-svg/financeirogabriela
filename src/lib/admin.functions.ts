@@ -208,3 +208,81 @@ export const updateUser = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+/** Revogar todas as sessões ativas do usuário (força logout em todos os dispositivos). */
+export const revokeUserSessions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { userId: string }) =>
+    z.object({ userId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.signOut(data.userId, "global");
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Listar eventos de login recentes com nome/email do usuário. */
+export const listLoginEvents = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { limit?: number }) =>
+    z.object({ limit: z.number().int().min(1).max(500).optional() }).parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const limit = data.limit ?? 100;
+    const { data: events, error } = await supabaseAdmin
+      .from("login_events")
+      .select("id, user_id, tipo, ip, user_agent, criado_em")
+      .order("criado_em", { ascending: false })
+      .limit(limit);
+    if (error) throw new Error(error.message);
+    const ids = Array.from(new Set((events ?? []).map((e) => e.user_id).filter(Boolean)));
+    const { data: profiles } = ids.length
+      ? await supabaseAdmin.from("profiles").select("id, nome, email").in("id", ids)
+      : { data: [] };
+    const map = new Map((profiles ?? []).map((p) => [p.id, p]));
+    return (events ?? []).map((e) => ({
+      ...e,
+      nome: map.get(e.user_id)?.nome ?? null,
+      email: map.get(e.user_id)?.email ?? null,
+    }));
+  });
+
+/** Estatísticas administrativas. */
+export const adminStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
+
+    const [{ count: totalProfiles }, { count: admins }, { count: loginsWeek }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("*", { count: "exact", head: true }),
+      supabaseAdmin.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "admin"),
+      supabaseAdmin.from("login_events").select("*", { count: "exact", head: true }).gte("criado_em", sevenDaysAgo),
+    ]);
+
+    // count blocked by paginating auth users
+    let blocked = 0;
+    let page = 1;
+    while (true) {
+      const { data: au, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+      if (error) break;
+      for (const u of au.users) {
+        const bu = (u as { banned_until?: string | null }).banned_until ?? null;
+        if (bu && new Date(bu).getTime() > Date.now()) blocked += 1;
+      }
+      if (au.users.length < 200) break;
+      page += 1;
+    }
+
+    return {
+      total: totalProfiles ?? 0,
+      admins: admins ?? 0,
+      blocked,
+      loginsWeek: loginsWeek ?? 0,
+    };
+  });

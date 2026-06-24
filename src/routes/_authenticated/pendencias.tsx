@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, AlertCircle } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { TableState } from "@/components/data-state";
 
 export const Route = createFileRoute("/_authenticated/pendencias")({
   head: () => ({ meta: [{ title: "Centro de Pendências" }] }),

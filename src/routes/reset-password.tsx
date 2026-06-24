@@ -40,6 +40,7 @@ function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) return toast.error("Erro ao redefinir", { description: error.message });
+    await logLoginEvent("password_reset");
     toast.success("Senha atualizada!");
     navigate({ to: "/" });
   };

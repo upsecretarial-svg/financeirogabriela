@@ -153,38 +153,73 @@ function Dashboard() {
   });
 
 
-  const cards = [
-    { label: "Faturado no mês", value: brl(stats?.faturado), icon: TrendingUp, color: "text-primary" },
-    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, color: "text-success" },
-    { label: "A receber", value: brl(stats?.pendente), icon: Clock, color: "text-warning" },
-    { label: "Atendimentos no mês", value: String(stats?.qtd ?? 0), icon: ClipboardCheck, color: "text-primary" },
-    { label: "NFs pendentes", value: String(stats?.nfPendentes ?? 0), icon: FileText, color: "text-warning" },
-    { label: "Pendências abertas", value: String(stats?.pendencias ?? 0), icon: AlertCircle, color: "text-destructive" },
+  const heroCards = [
+    {
+      label: "Faturado no mês",
+      value: brl(stats?.faturado),
+      icon: TrendingUp,
+      accent: "from-primary/20 to-primary/5",
+      iconBg: "bg-primary/15 text-primary",
+    },
+    {
+      label: "Recebido",
+      value: brl(stats?.recebido),
+      icon: Wallet,
+      accent: "from-success/25 to-success/5",
+      iconBg: "bg-success/15 text-success",
+    },
+    {
+      label: "A receber",
+      value: brl(stats?.pendente),
+      icon: Clock,
+      accent: "from-warning/25 to-warning/5",
+      iconBg: "bg-warning/20 text-warning-foreground",
+    },
+    {
+      label: "Atendimentos",
+      value: String(stats?.qtd ?? 0),
+      icon: ClipboardCheck,
+      accent: "from-accent/60 to-accent/10",
+      iconBg: "bg-accent text-accent-foreground",
+      sub: `${stats?.nfPendentes ?? 0} NF pend. · ${stats?.pendencias ?? 0} pendências`,
+    },
   ];
+
+  const now = new Date();
+  const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Visão geral</h1>
-        <p className="text-sm text-muted-foreground">Resumo financeiro do mês atual.</p>
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Painel executivo</p>
+          <h1 className="text-3xl font-bold tracking-tight">Olá, Dra. Gabriela</h1>
+          <p className="mt-1 text-sm capitalize text-muted-foreground">{mesAtual}</p>
+        </div>
       </header>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c) => {
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {heroCards.map((c) => {
           const Icon = c.icon;
           return (
-            <Card key={c.label} className="border-border/60">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{c.label}</CardTitle>
-                <Icon className={`h-4 w-4 ${c.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-semibold">{isLoading ? "—" : c.value}</div>
+            <Card key={c.label} className={`relative overflow-hidden border-border/60 bg-gradient-to-br ${c.accent} transition-shadow hover:shadow-md`}>
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{c.label}</p>
+                    <p className="mt-2 text-2xl font-bold tracking-tight">{isLoading ? "—" : c.value}</p>
+                    {c.sub && <p className="mt-1 text-[11px] text-muted-foreground">{c.sub}</p>}
+                  </div>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${c.iconBg}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           );
         })}
       </section>
+
 
       <Card className="border-border/60">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">

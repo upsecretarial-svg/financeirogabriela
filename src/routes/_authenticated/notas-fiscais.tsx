@@ -25,6 +25,7 @@ interface Row {
   id: string;
   numero_interno: string | null;
   tutor: string;
+  tutor_cpf: string | null;
   pet: string;
   data_atendimento: string;
   valor: number | null;
@@ -74,7 +75,7 @@ function Page() {
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,numero_interno,tutor,pet,data_atendimento,valor,nf_emitida,nf_enviada,nf_numero,nf_pdf_path")
+        .select("id,numero_interno,tutor,tutor_cpf,pet,data_atendimento,valor,nf_emitida,nf_enviada,nf_numero,nf_pdf_path")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(300);
@@ -157,6 +158,7 @@ function Page() {
               <TableRow>
                 <TableHead>Data</TableHead>
                 <TableHead>Tutor / Pet</TableHead>
+                <TableHead>CPF</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead>Nº NF</TableHead>
                 <TableHead>Status</TableHead>
@@ -168,6 +170,7 @@ function Page() {
                 <TableRow key={r.id}>
                   <TableCell className="text-sm">{r.data_atendimento}</TableCell>
                   <TableCell className="text-sm"><div className="font-medium">{r.tutor}</div><div className="text-xs text-muted-foreground">{r.pet}</div></TableCell>
+                  <TableCell className="font-mono text-xs">{r.tutor_cpf ?? "—"}</TableCell>
                   <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
                   <TableCell className="font-mono text-xs">{r.nf_numero ?? "—"}</TableCell>
                   <TableCell>
@@ -206,7 +209,7 @@ function Page() {
                 </TableRow>
               ))}
               {!data?.length && (
-                <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Nenhum atendimento.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

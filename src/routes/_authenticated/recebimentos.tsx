@@ -27,6 +27,7 @@ interface Row {
   id: string;
   numero_interno: string | null;
   tutor: string;
+  tutor_cpf: string | null;
   pet: string;
   data_atendimento: string;
   valor: number | null;
@@ -86,7 +87,7 @@ function Page() {
     queryFn: async () => {
       let q = supabase
         .from("appointments")
-        .select("id,numero_interno,tutor,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
+        .select("id,numero_interno,tutor,tutor_cpf,pet,data_atendimento,valor,valor_recebido,data_pagamento,payment_method_id,pago,obs_financeiras,comprovante_path,paid_by_name,paid_at,nf_numero,status,clinics(nome),payment_methods(nome)")
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(1000);
@@ -121,6 +122,7 @@ function Page() {
     Numero: r.numero_interno ?? "",
     Data: r.data_atendimento,
     Tutor: r.tutor,
+    CPF: r.tutor_cpf ?? "",
     Pet: r.pet,
     Clinica: r.clinics?.nome ?? "",
     Valor: Number(r.valor ?? 0),
@@ -138,8 +140,8 @@ function Page() {
   const onPDF = () => exportPDF(
     filename,
     "Histórico de recebimentos",
-    ["Nº", "Data", "Tutor/Pet", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
-    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
+    ["Nº", "Data", "Tutor/Pet", "CPF", "Clínica", "Valor", "Recebido", "Pgto.", "Baixa por", "Status"],
+    exportRows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.CPF, r.Clinica, brl(r.Valor), brl(r.Recebido), r["Forma de pagamento"], r["Baixa por"], r.Status]),
     {
       Período: `${from || "—"} → ${to || "—"}`,
       Atendimentos: String(totals.qtd),

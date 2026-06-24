@@ -29,6 +29,7 @@ interface AppointmentRow {
   id: string;
   numero_interno: string | null;
   tutor: string;
+  tutor_cpf: string | null;
   pet: string;
   data_atendimento: string;
   valor: number | null;

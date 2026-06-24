@@ -102,6 +102,8 @@ function Atendimentos() {
         nf_numero: row.nf_numero || null,
         observacoes: row.observacoes || null,
         obs_financeiras: row.obs_financeiras || null,
+        nf_pdf_path: row.nf_pdf_path || null,
+        comprovante_path: row.comprovante_path || null,
       };
       if (row.id) {
         const { error } = await supabase.from("appointments").update(payload).eq("id", row.id);

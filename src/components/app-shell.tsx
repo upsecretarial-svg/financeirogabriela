@@ -113,7 +113,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-2">
           {NAV_GROUPS.map((group) => {
-            const items = group.items.filter((n) => !n.adminOnly || isAdmin);
+          const isSuperAdmin = (user?.email ?? "").toLowerCase() === SUPER_ADMIN_EMAIL;
+          const items = group.items.filter((n) => {
+            if (n.superAdminOnly && !isSuperAdmin) return false;
+            if (n.adminOnly && !isAdmin) return false;
+            return true;
+          });
+
             if (!items.length) return null;
             return (
               <div key={group.label} className="space-y-1">

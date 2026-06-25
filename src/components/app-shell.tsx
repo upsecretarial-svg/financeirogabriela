@@ -65,7 +65,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: "/clinicas", label: "Clínicas", icon: Building2, adminOnly: true },
       { to: "/servicos", label: "Serviços", icon: Stethoscope },
-      { to: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
+      { to: "/usuarios", label: "Usuários", icon: Users, superAdminOnly: true },
     ],
   },
   {

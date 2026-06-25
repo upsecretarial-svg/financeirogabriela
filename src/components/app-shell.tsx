@@ -21,12 +21,16 @@ import {
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import type { ReactNode } from "react";
 
+const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
+
 interface NavItem {
   to: string;
   label: string;
   icon: typeof LayoutDashboard;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
 }
+
 
 interface NavGroup {
   label: string;

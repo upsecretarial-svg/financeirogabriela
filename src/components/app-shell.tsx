@@ -84,6 +84,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { loading, user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("sidebar-collapsed") === "1";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("sidebar-collapsed", collapsed ? "1" : "0");
+    }
+  }, [collapsed]);
 
   if (loading) {
     return (
@@ -100,16 +110,32 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar md:flex">
-        <div className="flex flex-col items-center gap-2 px-5 py-6 text-center">
-          <div className="flex h-24 w-24 items-center justify-center">
+      <aside
+        className={cn(
+          "relative hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 md:flex",
+          collapsed ? "w-16" : "w-64",
+        )}
+      >
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
+          className="absolute -right-3 top-6 z-10 grid h-6 w-6 place-items-center rounded-full border border-sidebar-border bg-background text-muted-foreground shadow-sm hover:text-foreground"
+        >
+          {collapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
+        </button>
+
+        <div className={cn("flex flex-col items-center gap-2 px-3 py-6 text-center", collapsed && "px-2 py-4")}>
+          <div className={cn("flex items-center justify-center", collapsed ? "h-10 w-10" : "h-24 w-24")}>
             <img src={logoAsset.url} alt="Dra. Gabriela Kronhardt" className="h-full w-full object-contain" />
           </div>
 
-          <div className="leading-tight">
-            <div className="text-sm font-semibold text-sidebar-foreground">Dra. Gabriela</div>
-            <div className="text-xs text-muted-foreground">Controle Financeiro</div>
-          </div>
+          {!collapsed && (
+            <div className="leading-tight">
+              <div className="text-sm font-semibold text-sidebar-foreground">Dra. Gabriela</div>
+              <div className="text-xs text-muted-foreground">Controle Financeiro</div>
+            </div>
+          )}
         </div>
 
 
@@ -125,9 +151,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             if (!items.length) return null;
             return (
               <div key={group.label} className="space-y-1">
-                <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  {group.label}
-                </div>
+                {!collapsed && (
+                  <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                    {group.label}
+                  </div>
+                )}
                 {items.map((item) => {
                   const active = path === item.to || (item.to !== "/" && path.startsWith(item.to));
                   const Icon = item.icon;
@@ -135,15 +163,17 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Link
                       key={item.to}
                       to={item.to}
+                      title={collapsed ? item.label : undefined}
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        collapsed && "justify-center px-2",
                         active
                           ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
-                      <Icon className="h-4 w-4" />
-                      {item.label}
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span className="truncate">{item.label}</span>}
                     </Link>
                   );
                 })}
@@ -154,12 +184,21 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 
         <div className="border-t border-sidebar-border p-3">
-          <div className="mb-2 px-2 text-xs">
-            <div className="truncate font-medium text-sidebar-foreground">{user?.email}</div>
-            <div className="text-muted-foreground">{isAdmin ? "Administrador" : "Veterinária"}</div>
-          </div>
-          <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" /> Sair
+          {!collapsed && (
+            <div className="mb-2 px-2 text-xs">
+              <div className="truncate font-medium text-sidebar-foreground">{user?.email}</div>
+              <div className="text-muted-foreground">{isAdmin ? "Administrador" : "Veterinária"}</div>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn("w-full", collapsed ? "justify-center px-0" : "justify-start")}
+            onClick={handleSignOut}
+            title={collapsed ? "Sair" : undefined}
+          >
+            <LogOut className={cn("h-4 w-4", !collapsed && "mr-2")} />
+            {!collapsed && "Sair"}
           </Button>
         </div>
       </aside>

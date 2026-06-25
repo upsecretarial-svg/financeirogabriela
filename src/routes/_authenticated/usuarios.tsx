@@ -186,11 +186,8 @@ function Usuarios() {
       </div>
     );
   }
-  // unreachable placeholder
-  if (false) {
 
-    return <p className="text-sm text-muted-foreground">Acesso restrito ao administrador.</p>;
-  }
+
 
   const s = statsData as { total: number; admins: number; blocked: number; loginsWeek: number } | undefined;
 

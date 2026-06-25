@@ -9,7 +9,13 @@ const createUserSchema = z.object({
   role: z.enum(["admin", "vet"]),
 });
 
-async function assertAdmin(context: { supabase: any; userId: string }) {
+export const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
+
+async function assertAdmin(context: { supabase: any; userId: string; claims?: any }) {
+  const email = (context.claims?.email ?? "").toString().toLowerCase();
+  if (email !== SUPER_ADMIN_EMAIL) {
+    throw new Error("Acesso negado. Apenas o administrador master pode acessar esta área.");
+  }
   const { data: isAdmin, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
@@ -17,6 +23,7 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
   if (error) throw new Error(error.message);
   if (!isAdmin) throw new Error("Acesso negado.");
 }
+
 
 /**
  * Bootstrap do primeiro administrador.

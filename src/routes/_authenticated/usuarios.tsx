@@ -82,7 +82,9 @@ function StatCard({ icon: Icon, label, value, tone = "default" }: { icon: React.
 }
 
 function Usuarios() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const isSuperAdmin = (user?.email ?? "").toLowerCase() === "upsecretarial@gmail.com" && isAdmin;
+
   const qc = useQueryClient();
   const list = useServerFn(listUsers);
   const create = useServerFn(createUser);
@@ -107,17 +109,17 @@ function Usuarios() {
   const { data, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => list(),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
   const { data: statsData } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: () => stats(),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
   const { data: eventsData } = useQuery({
     queryKey: ["login-events"],
     queryFn: () => events({ data: { limit: 100 } }),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
 
   const invalidate = () => {
@@ -173,9 +175,19 @@ function Usuarios() {
     });
   }, [data, search, filterStatus, filterRole]);
 
-  if (!isAdmin) {
-    return <p className="text-sm text-muted-foreground">Acesso restrito ao administrador.</p>;
+  if (!isSuperAdmin) {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center">
+        <ShieldAlert className="mx-auto mb-3 h-10 w-10 text-destructive" />
+        <h1 className="text-xl font-semibold">Acesso restrito</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Esta área é exclusiva do administrador master (<strong>upsecretarial@gmail.com</strong>).
+        </p>
+      </div>
+    );
   }
+
+
 
   const s = statsData as { total: number; admins: number; blocked: number; loginsWeek: number } | undefined;
 

@@ -14,9 +14,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet } from "lucide-react";
+import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet, Receipt } from "lucide-react";
 import { TableState } from "@/components/data-state";
 import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
+import { generateReceiptPDF } from "@/lib/receipt";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/recebimentos")({
@@ -292,6 +293,30 @@ function Page() {
                       >
                         {r.pago ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
                         {r.pago ? "Reabrir" : "Marcar pago"}
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Gerar recibo PDF"
+                        disabled={!r.pago}
+                        onClick={() =>
+                          generateReceiptPDF({
+                            numero: r.numero_interno ?? r.id.slice(0, 8),
+                            tutor: r.tutor,
+                            cpf: r.tutor_cpf,
+                            pet: r.pet,
+                            clinica: r.clinics?.nome ?? null,
+                            valor: Number(r.valor ?? 0),
+                            valorRecebido: Number(r.valor_recebido ?? r.valor ?? 0),
+                            dataPagamento: r.data_pagamento,
+                            formaPagamento: r.payment_methods?.nome ?? null,
+                            baixaPor: r.paid_by_name,
+                            observacoes: r.obs_financeiras,
+                          }).catch((e: Error) => toast.error("Falha ao gerar recibo", { description: e.message }))
+                        }
+                      >
+                        <Receipt className="h-4 w-4" />
                       </Button>
 
                       <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>

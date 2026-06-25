@@ -295,6 +295,30 @@ function Page() {
                         {r.pago ? "Reabrir" : "Marcar pago"}
                       </Button>
 
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Gerar recibo PDF"
+                        disabled={!r.pago}
+                        onClick={() =>
+                          generateReceiptPDF({
+                            numero: r.numero_interno ?? r.id.slice(0, 8),
+                            tutor: r.tutor,
+                            cpf: r.tutor_cpf,
+                            pet: r.pet,
+                            clinica: r.clinics?.nome ?? null,
+                            valor: Number(r.valor ?? 0),
+                            valorRecebido: Number(r.valor_recebido ?? r.valor ?? 0),
+                            dataPagamento: r.data_pagamento,
+                            formaPagamento: r.payment_methods?.nome ?? null,
+                            baixaPor: r.paid_by_name,
+                            observacoes: r.obs_financeiras,
+                          }).catch((e: Error) => toast.error("Falha ao gerar recibo", { description: e.message }))
+                        }
+                      >
+                        <Receipt className="h-4 w-4" />
+                      </Button>
+
                       <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
                     </div>
                   </TableCell>

@@ -82,7 +82,9 @@ function StatCard({ icon: Icon, label, value, tone = "default" }: { icon: React.
 }
 
 function Usuarios() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const isSuperAdmin = (user?.email ?? "").toLowerCase() === "upsecretarial@gmail.com" && isAdmin;
+
   const qc = useQueryClient();
   const list = useServerFn(listUsers);
   const create = useServerFn(createUser);

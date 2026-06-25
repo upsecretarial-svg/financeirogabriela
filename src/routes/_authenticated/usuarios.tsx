@@ -109,17 +109,17 @@ function Usuarios() {
   const { data, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: () => list(),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
   const { data: statsData } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: () => stats(),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
   const { data: eventsData } = useQuery({
     queryKey: ["login-events"],
     queryFn: () => events({ data: { limit: 100 } }),
-    enabled: isAdmin,
+    enabled: isSuperAdmin,
   });
 
   const invalidate = () => {
@@ -175,7 +175,7 @@ function Usuarios() {
     });
   }, [data, search, filterStatus, filterRole]);
 
-  if (!isAdmin) {
+  if (!isSuperAdmin) {
     return <p className="text-sm text-muted-foreground">Acesso restrito ao administrador.</p>;
   }
 

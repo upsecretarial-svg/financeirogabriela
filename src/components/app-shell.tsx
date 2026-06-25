@@ -17,9 +17,11 @@ import {
   LogOut,
   Loader2,
   Trash2,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
 

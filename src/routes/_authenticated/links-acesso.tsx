@@ -77,6 +77,15 @@ function LinksAcessoPage() {
     onError: (e: any) => toast.error(e?.message ?? "Erro ao excluir"),
   });
 
+  const renewMut = useMutation({
+    mutationFn: (vars: { id: string; ttlHours: number | null }) => renew({ data: vars }),
+    onSuccess: () => {
+      toast.success("Link renovado");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao renovar"),
+  });
+
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
 
   const statusOf = (row: any) => {

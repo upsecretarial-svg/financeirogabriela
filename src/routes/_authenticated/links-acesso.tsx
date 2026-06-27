@@ -227,6 +227,27 @@ function LinksAcessoPage() {
                             <Button
                               size="sm"
                               variant="ghost"
+                              onClick={() => {
+                                const input = prompt(
+                                  "Renovar por quantas horas? (deixe vazio para tornar permanente)",
+                                  row.expires_at ? "24" : "",
+                                );
+                                if (input === null) return;
+                                const trimmed = input.trim();
+                                const ttl = trimmed === "" ? null : Number(trimmed);
+                                if (ttl !== null && (!Number.isFinite(ttl) || ttl < 1)) {
+                                  toast.error("Informe um número válido de horas.");
+                                  return;
+                                }
+                                renewMut.mutate({ id: row.id, ttlHours: ttl });
+                              }}
+                              disabled={renewMut.isPending}
+                            >
+                              <RefreshCw className="mr-1 h-3 w-3" /> Renovar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
                               className="text-destructive hover:text-destructive"
                               onClick={() => {
                                 if (confirm("Excluir este link permanentemente?")) {

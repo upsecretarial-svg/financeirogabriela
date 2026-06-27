@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_tokens: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          label: string | null
+          revoked_at: string | null
+          token: string
+          used_at: string | null
+          used_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          label?: string | null
+          revoked_at?: string | null
+          token: string
+          used_at?: string | null
+          used_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          label?: string | null
+          revoked_at?: string | null
+          token?: string
+          used_at?: string | null
+          used_count?: number
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           id: boolean

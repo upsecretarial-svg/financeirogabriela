@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AcessoTokenRouteImport } from './routes/acesso.$token'
 import { Route as AuthenticatedUsuariosRouteImport } from './routes/_authenticated/usuarios'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
@@ -20,6 +21,7 @@ import { Route as AuthenticatedRecebimentosRouteImport } from './routes/_authent
 import { Route as AuthenticatedPendenciasRouteImport } from './routes/_authenticated/pendencias'
 import { Route as AuthenticatedNotasFiscaisRouteImport } from './routes/_authenticated/notas-fiscais'
 import { Route as AuthenticatedLixeiraRouteImport } from './routes/_authenticated/lixeira'
+import { Route as AuthenticatedLinksAcessoRouteImport } from './routes/_authenticated/links-acesso'
 import { Route as AuthenticatedFormasPagamentoRouteImport } from './routes/_authenticated/formas-pagamento'
 import { Route as AuthenticatedClinicasRouteImport } from './routes/_authenticated/clinicas'
 import { Route as AuthenticatedAuditoriaRouteImport } from './routes/_authenticated/auditoria'
@@ -43,6 +45,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AcessoTokenRoute = AcessoTokenRouteImport.update({
+  id: '/acesso/$token',
+  path: '/acesso/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedUsuariosRoute = AuthenticatedUsuariosRouteImport.update({
   id: '/usuarios',
@@ -81,6 +88,12 @@ const AuthenticatedLixeiraRoute = AuthenticatedLixeiraRouteImport.update({
   path: '/lixeira',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLinksAcessoRoute =
+  AuthenticatedLinksAcessoRouteImport.update({
+    id: '/links-acesso',
+    path: '/links-acesso',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFormasPagamentoRoute =
   AuthenticatedFormasPagamentoRouteImport.update({
     id: '/formas-pagamento',
@@ -112,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
+  '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
@@ -119,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
+  '/acesso/$token': typeof AcessoTokenRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -127,6 +142,7 @@ export interface FileRoutesByTo {
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
+  '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
@@ -134,6 +150,7 @@ export interface FileRoutesByTo {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/servicos': typeof AuthenticatedServicosRoute
   '/usuarios': typeof AuthenticatedUsuariosRoute
+  '/acesso/$token': typeof AcessoTokenRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
@@ -145,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/auditoria': typeof AuthenticatedAuditoriaRoute
   '/_authenticated/clinicas': typeof AuthenticatedClinicasRoute
   '/_authenticated/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
+  '/_authenticated/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/_authenticated/lixeira': typeof AuthenticatedLixeiraRoute
   '/_authenticated/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
   '/_authenticated/pendencias': typeof AuthenticatedPendenciasRoute
@@ -152,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
   '/_authenticated/usuarios': typeof AuthenticatedUsuariosRoute
+  '/acesso/$token': typeof AcessoTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
@@ -164,6 +183,7 @@ export interface FileRouteTypes {
     | '/auditoria'
     | '/clinicas'
     | '/formas-pagamento'
+    | '/links-acesso'
     | '/lixeira'
     | '/notas-fiscais'
     | '/pendencias'
@@ -171,6 +191,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/servicos'
     | '/usuarios'
+    | '/acesso/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -179,6 +200,7 @@ export interface FileRouteTypes {
     | '/auditoria'
     | '/clinicas'
     | '/formas-pagamento'
+    | '/links-acesso'
     | '/lixeira'
     | '/notas-fiscais'
     | '/pendencias'
@@ -186,6 +208,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/servicos'
     | '/usuarios'
+    | '/acesso/$token'
     | '/'
   id:
     | '__root__'
@@ -196,6 +219,7 @@ export interface FileRouteTypes {
     | '/_authenticated/auditoria'
     | '/_authenticated/clinicas'
     | '/_authenticated/formas-pagamento'
+    | '/_authenticated/links-acesso'
     | '/_authenticated/lixeira'
     | '/_authenticated/notas-fiscais'
     | '/_authenticated/pendencias'
@@ -203,6 +227,7 @@ export interface FileRouteTypes {
     | '/_authenticated/relatorios'
     | '/_authenticated/servicos'
     | '/_authenticated/usuarios'
+    | '/acesso/$token'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
@@ -210,6 +235,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  AcessoTokenRoute: typeof AcessoTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +267,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/acesso/$token': {
+      id: '/acesso/$token'
+      path: '/acesso/$token'
+      fullPath: '/acesso/$token'
+      preLoaderRoute: typeof AcessoTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/usuarios': {
       id: '/_authenticated/usuarios'
@@ -291,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLixeiraRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/links-acesso': {
+      id: '/_authenticated/links-acesso'
+      path: '/links-acesso'
+      fullPath: '/links-acesso'
+      preLoaderRoute: typeof AuthenticatedLinksAcessoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/formas-pagamento': {
       id: '/_authenticated/formas-pagamento'
       path: '/formas-pagamento'
@@ -327,6 +367,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAuditoriaRoute: typeof AuthenticatedAuditoriaRoute
   AuthenticatedClinicasRoute: typeof AuthenticatedClinicasRoute
   AuthenticatedFormasPagamentoRoute: typeof AuthenticatedFormasPagamentoRoute
+  AuthenticatedLinksAcessoRoute: typeof AuthenticatedLinksAcessoRoute
   AuthenticatedLixeiraRoute: typeof AuthenticatedLixeiraRoute
   AuthenticatedNotasFiscaisRoute: typeof AuthenticatedNotasFiscaisRoute
   AuthenticatedPendenciasRoute: typeof AuthenticatedPendenciasRoute
@@ -342,6 +383,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAuditoriaRoute: AuthenticatedAuditoriaRoute,
   AuthenticatedClinicasRoute: AuthenticatedClinicasRoute,
   AuthenticatedFormasPagamentoRoute: AuthenticatedFormasPagamentoRoute,
+  AuthenticatedLinksAcessoRoute: AuthenticatedLinksAcessoRoute,
   AuthenticatedLixeiraRoute: AuthenticatedLixeiraRoute,
   AuthenticatedNotasFiscaisRoute: AuthenticatedNotasFiscaisRoute,
   AuthenticatedPendenciasRoute: AuthenticatedPendenciasRoute,
@@ -359,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  AcessoTokenRoute: AcessoTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -88,6 +88,15 @@ function LinksAcessoPage() {
     onError: (e: any) => toast.error(e?.message ?? "Erro ao renovar"),
   });
 
+  const holdMut = useMutation({
+    mutationFn: (vars: { id: string; hold: boolean }) => toggleHold({ data: vars }),
+    onSuccess: (_d, vars) => {
+      toast.success(vars.hold ? "Link mantido permanente" : "Validade restaurada");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao alternar"),
+  });
+
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
 
   const statusOf = (row: any) => {

@@ -29,17 +29,20 @@ export const listAccessTokens = createServerFn({ method: "GET" })
 
 export const createAccessToken = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((i: { email: string; label?: string; ttlHours: number }) =>
+  .inputValidator((i: { email: string; label?: string; ttlHours: number | null }) =>
     z.object({
       email: z.string().email(),
       label: z.string().optional(),
-      ttlHours: z.number().int().min(1).max(24 * 30),
+      ttlHours: z.number().int().min(1).max(24 * 365).nullable(),
     }).parse(i),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const token = randomToken();
-    const expiresAt = new Date(Date.now() + data.ttlHours * 3600 * 1000).toISOString();
+    const expiresAt =
+      data.ttlHours == null
+        ? null
+        : new Date(Date.now() + data.ttlHours * 3600 * 1000).toISOString();
     const { data: row, error } = await context.supabase
       .from("access_tokens")
       .insert({
@@ -53,6 +56,19 @@ export const createAccessToken = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
     return row;
+  });
+
+export const deleteAccessToken = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { id: string }) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { error } = await context.supabase
+      .from("access_tokens")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const revokeAccessToken = createServerFn({ method: "POST" })
@@ -85,7 +101,8 @@ export const consumeAccessToken = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Link inválido.");
     if (row.revoked_at) throw new Error("Link revogado.");
-    if (new Date(row.expires_at).getTime() < Date.now()) throw new Error("Link expirado.");
+    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now())
+      throw new Error("Link expirado.");
 
     const { data: link, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
       type: "magiclink",

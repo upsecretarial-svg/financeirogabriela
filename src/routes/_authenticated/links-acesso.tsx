@@ -7,6 +7,7 @@ import {
   listAccessTokens,
   createAccessToken,
   revokeAccessToken,
+  deleteAccessToken,
 } from "@/lib/access-tokens.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2Off, Loader2 } from "lucide-react";
+import { Copy, Link2Off, Loader2, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/links-acesso")({
   component: LinksAcessoPage,
@@ -30,6 +32,7 @@ function LinksAcessoPage() {
   const list = useServerFn(listAccessTokens);
   const create = useServerFn(createAccessToken);
   const revoke = useServerFn(revokeAccessToken);
+  const remove = useServerFn(deleteAccessToken);
 
   const { data, isLoading } = useQuery({
     queryKey: ["access-tokens"],
@@ -39,14 +42,16 @@ function LinksAcessoPage() {
   const [email, setEmail] = useState("");
   const [label, setLabel] = useState("");
   const [ttlHours, setTtlHours] = useState(24);
+  const [permanent, setPermanent] = useState(false);
 
   const createMut = useMutation({
-    mutationFn: (vars: { email: string; label?: string; ttlHours: number }) =>
+    mutationFn: (vars: { email: string; label?: string; ttlHours: number | null }) =>
       create({ data: vars }),
     onSuccess: () => {
       toast.success("Link gerado com sucesso");
       setEmail("");
       setLabel("");
+      setPermanent(false);
       qc.invalidateQueries({ queryKey: ["access-tokens"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao gerar link"),
@@ -61,10 +66,20 @@ function LinksAcessoPage() {
     onError: (e: any) => toast.error(e?.message ?? "Erro ao revogar"),
   });
 
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Link excluído");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao excluir"),
+  });
+
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
 
   const statusOf = (row: any) => {
     if (row.revoked_at) return { label: "Revogado", variant: "destructive" as const };
+    if (!row.expires_at) return { label: "Permanente", variant: "default" as const };
     if (new Date(row.expires_at).getTime() < Date.now())
       return { label: "Expirado", variant: "secondary" as const };
     return { label: "Ativo", variant: "default" as const };
@@ -90,7 +105,11 @@ function LinksAcessoPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (!email) return;
-              createMut.mutate({ email, label: label || undefined, ttlHours });
+              createMut.mutate({
+                email,
+                label: label || undefined,
+                ttlHours: permanent ? null : ttlHours,
+              });
             }}
           >
             <div>
@@ -112,12 +131,20 @@ function LinksAcessoPage() {
               <Input
                 type="number"
                 min={1}
-                max={720}
+                max={8760}
                 value={ttlHours}
+                disabled={permanent}
                 onChange={(e) => setTtlHours(Number(e.target.value) || 1)}
               />
+              <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  checked={permanent}
+                  onCheckedChange={(v) => setPermanent(v === true)}
+                />
+                Acesso permanente (sem expiração)
+              </label>
             </div>
-            <div className="flex items-end">
+            <div className="flex items-start">
               <Button type="submit" disabled={createMut.isPending}>
                 {createMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Gerar link"}
               </Button>
@@ -158,7 +185,9 @@ function LinksAcessoPage() {
                       <tr key={row.id} className="border-b last:border-0">
                         <td className="py-2 pr-3">{row.email}</td>
                         <td className="py-2 pr-3">{row.label ?? "—"}</td>
-                        <td className="py-2 pr-3">{new Date(row.expires_at).toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3">
+                          {row.expires_at ? new Date(row.expires_at).toLocaleString("pt-BR") : "Permanente"}
+                        </td>
                         <td className="py-2 pr-3">{row.used_count ?? 0}</td>
                         <td className="py-2 pr-3"><Badge variant={s.variant}>{s.label}</Badge></td>
                         <td className="py-2 pr-3">
@@ -170,7 +199,7 @@ function LinksAcessoPage() {
                                 await navigator.clipboard.writeText(url);
                                 toast.success("Link copiado");
                               }}
-                              disabled={s.label !== "Ativo"}
+                              disabled={s.label !== "Ativo" && s.label !== "Permanente"}
                             >
                               <Copy className="mr-1 h-3 w-3" /> Copiar
                             </Button>
@@ -184,6 +213,19 @@ function LinksAcessoPage() {
                                 <Link2Off className="mr-1 h-3 w-3" /> Revogar
                               </Button>
                             )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => {
+                                if (confirm("Excluir este link permanentemente?")) {
+                                  deleteMut.mutate(row.id);
+                                }
+                              }}
+                              disabled={deleteMut.isPending}
+                            >
+                              <Trash2 className="mr-1 h-3 w-3" /> Excluir
+                            </Button>
                           </div>
                         </td>
                       </tr>

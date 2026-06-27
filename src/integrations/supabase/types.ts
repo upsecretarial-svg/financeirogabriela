@@ -19,7 +19,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           email: string
-          expires_at: string
+          expires_at: string | null
           id: string
           label: string | null
           revoked_at: string | null
@@ -31,7 +31,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email: string
-          expires_at: string
+          expires_at?: string | null
           id?: string
           label?: string | null
           revoked_at?: string | null
@@ -43,7 +43,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           email?: string
-          expires_at?: string
+          expires_at?: string | null
           id?: string
           label?: string | null
           revoked_at?: string | null

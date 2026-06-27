@@ -1,0 +1,1 @@
+ALTER TABLE public.access_tokens ADD COLUMN IF NOT EXISTS previous_expires_at TIMESTAMPTZ;

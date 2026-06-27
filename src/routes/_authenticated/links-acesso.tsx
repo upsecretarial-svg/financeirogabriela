@@ -9,6 +9,7 @@ import {
   revokeAccessToken,
   deleteAccessToken,
   renewAccessToken,
+  togglePermanentHold,
 } from "@/lib/access-tokens.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2Off, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { Copy, Infinity as InfinityIcon, Link2Off, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/links-acesso")({
@@ -35,6 +36,7 @@ function LinksAcessoPage() {
   const revoke = useServerFn(revokeAccessToken);
   const remove = useServerFn(deleteAccessToken);
   const renew = useServerFn(renewAccessToken);
+  const toggleHold = useServerFn(togglePermanentHold);
 
   const { data, isLoading } = useQuery({
     queryKey: ["access-tokens"],
@@ -84,6 +86,15 @@ function LinksAcessoPage() {
       qc.invalidateQueries({ queryKey: ["access-tokens"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao renovar"),
+  });
+
+  const holdMut = useMutation({
+    mutationFn: (vars: { id: string; hold: boolean }) => toggleHold({ data: vars }),
+    onSuccess: (_d, vars) => {
+      toast.success(vars.hold ? "Link mantido permanente" : "Validade restaurada");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao alternar"),
   });
 
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
@@ -214,6 +225,24 @@ function LinksAcessoPage() {
                             >
                               <Copy className="mr-1 h-3 w-3" /> Copiar
                             </Button>
+                            {!row.revoked_at && (row.expires_at || row.previous_expires_at) && (
+                              <Button
+                                size="sm"
+                                variant={row.previous_expires_at ? "default" : "outline"}
+                                title={
+                                  row.previous_expires_at
+                                    ? "Solte para voltar à validade anterior"
+                                    : "Pressione para manter permanente; solte para voltar ao tempo definido"
+                                }
+                                onClick={() =>
+                                  holdMut.mutate({ id: row.id, hold: !row.previous_expires_at })
+                                }
+                                disabled={holdMut.isPending}
+                              >
+                                <InfinityIcon className="mr-1 h-3 w-3" />
+                                {row.previous_expires_at ? "Mantendo" : "Manter"}
+                              </Button>
+                            )}
                             {!row.revoked_at && (
                               <Button
                                 size="sm"

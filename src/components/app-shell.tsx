@@ -19,6 +19,7 @@ import {
   Trash2,
   PanelLeftClose,
   PanelLeftOpen,
+  KeyRound,
 } from "lucide-react";
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import { useEffect, useState, type ReactNode } from "react";
@@ -75,6 +76,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: "/auditoria", label: "Histórico", icon: History },
       { to: "/lixeira", label: "Lixeira", icon: Trash2, adminOnly: true },
+      { to: "/links-acesso", label: "Links de Acesso", icon: KeyRound, superAdminOnly: true },
     ],
   },
 ];

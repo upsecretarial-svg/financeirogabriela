@@ -9,6 +9,7 @@ import {
   revokeAccessToken,
   deleteAccessToken,
   renewAccessToken,
+  togglePermanentHold,
 } from "@/lib/access-tokens.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2Off, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { Copy, Infinity as InfinityIcon, Link2Off, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/links-acesso")({

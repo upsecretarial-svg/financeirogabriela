@@ -225,6 +225,24 @@ function LinksAcessoPage() {
                             >
                               <Copy className="mr-1 h-3 w-3" /> Copiar
                             </Button>
+                            {!row.revoked_at && (row.expires_at || row.previous_expires_at) && (
+                              <Button
+                                size="sm"
+                                variant={row.previous_expires_at ? "default" : "outline"}
+                                title={
+                                  row.previous_expires_at
+                                    ? "Solte para voltar à validade anterior"
+                                    : "Pressione para manter permanente; solte para voltar ao tempo definido"
+                                }
+                                onClick={() =>
+                                  holdMut.mutate({ id: row.id, hold: !row.previous_expires_at })
+                                }
+                                disabled={holdMut.isPending}
+                              >
+                                <InfinityIcon className="mr-1 h-3 w-3" />
+                                {row.previous_expires_at ? "Mantendo" : "Manter"}
+                              </Button>
+                            )}
                             {!row.revoked_at && (
                               <Button
                                 size="sm"

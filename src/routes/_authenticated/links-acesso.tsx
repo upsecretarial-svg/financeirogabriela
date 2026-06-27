@@ -8,6 +8,7 @@ import {
   createAccessToken,
   revokeAccessToken,
   deleteAccessToken,
+  renewAccessToken,
 } from "@/lib/access-tokens.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Link2Off, Loader2, Trash2 } from "lucide-react";
+import { Copy, Link2Off, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/_authenticated/links-acesso")({
@@ -33,6 +34,7 @@ function LinksAcessoPage() {
   const create = useServerFn(createAccessToken);
   const revoke = useServerFn(revokeAccessToken);
   const remove = useServerFn(deleteAccessToken);
+  const renew = useServerFn(renewAccessToken);
 
   const { data, isLoading } = useQuery({
     queryKey: ["access-tokens"],
@@ -73,6 +75,15 @@ function LinksAcessoPage() {
       qc.invalidateQueries({ queryKey: ["access-tokens"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao excluir"),
+  });
+
+  const renewMut = useMutation({
+    mutationFn: (vars: { id: string; ttlHours: number | null }) => renew({ data: vars }),
+    onSuccess: () => {
+      toast.success("Link renovado");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao renovar"),
   });
 
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
@@ -213,6 +224,27 @@ function LinksAcessoPage() {
                                 <Link2Off className="mr-1 h-3 w-3" /> Revogar
                               </Button>
                             )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const input = prompt(
+                                  "Renovar por quantas horas? (deixe vazio para tornar permanente)",
+                                  row.expires_at ? "24" : "",
+                                );
+                                if (input === null) return;
+                                const trimmed = input.trim();
+                                const ttl = trimmed === "" ? null : Number(trimmed);
+                                if (ttl !== null && (!Number.isFinite(ttl) || ttl < 1)) {
+                                  toast.error("Informe um número válido de horas.");
+                                  return;
+                                }
+                                renewMut.mutate({ id: row.id, ttlHours: ttl });
+                              }}
+                              disabled={renewMut.isPending}
+                            >
+                              <RefreshCw className="mr-1 h-3 w-3" /> Renovar
+                            </Button>
                             <Button
                               size="sm"
                               variant="ghost"

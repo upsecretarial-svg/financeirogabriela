@@ -84,6 +84,30 @@ export const revokeAccessToken = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const renewAccessToken = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { id: string; ttlHours: number | null }) =>
+    z.object({
+      id: z.string().uuid(),
+      ttlHours: z.number().int().min(1).max(24 * 365).nullable(),
+    }).parse(i),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const expiresAt =
+      data.ttlHours == null
+        ? null
+        : new Date(Date.now() + data.ttlHours * 3600 * 1000).toISOString();
+    const { data: row, error } = await context.supabase
+      .from("access_tokens")
+      .update({ expires_at: expiresAt, revoked_at: null })
+      .eq("id", data.id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
 export const consumeAccessToken = createServerFn({ method: "POST" })
   .inputValidator((i: { token: string; redirectTo?: string }) =>
     z.object({

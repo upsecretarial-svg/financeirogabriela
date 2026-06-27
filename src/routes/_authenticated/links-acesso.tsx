@@ -34,6 +34,7 @@ function LinksAcessoPage() {
   const create = useServerFn(createAccessToken);
   const revoke = useServerFn(revokeAccessToken);
   const remove = useServerFn(deleteAccessToken);
+  const renew = useServerFn(renewAccessToken);
 
   const { data, isLoading } = useQuery({
     queryKey: ["access-tokens"],

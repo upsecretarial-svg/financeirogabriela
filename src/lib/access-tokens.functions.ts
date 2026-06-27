@@ -108,6 +108,38 @@ export const renewAccessToken = createServerFn({ method: "POST" })
     return row;
   });
 
+export const togglePermanentHold = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { id: string; hold: boolean }) =>
+    z.object({ id: z.string().uuid(), hold: z.boolean() }).parse(i),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { data: current, error: readErr } = await context.supabase
+      .from("access_tokens")
+      .select("expires_at, previous_expires_at")
+      .eq("id", data.id)
+      .single();
+    if (readErr) throw new Error(readErr.message);
+
+    const patch: Record<string, any> = {};
+    if (data.hold) {
+      patch.previous_expires_at = current.expires_at ?? current.previous_expires_at ?? null;
+      patch.expires_at = null;
+    } else {
+      patch.expires_at = current.previous_expires_at ?? null;
+      patch.previous_expires_at = null;
+    }
+    const { data: row, error } = await context.supabase
+      .from("access_tokens")
+      .update(patch)
+      .eq("id", data.id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
 export const consumeAccessToken = createServerFn({ method: "POST" })
   .inputValidator((i: { token: string; redirectTo?: string }) =>
     z.object({

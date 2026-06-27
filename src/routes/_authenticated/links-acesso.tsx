@@ -32,6 +32,7 @@ function LinksAcessoPage() {
   const list = useServerFn(listAccessTokens);
   const create = useServerFn(createAccessToken);
   const revoke = useServerFn(revokeAccessToken);
+  const remove = useServerFn(deleteAccessToken);
 
   const { data, isLoading } = useQuery({
     queryKey: ["access-tokens"],
@@ -41,14 +42,16 @@ function LinksAcessoPage() {
   const [email, setEmail] = useState("");
   const [label, setLabel] = useState("");
   const [ttlHours, setTtlHours] = useState(24);
+  const [permanent, setPermanent] = useState(false);
 
   const createMut = useMutation({
-    mutationFn: (vars: { email: string; label?: string; ttlHours: number }) =>
+    mutationFn: (vars: { email: string; label?: string; ttlHours: number | null }) =>
       create({ data: vars }),
     onSuccess: () => {
       toast.success("Link gerado com sucesso");
       setEmail("");
       setLabel("");
+      setPermanent(false);
       qc.invalidateQueries({ queryKey: ["access-tokens"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao gerar link"),
@@ -63,10 +66,20 @@ function LinksAcessoPage() {
     onError: (e: any) => toast.error(e?.message ?? "Erro ao revogar"),
   });
 
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Link excluído");
+      qc.invalidateQueries({ queryKey: ["access-tokens"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao excluir"),
+  });
+
   const buildUrl = (token: string) => `${window.location.origin}/acesso/${token}`;
 
   const statusOf = (row: any) => {
     if (row.revoked_at) return { label: "Revogado", variant: "destructive" as const };
+    if (!row.expires_at) return { label: "Permanente", variant: "default" as const };
     if (new Date(row.expires_at).getTime() < Date.now())
       return { label: "Expirado", variant: "secondary" as const };
     return { label: "Ativo", variant: "default" as const };

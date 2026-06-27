@@ -105,7 +105,11 @@ function LinksAcessoPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (!email) return;
-              createMut.mutate({ email, label: label || undefined, ttlHours });
+              createMut.mutate({
+                email,
+                label: label || undefined,
+                ttlHours: permanent ? null : ttlHours,
+              });
             }}
           >
             <div>
@@ -127,12 +131,20 @@ function LinksAcessoPage() {
               <Input
                 type="number"
                 min={1}
-                max={720}
+                max={8760}
                 value={ttlHours}
+                disabled={permanent}
                 onChange={(e) => setTtlHours(Number(e.target.value) || 1)}
               />
+              <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  checked={permanent}
+                  onCheckedChange={(v) => setPermanent(v === true)}
+                />
+                Acesso permanente (sem expiração)
+              </label>
             </div>
-            <div className="flex items-end">
+            <div className="flex items-start">
               <Button type="submit" disabled={createMut.isPending}>
                 {createMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Gerar link"}
               </Button>
@@ -173,7 +185,9 @@ function LinksAcessoPage() {
                       <tr key={row.id} className="border-b last:border-0">
                         <td className="py-2 pr-3">{row.email}</td>
                         <td className="py-2 pr-3">{row.label ?? "—"}</td>
-                        <td className="py-2 pr-3">{new Date(row.expires_at).toLocaleString("pt-BR")}</td>
+                        <td className="py-2 pr-3">
+                          {row.expires_at ? new Date(row.expires_at).toLocaleString("pt-BR") : "Permanente"}
+                        </td>
                         <td className="py-2 pr-3">{row.used_count ?? 0}</td>
                         <td className="py-2 pr-3"><Badge variant={s.variant}>{s.label}</Badge></td>
                         <td className="py-2 pr-3">
@@ -185,7 +199,7 @@ function LinksAcessoPage() {
                                 await navigator.clipboard.writeText(url);
                                 toast.success("Link copiado");
                               }}
-                              disabled={s.label !== "Ativo"}
+                              disabled={s.label !== "Ativo" && s.label !== "Permanente"}
                             >
                               <Copy className="mr-1 h-3 w-3" /> Copiar
                             </Button>
@@ -199,6 +213,19 @@ function LinksAcessoPage() {
                                 <Link2Off className="mr-1 h-3 w-3" /> Revogar
                               </Button>
                             )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => {
+                                if (confirm("Excluir este link permanentemente?")) {
+                                  deleteMut.mutate(row.id);
+                                }
+                              }}
+                              disabled={deleteMut.isPending}
+                            >
+                              <Trash2 className="mr-1 h-3 w-3" /> Excluir
+                            </Button>
                           </div>
                         </td>
                       </tr>

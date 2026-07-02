@@ -72,6 +72,25 @@ function Dashboard() {
     },
   });
 
+  const { data: contasVencendo } = useQuery({
+    queryKey: ["payables-alert"],
+    queryFn: async () => {
+      const hoje = new Date();
+      const limite = new Date();
+      limite.setDate(hoje.getDate() + ALERT_DAYS);
+      const { data } = await supabase
+        .from("payables")
+        .select("id, fornecedor, valor, data_vencimento, status")
+        .is("deleted_at", null)
+        .in("status", ["pendente", "vencido", "agendado"])
+        .lte("data_vencimento", limite.toISOString().slice(0, 10))
+        .order("data_vencimento", { ascending: true })
+        .limit(20);
+      return data ?? [];
+    },
+  });
+
+
   const { data: chart } = useQuery({
     queryKey: ["dashboard-chart"],
     queryFn: async () => {

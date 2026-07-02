@@ -15,8 +15,12 @@ import {
   ClipboardCheck,
   Target,
   Trophy,
+  AlertTriangle,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+
+const ALERT_DAYS = 7;
+
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Dashboard — Sistema Financeiro" }] }),

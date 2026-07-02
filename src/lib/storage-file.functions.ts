@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 const storageFileSchema = z.object({
-  bucket: z.enum(["notas-fiscais"]),
+  bucket: z.enum(["notas-fiscais", "contas-pagar"]),
   path: z.string().min(1).max(500).refine((value) => !value.includes(".."), {
     message: "Caminho de arquivo inválido.",
   }),
@@ -11,7 +11,7 @@ const storageFileSchema = z.object({
 
 export const getStorageFile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { bucket: "notas-fiscais"; path: string }) => storageFileSchema.parse(input))
+  .inputValidator((input: { bucket: "notas-fiscais" | "contas-pagar"; path: string }) => storageFileSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { data: file, error } = await context.supabase.storage.from(data.bucket).download(data.path);
 

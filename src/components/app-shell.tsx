@@ -20,6 +20,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   KeyRound,
+  Receipt,
 } from "lucide-react";
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import { useEffect, useState, type ReactNode } from "react";

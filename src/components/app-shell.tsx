@@ -60,6 +60,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: "/notas-fiscais", label: "Notas Fiscais", icon: FileText },
       { to: "/recebimentos", label: "Recebimentos", icon: Wallet },
+      { to: "/contas-pagar", label: "Contas a Pagar", icon: Receipt },
       { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
       { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
     ],

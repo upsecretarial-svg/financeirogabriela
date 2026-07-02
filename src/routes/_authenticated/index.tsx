@@ -231,7 +231,11 @@ function Dashboard() {
         </div>
       </header>
 
+      {/* Alerta de contas a vencer */}
+      {contasVencendo && contasVencendo.length > 0 && <PayablesAlert rows={contasVencendo} />}
+
       {/* KPIs */}
+
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {kpis.map((c) => {
           const Icon = c.icon;

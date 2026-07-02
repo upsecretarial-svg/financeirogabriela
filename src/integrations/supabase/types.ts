@@ -372,6 +372,66 @@ export type Database = {
         }
         Relationships: []
       }
+      payables: {
+        Row: {
+          anexo_path: string | null
+          categoria: string | null
+          codigo_barras: string | null
+          created_at: string
+          created_by: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          deleted_at: string | null
+          descricao: string | null
+          fornecedor: string
+          id: string
+          observacoes: string | null
+          paid_by: string | null
+          paid_by_name: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          anexo_path?: string | null
+          categoria?: string | null
+          codigo_barras?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          deleted_at?: string | null
+          descricao?: string | null
+          fornecedor: string
+          id?: string
+          observacoes?: string | null
+          paid_by?: string | null
+          paid_by_name?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Update: {
+          anexo_path?: string | null
+          categoria?: string | null
+          codigo_barras?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          deleted_at?: string | null
+          descricao?: string | null
+          fornecedor?: string
+          id?: string
+          observacoes?: string | null
+          paid_by?: string | null
+          paid_by_name?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           ativo: boolean

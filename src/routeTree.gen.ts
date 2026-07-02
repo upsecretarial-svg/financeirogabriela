@@ -23,6 +23,7 @@ import { Route as AuthenticatedNotasFiscaisRouteImport } from './routes/_authent
 import { Route as AuthenticatedLixeiraRouteImport } from './routes/_authenticated/lixeira'
 import { Route as AuthenticatedLinksAcessoRouteImport } from './routes/_authenticated/links-acesso'
 import { Route as AuthenticatedFormasPagamentoRouteImport } from './routes/_authenticated/formas-pagamento'
+import { Route as AuthenticatedContasPagarRouteImport } from './routes/_authenticated/contas-pagar'
 import { Route as AuthenticatedClinicasRouteImport } from './routes/_authenticated/clinicas'
 import { Route as AuthenticatedAuditoriaRouteImport } from './routes/_authenticated/auditoria'
 import { Route as AuthenticatedAtendimentosRouteImport } from './routes/_authenticated/atendimentos'
@@ -100,6 +101,12 @@ const AuthenticatedFormasPagamentoRoute =
     path: '/formas-pagamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedContasPagarRoute =
+  AuthenticatedContasPagarRouteImport.update({
+    id: '/contas-pagar',
+    path: '/contas-pagar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedClinicasRoute = AuthenticatedClinicasRouteImport.update({
   id: '/clinicas',
   path: '/clinicas',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/atendimentos': typeof AuthenticatedAtendimentosRoute
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
+  '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/atendimentos': typeof AuthenticatedAtendimentosRoute
   '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/clinicas': typeof AuthenticatedClinicasRoute
+  '/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
@@ -161,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/atendimentos': typeof AuthenticatedAtendimentosRoute
   '/_authenticated/auditoria': typeof AuthenticatedAuditoriaRoute
   '/_authenticated/clinicas': typeof AuthenticatedClinicasRoute
+  '/_authenticated/contas-pagar': typeof AuthenticatedContasPagarRoute
   '/_authenticated/formas-pagamento': typeof AuthenticatedFormasPagamentoRoute
   '/_authenticated/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/_authenticated/lixeira': typeof AuthenticatedLixeiraRoute
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/atendimentos'
     | '/auditoria'
     | '/clinicas'
+    | '/contas-pagar'
     | '/formas-pagamento'
     | '/links-acesso'
     | '/lixeira'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/atendimentos'
     | '/auditoria'
     | '/clinicas'
+    | '/contas-pagar'
     | '/formas-pagamento'
     | '/links-acesso'
     | '/lixeira'
@@ -218,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/atendimentos'
     | '/_authenticated/auditoria'
     | '/_authenticated/clinicas'
+    | '/_authenticated/contas-pagar'
     | '/_authenticated/formas-pagamento'
     | '/_authenticated/links-acesso'
     | '/_authenticated/lixeira'
@@ -338,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFormasPagamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/contas-pagar': {
+      id: '/_authenticated/contas-pagar'
+      path: '/contas-pagar'
+      fullPath: '/contas-pagar'
+      preLoaderRoute: typeof AuthenticatedContasPagarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/clinicas': {
       id: '/_authenticated/clinicas'
       path: '/clinicas'
@@ -366,6 +386,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAtendimentosRoute: typeof AuthenticatedAtendimentosRoute
   AuthenticatedAuditoriaRoute: typeof AuthenticatedAuditoriaRoute
   AuthenticatedClinicasRoute: typeof AuthenticatedClinicasRoute
+  AuthenticatedContasPagarRoute: typeof AuthenticatedContasPagarRoute
   AuthenticatedFormasPagamentoRoute: typeof AuthenticatedFormasPagamentoRoute
   AuthenticatedLinksAcessoRoute: typeof AuthenticatedLinksAcessoRoute
   AuthenticatedLixeiraRoute: typeof AuthenticatedLixeiraRoute
@@ -382,6 +403,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAtendimentosRoute: AuthenticatedAtendimentosRoute,
   AuthenticatedAuditoriaRoute: AuthenticatedAuditoriaRoute,
   AuthenticatedClinicasRoute: AuthenticatedClinicasRoute,
+  AuthenticatedContasPagarRoute: AuthenticatedContasPagarRoute,
   AuthenticatedFormasPagamentoRoute: AuthenticatedFormasPagamentoRoute,
   AuthenticatedLinksAcessoRoute: AuthenticatedLinksAcessoRoute,
   AuthenticatedLixeiraRoute: AuthenticatedLixeiraRoute,

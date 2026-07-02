@@ -451,3 +451,102 @@ function Dashboard() {
     </div>
   );
 }
+
+type PayableAlertRow = {
+  id: string;
+  fornecedor: string;
+  valor: number;
+  data_vencimento: string;
+  status: string;
+};
+
+function PayablesAlert({ rows }: { rows: PayableAlertRow[] }) {
+  const hoje = new Date().toISOString().slice(0, 10);
+  const vencidas = rows.filter((r) => r.data_vencimento < hoje);
+  const proximas = rows.filter((r) => r.data_vencimento >= hoje);
+  const total = rows.reduce((s, r) => s + Number(r.valor), 0);
+  const fmtDate = (d: string) => d.split("-").reverse().join("/");
+  const diasAte = (d: string) => {
+    const diff = Math.round((new Date(d).getTime() - new Date(hoje).getTime()) / 86400000);
+    if (diff < 0) return `${Math.abs(diff)}d vencida`;
+    if (diff === 0) return "vence hoje";
+    if (diff === 1) return "vence amanhã";
+    return `em ${diff}d`;
+  };
+  const critical = vencidas.length > 0;
+
+  return (
+    <Card
+      className={`rounded-sm border-l-4 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] ${
+        critical
+          ? "border-l-destructive bg-destructive/5"
+          : "border-l-warning bg-warning/5"
+      }`}
+    >
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+        <div className="flex items-start gap-3">
+          <div
+            className={`grid h-10 w-10 place-items-center rounded-full ${
+              critical ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"
+            }`}
+          >
+            <AlertTriangle className="h-5 w-5" />
+          </div>
+          <div>
+            <CardTitle className={`text-sm font-semibold ${critical ? "text-destructive" : "text-warning"}`}>
+              {critical
+                ? `${vencidas.length} conta${vencidas.length > 1 ? "s" : ""} vencida${vencidas.length > 1 ? "s" : ""}`
+                : `${proximas.length} conta${proximas.length > 1 ? "s" : ""} a vencer em até ${ALERT_DAYS} dias`}
+            </CardTitle>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Total: <span className="font-semibold text-foreground">{brl(total)}</span>
+              {critical && proximas.length > 0 && ` · +${proximas.length} próximas`}
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/contas-pagar"
+          className={`text-xs font-medium hover:underline ${critical ? "text-destructive" : "text-warning"}`}
+        >
+          Ver todas →
+        </Link>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <ul className="divide-y divide-border">
+          {rows.slice(0, 5).map((r) => {
+            const isVenc = r.data_vencimento < hoje;
+            return (
+              <li key={r.id} className="flex items-center justify-between gap-3 py-2.5">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium">{r.fornecedor}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Vence em {fmtDate(r.data_vencimento)}
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="text-sm font-semibold">{brl(Number(r.valor))}</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      isVenc
+                        ? "border-destructive/40 bg-destructive/10 text-destructive"
+                        : "border-warning/40 bg-warning/10 text-warning"
+                    }
+                  >
+                    {diasAte(r.data_vencimento)}
+                  </Badge>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        {rows.length > 5 && (
+          <p className="pt-3 text-center text-xs text-muted-foreground">
+            +{rows.length - 5} outras contas
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+

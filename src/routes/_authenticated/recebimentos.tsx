@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet, Receipt } from "lucide-react";
 import { TableState } from "@/components/data-state";
+import { TableActions, TableAction } from "@/components/table-actions";
 import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
 import { generateReceiptPDF } from "@/lib/receipt";
 import { toast } from "sonner";
@@ -307,22 +308,17 @@ function Page() {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
+                    <TableActions>
+                      <TableAction
+                        label={r.pago ? "Reabrir" : "Marcar como pago"}
+                        icon={r.pago ? X : Check}
+                        tone={r.pago ? "destructive" : "success"}
                         disabled={togglePago.isPending}
-                        title={r.pago ? "Reabrir" : "Marcar como pago"}
-                        className={r.pago ? "h-8 w-8 text-destructive hover:text-destructive" : "h-8 w-8 text-success hover:text-success"}
                         onClick={() => togglePago.mutate(r)}
-                      >
-                        {r.pago ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        title="Gerar recibo PDF"
+                      />
+                      <TableAction
+                        label="Gerar recibo PDF"
+                        icon={Receipt}
                         disabled={!r.pago}
                         onClick={() =>
                           generateReceiptPDF({
@@ -339,13 +335,9 @@ function Page() {
                             observacoes: r.obs_financeiras,
                           }).catch((e: Error) => toast.error("Falha ao gerar recibo", { description: e.message }))
                         }
-                      >
-                        <Receipt className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Editar" onClick={() => setEdit(r)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </div>
+                      />
+                      <TableAction label="Editar" icon={Pencil} onClick={() => setEdit(r)} />
+                    </TableActions>
                   </TableCell>
                 </TableRow>
               ))}

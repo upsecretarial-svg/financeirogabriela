@@ -80,12 +80,13 @@ function Page() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "open" | "paid">("all");
+  const [methodFilter, setMethodFilter] = useState<string>("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [edit, setEdit] = useState<Row | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["receb-list", search, filter, from, to],
+    queryKey: ["receb-list", search, filter, methodFilter, from, to],
     queryFn: async () => {
       let q = supabase
         .from("appointments")
@@ -95,6 +96,10 @@ function Page() {
         .limit(1000);
       if (filter === "open") q = q.eq("pago", false);
       if (filter === "paid") q = q.eq("pago", true);
+      if (methodFilter !== "all") {
+        if (methodFilter === "none") q = q.is("payment_method_id", null);
+        else q = q.eq("payment_method_id", methodFilter);
+      }
       if (from) q = q.gte("data_atendimento", from);
       if (to) q = q.lte("data_atendimento", to);
       if (search) q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%`);
@@ -233,11 +238,21 @@ function Page() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto_auto]">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input className="pl-9" placeholder="Buscar tutor ou pet…" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
+            <Select value={methodFilter} onValueChange={setMethodFilter}>
+              <SelectTrigger className="w-full sm:w-[200px]" aria-label="Forma de pagamento">
+                <SelectValue placeholder="Forma de pagamento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as formas</SelectItem>
+                <SelectItem value="none">Sem forma definida</SelectItem>
+                {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
+              </SelectContent>
+            </Select>
             <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="De" />
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Até" />
           </div>
@@ -251,6 +266,7 @@ function Page() {
                 <TableHead className="text-right">Valor</TableHead>
                 <TableHead className="text-right">Recebido</TableHead>
                 <TableHead>Pago em</TableHead>
+                <TableHead>Forma</TableHead>
                 <TableHead>Baixa por</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead></TableHead>
@@ -264,6 +280,13 @@ function Page() {
                   <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
                   <TableCell className="text-right text-sm">{brl(r.valor_recebido)}</TableCell>
                   <TableCell className="text-sm">{r.data_pagamento ?? "—"}</TableCell>
+                  <TableCell className="text-sm">
+                    {r.payment_methods?.nome ? (
+                      <Badge variant="outline" className="font-normal">{r.payment_methods.nome}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-sm">
                     {r.paid_by_name ? (
                       <span className="font-medium">{r.paid_by_name}</span>
@@ -326,7 +349,7 @@ function Page() {
                 </TableRow>
               ))}
               <TableState
-                colSpan={8}
+                colSpan={9}
                 isLoading={isLoading}
                 isError={isError}
                 error={error as Error | null}

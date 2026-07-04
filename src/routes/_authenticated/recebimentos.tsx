@@ -86,7 +86,7 @@ function Page() {
   const [edit, setEdit] = useState<Row | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["receb-list", search, filter, from, to],
+    queryKey: ["receb-list", search, filter, methodFilter, from, to],
     queryFn: async () => {
       let q = supabase
         .from("appointments")

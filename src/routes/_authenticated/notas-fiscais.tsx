@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getStorageFile } from "@/lib/storage-file.functions";
-import { extractNfFromFile } from "@/lib/nf-extract.functions";
+import { extractNfFromFile, mergeExtractedNf } from "@/lib/nf-extract.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -315,8 +315,7 @@ function NfInlineFile({ row }: { row: Row }) {
         const extracted = await extract({
           data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
         });
-        if (extracted.nf_numero && !row.nf_numero) update.nf_numero = extracted.nf_numero;
-        if (extracted.tutor_cpf && !row.tutor_cpf) update.tutor_cpf = extracted.tutor_cpf;
+        Object.assign(update, mergeExtractedNf(row, extracted));
         if (extracted.nf_numero || extracted.tutor_cpf) {
           toast.success("Dados extraídos automaticamente da NF.");
         }

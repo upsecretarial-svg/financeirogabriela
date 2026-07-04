@@ -439,9 +439,6 @@ function Dashboard() {
                       {p.data_atendimento} · {brl(Number(p.valor))}
                     </div>
                   </div>
-                  <Badge variant="outline" className="shrink-0 capitalize">
-                    {p.tipo_pendencia?.replaceAll("_", " ")}
-                  </Badge>
                 </li>
               ))}
             </ul>

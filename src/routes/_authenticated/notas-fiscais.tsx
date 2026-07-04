@@ -288,7 +288,11 @@ function NfInlineFile({ row }: { row: Row }) {
       const key = `nf/${crypto.randomUUID()}.${ext}`;
       const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
       if (up.error) throw up.error;
-      const update: Record<string, unknown> = { nf_pdf_path: key };
+      const update: {
+        nf_pdf_path: string;
+        nf_numero?: string;
+        tutor_cpf?: string;
+      } = { nf_pdf_path: key };
       try {
         const base64 = await fileToBase64(file);
         const extracted = await extract({
@@ -314,6 +318,7 @@ function NfInlineFile({ row }: { row: Row }) {
       setBusy(false);
     }
   };
+
 
 
   return (

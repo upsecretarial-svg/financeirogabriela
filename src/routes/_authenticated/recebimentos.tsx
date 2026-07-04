@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, Pencil, Check, X, FileDown, FileSpreadsheet, FileText, Wallet, Receipt } from "lucide-react";
 import { TableState } from "@/components/data-state";
+import { TableActions, TableAction } from "@/components/table-actions";
 import { exportCSV, exportXLSX, exportPDF } from "@/lib/export";
 import { generateReceiptPDF } from "@/lib/receipt";
 import { toast } from "sonner";

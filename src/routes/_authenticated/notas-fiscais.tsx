@@ -259,6 +259,11 @@ function Page() {
                 path={edit.nf_pdf_path}
                 prefix="nf"
                 onChange={(p) => setEdit({ ...edit, nf_pdf_path: p })}
+                onExtract={(x) => setEdit((cur) => cur ? {
+                  ...cur,
+                  nf_numero: cur.nf_numero || x.nf_numero || cur.nf_numero,
+                  tutor_cpf: cur.tutor_cpf || x.tutor_cpf || cur.tutor_cpf,
+                } : cur)}
               />
             </div>
           )}

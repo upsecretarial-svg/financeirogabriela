@@ -50,6 +50,12 @@ interface Row {
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const fmtDate = (iso: string | null | undefined) => {
+  if (!iso) return "—";
+  const [y, m, d] = iso.slice(0, 10).split("-");
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+};
+
 function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
   const byteCharacters = atob(file.base64);
   const byteNumbers = new Array(byteCharacters.length);
@@ -261,38 +267,37 @@ function Page() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Data</TableHead>
+                <TableHead className="whitespace-nowrap">Data</TableHead>
                 <TableHead>Tutor / Pet</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
-                <TableHead className="text-right">Recebido</TableHead>
-                <TableHead>Pago em</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Valor</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Recebido</TableHead>
+                <TableHead className="whitespace-nowrap">Pago em</TableHead>
                 <TableHead>Forma</TableHead>
                 <TableHead>Baixa por</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data?.map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell className="text-sm">{r.data_atendimento}</TableCell>
-                  <TableCell className="text-sm"><div className="font-medium">{r.tutor}</div><div className="text-xs text-muted-foreground">{r.pet}</div></TableCell>
-                  <TableCell className="text-right text-sm font-medium">{brl(r.valor)}</TableCell>
-                  <TableCell className="text-right text-sm">{brl(r.valor_recebido)}</TableCell>
-                  <TableCell className="text-sm">{r.data_pagamento ?? "—"}</TableCell>
+                  <TableCell className="whitespace-nowrap text-sm tabular-nums text-muted-foreground">{fmtDate(r.data_atendimento)}</TableCell>
+                  <TableCell className="text-sm">
+                    <div className="font-medium leading-tight">{r.tutor}</div>
+                    <div className="text-xs text-muted-foreground leading-tight">{r.pet}</div>
+                  </TableCell>
+                  <TableCell className="text-right text-sm font-medium tabular-nums whitespace-nowrap">{brl(r.valor)}</TableCell>
+                  <TableCell className="text-right text-sm tabular-nums whitespace-nowrap">{brl(r.valor_recebido)}</TableCell>
+                  <TableCell className="text-sm tabular-nums text-muted-foreground whitespace-nowrap">{fmtDate(r.data_pagamento)}</TableCell>
                   <TableCell className="text-sm">
                     {r.payment_methods?.nome ? (
-                      <Badge variant="outline" className="font-normal">{r.payment_methods.nome}</Badge>
+                      <Badge variant="secondary" className="font-normal">{r.payment_methods.nome}</Badge>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm">
-                    {r.paid_by_name ? (
-                      <span className="font-medium">{r.paid_by_name}</span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
+                  <TableCell className="text-sm max-w-[140px] truncate" title={r.paid_by_name ?? ""}>
+                    {r.paid_by_name ?? <span className="text-muted-foreground">—</span>}
                   </TableCell>
                   <TableCell>
                     {r.pago ? (
@@ -302,25 +307,21 @@ function Page() {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1">
                       <Button
-                        size="sm"
-                        variant="outline"
+                        size="icon"
+                        variant="ghost"
                         disabled={togglePago.isPending}
-                        className={
-                          r.pago
-                            ? "h-8 gap-1.5 border-destructive/40 bg-destructive/5 text-destructive hover:bg-destructive/10"
-                            : "h-8 gap-1.5 border-success/40 bg-success/10 text-success hover:bg-success/20"
-                        }
+                        title={r.pago ? "Reabrir" : "Marcar como pago"}
+                        className={r.pago ? "h-8 w-8 text-destructive hover:text-destructive" : "h-8 w-8 text-success hover:text-success"}
                         onClick={() => togglePago.mutate(r)}
                       >
-                        {r.pago ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
-                        {r.pago ? "Reabrir" : "Marcar pago"}
+                        {r.pago ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                       </Button>
-
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
                         title="Gerar recibo PDF"
                         disabled={!r.pago}
                         onClick={() =>
@@ -341,11 +342,11 @@ function Page() {
                       >
                         <Receipt className="h-4 w-4" />
                       </Button>
-
-                      <Button variant="ghost" size="icon" onClick={() => setEdit(r)}><Pencil className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Editar" onClick={() => setEdit(r)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
-
                 </TableRow>
               ))}
               <TableState

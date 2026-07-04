@@ -281,6 +281,13 @@ function Page() {
                   <TableCell className="text-right text-sm">{brl(r.valor_recebido)}</TableCell>
                   <TableCell className="text-sm">{r.data_pagamento ?? "—"}</TableCell>
                   <TableCell className="text-sm">
+                    {r.payment_methods?.nome ? (
+                      <Badge variant="outline" className="font-normal">{r.payment_methods.nome}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm">
                     {r.paid_by_name ? (
                       <span className="font-medium">{r.paid_by_name}</span>
                     ) : (

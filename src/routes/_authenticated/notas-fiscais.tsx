@@ -62,16 +62,22 @@ function openBase64File(file: { base64: string; contentType: string; filename: s
   const blob = new Blob([new Uint8Array(byteNumbers)], { type: file.contentType });
   const url = URL.createObjectURL(blob);
 
-  if (targetWindow) {
-    targetWindow.location.href = url;
-  } else {
+  // In sandboxed iframes (preview), navigating a pre-opened about:blank window
+  // to a blob: URL from the parent origin is blocked. Open the blob URL directly;
+  // fall back to a download anchor when the popup is blocked.
+  const opened = window.open(url, "_blank", "noopener,noreferrer");
+  if (!opened) {
     const link = document.createElement("a");
     link.href = url;
     link.download = file.filename;
     link.rel = "noopener noreferrer";
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     link.remove();
+  }
+  if (targetWindow && targetWindow !== opened) {
+    try { targetWindow.close(); } catch { /* ignore */ }
   }
 
   setTimeout(() => URL.revokeObjectURL(url), 60_000);

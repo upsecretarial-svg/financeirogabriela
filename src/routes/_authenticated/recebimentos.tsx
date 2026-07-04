@@ -349,7 +349,7 @@ function Page() {
                 </TableRow>
               ))}
               <TableState
-                colSpan={8}
+                colSpan={9}
                 isLoading={isLoading}
                 isError={isError}
                 error={error as Error | null}

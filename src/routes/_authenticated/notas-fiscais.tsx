@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getStorageFile } from "@/lib/storage-file.functions";
+import { extractNfFromFile } from "@/lib/nf-extract.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +39,17 @@ interface Row {
 
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+async function fileToBase64(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
 
 function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
   const byteCharacters = atob(file.base64);
@@ -98,6 +110,7 @@ function Page() {
           nf_emitida: row.nf_emitida,
           nf_enviada: row.nf_enviada,
           nf_pdf_path: row.nf_pdf_path || null,
+          tutor_cpf: row.tutor_cpf || null,
         })
         .eq("id", row.id);
       if (error) throw error;
@@ -247,6 +260,11 @@ function Page() {
                 path={edit.nf_pdf_path}
                 prefix="nf"
                 onChange={(p) => setEdit({ ...edit, nf_pdf_path: p })}
+                onExtract={(x) => setEdit((cur) => cur ? {
+                  ...cur,
+                  nf_numero: cur.nf_numero || x.nf_numero || cur.nf_numero,
+                  tutor_cpf: cur.tutor_cpf || x.tutor_cpf || cur.tutor_cpf,
+                } : cur)}
               />
             </div>
           )}
@@ -263,6 +281,7 @@ function Page() {
 function NfInlineFile({ row }: { row: Row }) {
   const qc = useQueryClient();
   const getFile = useServerFn(getStorageFile);
+  const extract = useServerFn(extractNfFromFile);
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -286,7 +305,27 @@ function NfInlineFile({ row }: { row: Row }) {
       const key = `nf/${crypto.randomUUID()}.${ext}`;
       const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
       if (up.error) throw up.error;
-      const { error } = await supabase.from("appointments").update({ nf_pdf_path: key }).eq("id", row.id);
+      const update: {
+        nf_pdf_path: string;
+        nf_numero?: string;
+        tutor_cpf?: string;
+      } = { nf_pdf_path: key };
+      try {
+        const base64 = await fileToBase64(file);
+        const extracted = await extract({
+          data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
+        });
+        if (extracted.nf_numero && !row.nf_numero) update.nf_numero = extracted.nf_numero;
+        if (extracted.tutor_cpf && !row.tutor_cpf) update.tutor_cpf = extracted.tutor_cpf;
+        if (extracted.nf_numero || extracted.tutor_cpf) {
+          toast.success("Dados extraídos automaticamente da NF.");
+        }
+      } catch (err) {
+        toast.warning("NF anexada, mas não foi possível extrair os dados.", {
+          description: (err as Error).message,
+        });
+      }
+      const { error } = await supabase.from("appointments").update(update).eq("id", row.id);
       if (error) throw error;
       toast.success("NF anexada.");
       qc.invalidateQueries({ queryKey: ["nf-list"] });
@@ -296,6 +335,8 @@ function NfInlineFile({ row }: { row: Row }) {
       setBusy(false);
     }
   };
+
+
 
   return (
     <>
@@ -332,8 +373,9 @@ function NfInlineFile({ row }: { row: Row }) {
   );
 }
 
-function FileField({ label, path, prefix, onChange }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void }) {
+function FileField({ label, path, prefix, onChange, onExtract }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void; onExtract?: (x: { nf_numero: string | null; tutor_cpf: string | null }) => void }) {
   const getFile = useServerFn(getStorageFile);
+  const extract = useServerFn(extractNfFromFile);
   const [busy, setBusy] = useState(false);
   const upload = async (file: File) => {
     setBusy(true);
@@ -344,6 +386,18 @@ function FileField({ label, path, prefix, onChange }: { label: string; path: str
       if (error) throw error;
       onChange(key);
       toast.success("Arquivo enviado.");
+      if (onExtract) {
+        try {
+          const base64 = await fileToBase64(file);
+          const extracted = await extract({
+            data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
+          });
+          onExtract(extracted);
+          if (extracted.nf_numero || extracted.tutor_cpf) toast.success("Dados extraídos da NF.");
+        } catch (err) {
+          toast.warning("Não foi possível extrair dados.", { description: (err as Error).message });
+        }
+      }
     } catch (e) {
       toast.error("Erro no upload", { description: (e as Error).message });
     } finally { setBusy(false); }

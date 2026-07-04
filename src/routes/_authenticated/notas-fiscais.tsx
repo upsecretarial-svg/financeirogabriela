@@ -110,6 +110,7 @@ function Page() {
           nf_emitida: row.nf_emitida,
           nf_enviada: row.nf_enviada,
           nf_pdf_path: row.nf_pdf_path || null,
+          tutor_cpf: row.tutor_cpf || null,
         })
         .eq("id", row.id);
       if (error) throw error;

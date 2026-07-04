@@ -50,6 +50,12 @@ interface Row {
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+const fmtDate = (iso: string | null | undefined) => {
+  if (!iso) return "—";
+  const [y, m, d] = iso.slice(0, 10).split("-");
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+};
+
 function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
   const byteCharacters = atob(file.base64);
   const byteNumbers = new Array(byteCharacters.length);

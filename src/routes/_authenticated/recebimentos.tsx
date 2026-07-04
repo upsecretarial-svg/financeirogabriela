@@ -96,6 +96,10 @@ function Page() {
         .limit(1000);
       if (filter === "open") q = q.eq("pago", false);
       if (filter === "paid") q = q.eq("pago", true);
+      if (methodFilter !== "all") {
+        if (methodFilter === "none") q = q.is("payment_method_id", null);
+        else q = q.eq("payment_method_id", methodFilter);
+      }
       if (from) q = q.gte("data_atendimento", from);
       if (to) q = q.lte("data_atendimento", to);
       if (search) q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%`);

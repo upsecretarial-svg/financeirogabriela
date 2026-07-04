@@ -71,16 +71,9 @@ export const extractNfFromFile = createServerFn({ method: "POST" })
 
     const json = await resp.json();
     const content: string = json.choices?.[0]?.message?.content ?? "";
-    const match = content.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Não foi possível interpretar a resposta da IA.");
-
     try {
-      const parsed = JSON.parse(match[0]) as ExtractedNf;
-      return {
-        nf_numero: parsed.nf_numero ? String(parsed.nf_numero).trim() : null,
-        tutor_cpf: parsed.tutor_cpf ? String(parsed.tutor_cpf).trim() : null,
-      };
-    } catch {
-      throw new Error("JSON inválido retornado pela IA.");
+      return parseExtractedNf(content);
+    } catch (err) {
+      throw new Error((err as Error).message || "JSON inválido retornado pela IA.");
     }
   });

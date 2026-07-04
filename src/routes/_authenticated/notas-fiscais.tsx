@@ -264,6 +264,7 @@ function Page() {
 function NfInlineFile({ row }: { row: Row }) {
   const qc = useQueryClient();
   const getFile = useServerFn(getStorageFile);
+  const extract = useServerFn(extractNfFromFile);
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -287,7 +288,23 @@ function NfInlineFile({ row }: { row: Row }) {
       const key = `nf/${crypto.randomUUID()}.${ext}`;
       const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
       if (up.error) throw up.error;
-      const { error } = await supabase.from("appointments").update({ nf_pdf_path: key }).eq("id", row.id);
+      const update: Record<string, unknown> = { nf_pdf_path: key };
+      try {
+        const base64 = await fileToBase64(file);
+        const extracted = await extract({
+          data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
+        });
+        if (extracted.nf_numero && !row.nf_numero) update.nf_numero = extracted.nf_numero;
+        if (extracted.tutor_cpf && !row.tutor_cpf) update.tutor_cpf = extracted.tutor_cpf;
+        if (extracted.nf_numero || extracted.tutor_cpf) {
+          toast.success("Dados extraídos automaticamente da NF.");
+        }
+      } catch (err) {
+        toast.warning("NF anexada, mas não foi possível extrair os dados.", {
+          description: (err as Error).message,
+        });
+      }
+      const { error } = await supabase.from("appointments").update(update).eq("id", row.id);
       if (error) throw error;
       toast.success("NF anexada.");
       qc.invalidateQueries({ queryKey: ["nf-list"] });
@@ -297,6 +314,7 @@ function NfInlineFile({ row }: { row: Row }) {
       setBusy(false);
     }
   };
+
 
   return (
     <>

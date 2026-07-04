@@ -80,6 +80,7 @@ function Page() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "open" | "paid">("all");
+  const [methodFilter, setMethodFilter] = useState<string>("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [edit, setEdit] = useState<Row | null>(null);

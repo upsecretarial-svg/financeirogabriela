@@ -339,19 +339,21 @@ function Atendimentos() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => startEdit(a as AppointmentRow)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      {isAdmin && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive"
-                          onClick={() => confirm("Excluir atendimento?") && del.mutate(a.id)}
-                        >
-                          Excluir
-                        </Button>
-                      )}
+                      <TableActions>
+                        <TableAction
+                          label="Editar atendimento"
+                          icon={Pencil}
+                          onClick={() => startEdit(a as AppointmentRow)}
+                        />
+                        {isAdmin && (
+                          <TableAction
+                            label="Excluir atendimento"
+                            icon={Trash2}
+                            tone="destructive"
+                            onClick={() => confirm("Excluir atendimento?") && del.mutate(a.id)}
+                          />
+                        )}
+                      </TableActions>
                     </TableCell>
                   </TableRow>
                 ))

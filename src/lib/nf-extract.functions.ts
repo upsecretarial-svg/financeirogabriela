@@ -13,6 +13,31 @@ export interface ExtractedNf {
   tutor_cpf: string | null;
 }
 
+/** Parse the raw AI content string into a normalized ExtractedNf. */
+export function parseExtractedNf(content: string): ExtractedNf {
+  const cleaned = content.replace(/```json|```/g, "").trim();
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("Não foi possível interpretar a resposta da IA.");
+  const parsed = JSON.parse(match[0]) as Partial<ExtractedNf>;
+  const nf = parsed.nf_numero != null ? String(parsed.nf_numero).trim() : "";
+  const cpf = parsed.tutor_cpf != null ? String(parsed.tutor_cpf).trim() : "";
+  return {
+    nf_numero: nf || null,
+    tutor_cpf: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf) ? cpf : null,
+  };
+}
+
+/** Merge extracted values into current: only fill empty fields, preserve existing. */
+export function mergeExtractedNf(
+  current: { nf_numero: string | null; tutor_cpf: string | null },
+  extracted: ExtractedNf,
+): { nf_numero?: string; tutor_cpf?: string } {
+  const update: { nf_numero?: string; tutor_cpf?: string } = {};
+  if (extracted.nf_numero && !current.nf_numero) update.nf_numero = extracted.nf_numero;
+  if (extracted.tutor_cpf && !current.tutor_cpf) update.tutor_cpf = extracted.tutor_cpf;
+  return update;
+}
+
 export const extractNfFromFile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { filename: string; mimeType: string; base64: string }) => schema.parse(input))

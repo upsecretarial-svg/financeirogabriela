@@ -62,8 +62,13 @@ function openBase64(file: { base64: string; contentType: string; filename: strin
   const arr = new Uint8Array(bytes.length);
   for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
   const url = URL.createObjectURL(new Blob([arr], { type: file.contentType }));
-  if (w) w.location.href = url;
-  else { const a = document.createElement("a"); a.href = url; a.download = file.filename; a.click(); }
+  const opened = window.open(url, "_blank", "noopener,noreferrer");
+  if (!opened) {
+    const a = document.createElement("a");
+    a.href = url; a.download = file.filename; a.target = "_blank"; a.rel = "noopener noreferrer";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  if (w && w !== opened) { try { w.close(); } catch { /* ignore */ } }
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 

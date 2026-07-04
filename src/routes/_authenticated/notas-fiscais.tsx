@@ -40,6 +40,17 @@ interface Row {
 const brl = (n: number | null | undefined) =>
   (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+async function fileToBase64(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
 function openBase64File(file: { base64: string; contentType: string; filename: string }, targetWindow: Window | null) {
   const byteCharacters = atob(file.base64);
   const byteNumbers = new Array(byteCharacters.length);

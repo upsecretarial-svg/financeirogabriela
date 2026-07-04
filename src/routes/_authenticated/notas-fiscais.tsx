@@ -315,8 +315,7 @@ function NfInlineFile({ row }: { row: Row }) {
         const extracted = await extract({
           data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
         });
-        if (extracted.nf_numero && !row.nf_numero) update.nf_numero = extracted.nf_numero;
-        if (extracted.tutor_cpf && !row.tutor_cpf) update.tutor_cpf = extracted.tutor_cpf;
+        Object.assign(update, mergeExtractedNf(row, extracted));
         if (extracted.nf_numero || extracted.tutor_cpf) {
           toast.success("Dados extraídos automaticamente da NF.");
         }

@@ -372,8 +372,9 @@ function NfInlineFile({ row }: { row: Row }) {
   );
 }
 
-function FileField({ label, path, prefix, onChange }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void }) {
+function FileField({ label, path, prefix, onChange, onExtract }: { label: string; path: string | null; prefix: string; onChange: (p: string | null) => void; onExtract?: (x: { nf_numero: string | null; tutor_cpf: string | null }) => void }) {
   const getFile = useServerFn(getStorageFile);
+  const extract = useServerFn(extractNfFromFile);
   const [busy, setBusy] = useState(false);
   const upload = async (file: File) => {
     setBusy(true);
@@ -384,6 +385,18 @@ function FileField({ label, path, prefix, onChange }: { label: string; path: str
       if (error) throw error;
       onChange(key);
       toast.success("Arquivo enviado.");
+      if (onExtract) {
+        try {
+          const base64 = await fileToBase64(file);
+          const extracted = await extract({
+            data: { filename: file.name, mimeType: file.type || "application/pdf", base64 },
+          });
+          onExtract(extracted);
+          if (extracted.nf_numero || extracted.tutor_cpf) toast.success("Dados extraídos da NF.");
+        } catch (err) {
+          toast.warning("Não foi possível extrair dados.", { description: (err as Error).message });
+        }
+      }
     } catch (e) {
       toast.error("Erro no upload", { description: (e as Error).message });
     } finally { setBusy(false); }

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList } from "lucide-react";
 import { TableState } from "@/components/data-state";
+import { TableActions, TableAction } from "@/components/table-actions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";

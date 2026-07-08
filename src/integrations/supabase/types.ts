@@ -388,6 +388,11 @@ export type Database = {
           observacoes: string | null
           paid_by: string | null
           paid_by_name: string | null
+          payment_method_id: string | null
+          recorrencia_grupo: string | null
+          recorrencia_parcela: number | null
+          recorrencia_total: number | null
+          recorrente: boolean
           status: string
           updated_at: string
           valor: number
@@ -407,6 +412,11 @@ export type Database = {
           observacoes?: string | null
           paid_by?: string | null
           paid_by_name?: string | null
+          payment_method_id?: string | null
+          recorrencia_grupo?: string | null
+          recorrencia_parcela?: number | null
+          recorrencia_total?: number | null
+          recorrente?: boolean
           status?: string
           updated_at?: string
           valor?: number
@@ -426,11 +436,24 @@ export type Database = {
           observacoes?: string | null
           paid_by?: string | null
           paid_by_name?: string | null
+          payment_method_id?: string | null
+          recorrencia_grupo?: string | null
+          recorrencia_parcela?: number | null
+          recorrencia_total?: number | null
+          recorrente?: boolean
           status?: string
           updated_at?: string
           valor?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "payables_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_methods: {
         Row: {

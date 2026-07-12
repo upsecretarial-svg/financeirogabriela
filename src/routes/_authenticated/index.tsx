@@ -60,17 +60,8 @@ function Dashboard() {
     },
   });
 
-  const { data: pendencias } = useQuery({
-    queryKey: ["pendencias-recent"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("pendencias_view")
-        .select("id, numero_interno, tutor, pet, valor, tipo_pendencia, data_atendimento")
-        .order("data_atendimento", { ascending: false })
-        .limit(5);
-      return data ?? [];
-    },
-  });
+
+
 
   const { data: contasVencendo } = useQuery({
     queryKey: ["payables-alert"],

@@ -23,9 +23,11 @@ import {
   Receipt,
   Menu,
   X,
+  Sparkles,
 } from "lucide-react";
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import { useEffect, useState, type ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
 
@@ -37,7 +39,6 @@ interface NavItem {
   superAdminOnly?: boolean;
 }
 
-
 interface NavGroup {
   label: string;
   items: NavItem[];
@@ -46,9 +47,7 @@ interface NavGroup {
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Visão geral",
-    items: [
-      { to: "/", label: "Painel", icon: LayoutDashboard },
-    ],
+    items: [{ to: "/", label: "Painel", icon: LayoutDashboard }],
   },
   {
     label: "Operação",
@@ -85,16 +84,18 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-
 export function AppShell({ children }: { children: ReactNode }) {
   const { loading, user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem("sidebar-collapsed") === "1";
-  });
+  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCollapsed(window.localStorage.getItem("sidebar-collapsed") === "1");
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -102,15 +103,17 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }, [collapsed]);
 
-  // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [path]);
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="relative">
+          <div className="absolute inset-0 animate-ping rounded-full bg-primary/30" />
+          <Loader2 className="relative h-8 w-8 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
@@ -131,31 +134,43 @@ export function AppShell({ children }: { children: ReactNode }) {
     <>
       <div
         className={cn(
-          "flex flex-col items-center gap-2 px-3 py-6 text-center",
+          "flex flex-col items-center gap-3 px-3 py-6 text-center",
           collapsed && !isMobile && "px-2 py-4",
         )}
       >
-        <div
-          className={cn(
-            "flex items-center justify-center",
-            collapsed && !isMobile ? "h-10 w-10" : "h-20 w-20",
-          )}
-        >
-          <img
-            src={logoAsset.url}
-            alt="Dra. Gabriela Kronhardt"
-            className="h-full w-full object-contain"
+        <div className="relative">
+          <div
+            className={cn(
+              "absolute inset-0 rounded-full bg-primary/30 blur-xl",
+              collapsed && !isMobile ? "h-10 w-10" : "h-20 w-20",
+            )}
           />
+          <div
+            className={cn(
+              "relative flex items-center justify-center rounded-full ring-1 ring-white/10",
+              collapsed && !isMobile ? "h-10 w-10" : "h-20 w-20",
+            )}
+          >
+            <img
+              src={logoAsset.url}
+              alt="Dra. Gabriela Kronhardt"
+              className="h-full w-full rounded-full object-contain"
+            />
+          </div>
         </div>
         {(!collapsed || isMobile) && (
           <div className="leading-tight">
-            <div className="text-sm font-semibold text-sidebar-foreground">Dra. Gabriela</div>
-            <div className="text-xs text-muted-foreground">Controle Financeiro</div>
+            <div className="text-sm font-bold text-gradient-primary" style={{ fontFamily: "Urbanist" }}>
+              Dra. Gabriela
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              Controle Financeiro
+            </div>
           </div>
         )}
       </div>
 
-      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-2">
+      <nav className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-3 py-2">
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter((n) => {
             if (n.superAdminOnly && !isSuperAdmin) return false;
@@ -164,9 +179,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           });
           if (!items.length) return null;
           return (
-            <div key={group.label} className="space-y-0.5">
+            <div key={group.label} className="space-y-1">
               {(!collapsed || isMobile) && (
-                <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">
+                <div className="px-3 pb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground/60">
                   {group.label}
                 </div>
               )}
@@ -179,27 +194,34 @@ export function AppShell({ children }: { children: ReactNode }) {
                     to={item.to}
                     title={collapsed && !isMobile ? item.label : undefined}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-150",
+                      "group relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                       collapsed && !isMobile && "justify-center px-2",
                       active
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                        ? "text-white"
+                        : "text-sidebar-foreground/70 hover:text-white",
                     )}
                   >
+                    {active && (
+                      <motion.div
+                        layoutId="nav-active"
+                        className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/40 via-primary/25 to-transparent ring-1 ring-primary/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
                     <span
                       aria-hidden
                       className={cn(
-                        "absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r bg-sidebar-primary transition-opacity",
-                        active ? "opacity-100" : "opacity-0",
+                        "absolute inset-0 -z-10 rounded-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+                        !active && "bg-white/[0.04]",
                       )}
                     />
                     <Icon
                       className={cn(
-                        "h-4 w-4 shrink-0 transition-colors",
-                        active ? "text-sidebar-primary" : "text-muted-foreground group-hover:text-sidebar-accent-foreground",
+                        "relative h-4 w-4 shrink-0 transition-all duration-200",
+                        active ? "text-primary-foreground drop-shadow-[0_0_8px_rgba(129,140,248,0.9)]" : "text-muted-foreground group-hover:text-primary",
                       )}
                     />
-                    {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
+                    {(!collapsed || isMobile) && <span className="relative truncate">{item.label}</span>}
                   </Link>
                 );
               })}
@@ -208,17 +230,23 @@ export function AppShell({ children }: { children: ReactNode }) {
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-3">
+      <div className="border-t border-white/5 p-3">
         {(!collapsed || isMobile) && (
-          <div className="mb-2 px-2 text-xs">
-            <div className="truncate font-medium text-sidebar-foreground">{user?.email}</div>
-            <div className="text-muted-foreground">{isAdmin ? "Administrador" : "Veterinária"}</div>
+          <div className="mb-3 rounded-lg bg-white/[0.03] px-3 py-2 ring-1 ring-white/5">
+            <div className="truncate text-xs font-semibold text-sidebar-foreground">{user?.email}</div>
+            <div className="mt-0.5 flex items-center gap-1 text-[10px] uppercase tracking-wider text-primary">
+              <Sparkles className="h-2.5 w-2.5" />
+              {isSuperAdmin ? "Super Admin" : isAdmin ? "Administrador" : "Veterinária"}
+            </div>
           </div>
         )}
         <Button
           variant="ghost"
           size="sm"
-          className={cn("w-full", collapsed && !isMobile ? "justify-center px-0" : "justify-start")}
+          className={cn(
+            "w-full text-sidebar-foreground/70 hover:bg-destructive/15 hover:text-destructive",
+            collapsed && !isMobile ? "justify-center px-0" : "justify-start",
+          )}
           onClick={handleSignOut}
           title={collapsed && !isMobile ? "Sair" : undefined}
         >
@@ -230,11 +258,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="relative flex min-h-screen">
+      {/* Ambient orbs */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="floating-orb left-[-8%] top-[-6%] h-[380px] w-[380px] bg-primary/30" />
+        <div className="floating-orb right-[-10%] top-[30%] h-[420px] w-[420px] bg-[#6d28d9]/25" style={{ animationDelay: "3s" }} />
+        <div className="floating-orb bottom-[-10%] left-[30%] h-[500px] w-[500px] bg-[#312e81]/40" style={{ animationDelay: "6s" }} />
+        <div className="absolute inset-0 bg-grid-lines opacity-40" />
+      </div>
+
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "relative hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 md:flex",
+          "relative hidden flex-col border-r border-white/5 bg-sidebar/70 backdrop-blur-2xl transition-[width] duration-300 md:flex",
           collapsed ? "w-16" : "w-64",
         )}
       >
@@ -242,7 +278,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           type="button"
           onClick={() => setCollapsed((c) => !c)}
           aria-label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
-          className="absolute -right-3 top-6 z-10 grid h-6 w-6 place-items-center rounded-full border border-sidebar-border bg-background text-muted-foreground shadow-xs transition-colors hover:text-foreground"
+          className="absolute -right-3 top-8 z-10 grid h-6 w-6 place-items-center rounded-full border border-white/10 bg-card text-muted-foreground shadow-lg transition-all hover:scale-110 hover:text-primary"
         >
           {collapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
         </button>
@@ -250,32 +286,44 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div
-            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col border-r border-sidebar-border bg-sidebar shadow-lg">
-            <div className="flex items-center justify-end px-3 pt-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Fechar menu"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <SidebarInner isMobile />
-          </aside>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            className="fixed inset-0 z-40 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              onClick={() => setMobileOpen(false)}
+              aria-hidden
+            />
+            <motion.aside
+              className="absolute inset-y-0 left-0 flex w-72 flex-col border-r border-white/10 bg-sidebar/95 backdrop-blur-2xl shadow-2xl"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex items-center justify-end px-3 pt-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Fechar menu"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <SidebarInner isMobile />
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/60 bg-background/85 px-4 backdrop-blur-md md:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/5 bg-background/40 px-4 backdrop-blur-2xl md:px-8">
           <Button
             variant="ghost"
             size="icon"
@@ -286,17 +334,29 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold text-foreground">
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                Online
+              </span>
+            </div>
+            <div className="truncate text-sm font-bold text-white" style={{ fontFamily: "Urbanist" }}>
               {currentTitle || "Painel"}
             </div>
           </div>
-          <div className="hidden text-xs text-muted-foreground sm:block">
-            {user?.email}
-          </div>
+          <div className="hidden text-xs text-muted-foreground sm:block">{user?.email}</div>
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8 md:py-8">{children}</div>
+          <motion.div
+            key={path}
+            className="mx-auto w-full max-w-[88rem] px-4 py-6 md:px-8 md:py-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.19, 1, 0.22, 1] }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
     </div>

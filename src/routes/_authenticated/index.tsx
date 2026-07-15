@@ -246,146 +246,140 @@ function Dashboard() {
       </div>
 
       {/* Gráfico + Meta bento */}
-      <div className="bento-grid">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <motion.div
-          className="bento-hero md:col-span-8"
-          style={{ gridColumn: "span 12" }}
+          className="lg:col-span-8"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <div className="md:!col-span-8" style={{ gridColumn: "span 12" }}>
-            <Card3D intensity={4} className="h-full">
-              <div className="p-6 md:p-8">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                      Tendência
-                    </div>
-                    <h3 className="mt-1 text-xl font-bold text-white" style={{ fontFamily: "Urbanist" }}>
-                      Faturamento × Recebido
-                    </h3>
-                    <p className="mt-1 text-xs text-muted-foreground">Últimos 6 meses</p>
+          <Card3D intensity={4} className="h-full">
+            <div className="p-6 md:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                    Tendência
                   </div>
-                  <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-primary shadow-[0_0_10px_rgba(129,140,248,0.7)]" />
-                      <span className="text-muted-foreground">Faturado</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-success shadow-[0_0_10px_rgba(74,222,128,0.7)]" />
-                      <span className="text-muted-foreground">Recebido</span>
-                    </div>
-                  </div>
+                  <h3 className="mt-1 text-xl font-bold text-white" style={{ fontFamily: "Urbanist" }}>
+                    Faturamento × Recebido
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Últimos 6 meses</p>
                 </div>
-                <div className="mt-8 flex h-52 items-end justify-between gap-4">
-                  {(chart ?? []).map((c, idx) => {
-                    const isLast = idx === (chart ?? []).length - 1;
-                    const hF = Math.max(4, (c.faturado / maxBar) * 100);
-                    const hR = Math.max(4, (c.recebido / maxBar) * 100);
-                    return (
-                      <div key={idx} className="flex flex-1 flex-col items-center gap-3">
-                        <div className="flex h-40 w-full items-end justify-center gap-1.5" title={`${brl(c.faturado)} / ${brl(c.recebido)}`}>
-                          <motion.div
-                            className="w-3 rounded-t-md bg-gradient-to-t from-primary to-primary/50 shadow-[0_0_20px_rgba(129,140,248,0.4)]"
-                            initial={{ height: 0 }}
-                            animate={{ height: `${hF}%` }}
-                            transition={{ delay: 0.5 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
-                            style={{ opacity: isLast ? 1 : 0.85 }}
-                          />
-                          <motion.div
-                            className="w-3 rounded-t-md bg-gradient-to-t from-success to-success/50 shadow-[0_0_20px_rgba(74,222,128,0.4)]"
-                            initial={{ height: 0 }}
-                            animate={{ height: `${hR}%` }}
-                            transition={{ delay: 0.55 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
-                            style={{ opacity: isLast ? 1 : 0.85 }}
-                          />
-                        </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isLast ? "text-primary" : "text-muted-foreground/70"}`}>
-                          {c.mes}
-                        </span>
-                      </div>
-                    );
-                  })}
+                <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-primary shadow-[0_0_10px_rgba(129,140,248,0.7)]" />
+                    <span className="text-muted-foreground">Faturado</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full bg-success shadow-[0_0_10px_rgba(74,222,128,0.7)]" />
+                    <span className="text-muted-foreground">Recebido</span>
+                  </div>
                 </div>
               </div>
-            </Card3D>
-          </div>
+              <div className="mt-8 flex h-52 items-end justify-between gap-4">
+                {(chart ?? []).map((c, idx) => {
+                  const isLast = idx === (chart ?? []).length - 1;
+                  const hF = Math.max(4, (c.faturado / maxBar) * 100);
+                  const hR = Math.max(4, (c.recebido / maxBar) * 100);
+                  return (
+                    <div key={idx} className="flex flex-1 flex-col items-center gap-3">
+                      <div className="flex h-40 w-full items-end justify-center gap-1.5" title={`${brl(c.faturado)} / ${brl(c.recebido)}`}>
+                        <motion.div
+                          className="w-3 rounded-t-md bg-gradient-to-t from-primary to-primary/50 shadow-[0_0_20px_rgba(129,140,248,0.4)]"
+                          initial={{ height: 0 }}
+                          animate={{ height: `${hF}%` }}
+                          transition={{ delay: 0.5 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+                          style={{ opacity: isLast ? 1 : 0.85 }}
+                        />
+                        <motion.div
+                          className="w-3 rounded-t-md bg-gradient-to-t from-success to-success/50 shadow-[0_0_20px_rgba(74,222,128,0.4)]"
+                          initial={{ height: 0 }}
+                          animate={{ height: `${hR}%` }}
+                          transition={{ delay: 0.55 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+                          style={{ opacity: isLast ? 1 : 0.85 }}
+                        />
+                      </div>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${isLast ? "text-primary" : "text-muted-foreground/70"}`}>
+                        {c.mes}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </Card3D>
         </motion.div>
 
         {/* Meta */}
         <motion.div
-          className="bento-third"
-          style={{ gridColumn: "span 12" }}
+          className="lg:col-span-4"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <div className="md:col-span-4" style={{ gridColumn: "span 12" }}>
-            <Card3D glow className="h-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/15 to-transparent" />
-              <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-primary/30 blur-3xl" />
-              <div className="relative flex h-full flex-col justify-between gap-6 p-6 md:p-8">
-                <div className="flex items-center gap-2">
-                  {metaAtingida ? (
-                    <Trophy className="h-4 w-4 text-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
-                  ) : (
-                    <Target className="h-4 w-4 text-primary" />
-                  )}
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
-                    Meta Mensal
-                  </h3>
-                </div>
-                <div>
-                  <p className="number-display text-5xl text-white">
-                    {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
-                  </p>
-                  <p className="mt-2 text-xs text-white/70">
-                    {meta > 0
-                      ? `${brl(recebido)} de ${brl(meta)}`
-                      : isAdmin
-                        ? "Defina uma meta abaixo"
-                        : "Nenhuma meta definida"}
-                  </p>
-                </div>
-                <div className="space-y-3">
-                  {meta > 0 && (
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-black/30 ring-1 ring-white/10">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-primary via-indigo-400 to-primary shadow-[0_0_12px_rgba(129,140,248,0.8)]"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progresso}%` }}
-                        transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-                      />
-                    </div>
-                  )}
-                  {isAdmin && (
-                    <form
-                      className="flex items-center gap-2 pt-1"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const v = Number(metaDraft);
-                        if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
-                      }}
-                    >
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder={meta ? brl(meta) : "Definir meta"}
-                        value={metaDraft}
-                        onChange={(e) => setMetaDraft(e.target.value)}
-                        className="h-9 border-white/15 bg-white/5 text-xs text-white placeholder:text-white/40"
-                      />
-                      <Button type="submit" size="sm" disabled={!metaDraft || saveMeta.isPending} className="h-9">
-                        Salvar
-                      </Button>
-                    </form>
-                  )}
-                </div>
+          <Card3D glow className="h-full">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/15 to-transparent" />
+            <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-primary/30 blur-3xl" />
+            <div className="relative flex h-full flex-col justify-between gap-6 p-6 md:p-8">
+              <div className="flex items-center gap-2">
+                {metaAtingida ? (
+                  <Trophy className="h-4 w-4 text-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                ) : (
+                  <Target className="h-4 w-4 text-primary" />
+                )}
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
+                  Meta Mensal
+                </h3>
               </div>
-            </Card3D>
-          </div>
+              <div>
+                <p className="number-display text-5xl text-white">
+                  {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
+                </p>
+                <p className="mt-2 text-xs text-white/70">
+                  {meta > 0
+                    ? `${brl(recebido)} de ${brl(meta)}`
+                    : isAdmin
+                      ? "Defina uma meta abaixo"
+                      : "Nenhuma meta definida"}
+                </p>
+              </div>
+              <div className="space-y-3">
+                {meta > 0 && (
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-black/30 ring-1 ring-white/10">
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-primary via-indigo-400 to-primary shadow-[0_0_12px_rgba(129,140,248,0.8)]"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progresso}%` }}
+                      transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
+                    />
+                  </div>
+                )}
+                {isAdmin && (
+                  <form
+                    className="flex items-center gap-2 pt-1"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const v = Number(metaDraft);
+                      if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
+                    }}
+                  >
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder={meta ? brl(meta) : "Definir meta"}
+                      value={metaDraft}
+                      onChange={(e) => setMetaDraft(e.target.value)}
+                      className="h-9 border-white/15 bg-white/5 text-xs text-white placeholder:text-white/40"
+                    />
+                    <Button type="submit" size="sm" disabled={!metaDraft || saveMeta.isPending} className="h-9">
+                      Salvar
+                    </Button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </Card3D>
         </motion.div>
       </div>
 

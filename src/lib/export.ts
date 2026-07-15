@@ -9,6 +9,18 @@ export function exportXLSX(filename: string, rows: Record<string, unknown>[]) {
   XLSX.writeFile(wb, `${filename}.xlsx`);
 }
 
+export function exportXLSXMultiSheet(
+  filename: string,
+  sheets: { name: string; rows: Record<string, unknown>[] }[],
+) {
+  const wb = XLSX.utils.book_new();
+  for (const s of sheets) {
+    const ws = XLSX.utils.json_to_sheet(s.rows.length ? s.rows : [{ "(sem dados)": "" }]);
+    XLSX.utils.book_append_sheet(wb, ws, s.name.slice(0, 31));
+  }
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+}
+
 export function exportCSV(filename: string, rows: Record<string, unknown>[]) {
   const ws = XLSX.utils.json_to_sheet(rows);
   const csv = XLSX.utils.sheet_to_csv(ws, { FS: ";" });

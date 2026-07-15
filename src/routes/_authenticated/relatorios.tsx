@@ -217,6 +217,9 @@ function Relatorios() {
           <Button variant="outline" size="sm" onClick={onPDF} disabled={!rows.length}>
             <FileText className="mr-2 h-4 w-4" /> PDF
           </Button>
+          <Button size="sm" onClick={onConsolidado}>
+            <Package className="mr-2 h-4 w-4" /> Excel consolidado
+          </Button>
         </div>
       </header>
 

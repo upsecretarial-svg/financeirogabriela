@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +15,15 @@ import {
   Target,
   Trophy,
   AlertTriangle,
+  ArrowUpRight,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { Card3D } from "@/components/card-3d";
 
 const ALERT_DAYS = 7;
-
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Dashboard — Sistema Financeiro" }] }),
@@ -39,29 +42,26 @@ function Dashboard() {
       startMes.setDate(1);
       startMes.setHours(0, 0, 0, 0);
       const inicio = startMes.toISOString().slice(0, 10);
-
       const { data: mes } = await supabase
         .from("appointments")
         .select("valor, valor_recebido, pago, nf_emitida")
         .is("deleted_at", null)
         .gte("data_atendimento", inicio);
-
       const { count: pendCount } = await supabase
         .from("pendencias_view")
         .select("*", { count: "exact", head: true });
-
       const faturado = (mes ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
       const recebido = (mes ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
-      const pendente = faturado - recebido;
-      const qtd = mes?.length ?? 0;
-      const nfPendentes = (mes ?? []).filter((a) => !a.nf_emitida).length;
-
-      return { faturado, recebido, pendente, qtd, nfPendentes, pendencias: pendCount ?? 0 };
+      return {
+        faturado,
+        recebido,
+        pendente: faturado - recebido,
+        qtd: mes?.length ?? 0,
+        nfPendentes: (mes ?? []).filter((a) => !a.nf_emitida).length,
+        pendencias: pendCount ?? 0,
+      };
     },
   });
-
-
-
 
   const { data: contasVencendo } = useQuery({
     queryKey: ["payables-alert"],
@@ -80,7 +80,6 @@ function Dashboard() {
       return data ?? [];
     },
   });
-
 
   const { data: chart } = useQuery({
     queryKey: ["dashboard-chart"],
@@ -162,244 +161,266 @@ function Dashboard() {
     onError: (e: Error) => toast.error("Erro", { description: e.message }),
   });
 
-
   const now = new Date();
   const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 
   const kpis = [
-    {
-      label: "Faturado Mês",
-      value: brl(stats?.faturado),
-      icon: TrendingUp,
-      tone: "default" as const,
-      sub: `${stats?.qtd ?? 0} atendimentos`,
-    },
-    {
-      label: "Recebido",
-      value: brl(stats?.recebido),
-      icon: Wallet,
-      tone: "primary" as const,
-      sub: stats?.faturado
-        ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado`
-        : "—",
-    },
-    {
-      label: "Em Aberto",
-      value: brl(stats?.pendente),
-      icon: Clock,
-      tone: "default" as const,
-      sub: `${stats?.nfPendentes ?? 0} NF pendentes`,
-    },
-    {
-      label: "Pendências",
-      value: String(stats?.pendencias ?? 0),
-      icon: ClipboardCheck,
-      tone: "danger" as const,
-      sub: "Atendimentos sem baixa",
-    },
-  ];
+    { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10" },
+    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10" },
+    { label: "Em aberto", value: brl(stats?.pendente), icon: Clock, tone: "warning", sub: `${stats?.nfPendentes ?? 0} NF pendentes`, gradient: "from-amber-500/25 to-orange-500/10" },
+    { label: "Pendências", value: String(stats?.pendencias ?? 0), icon: ClipboardCheck, tone: "destructive", sub: "Sem baixa", gradient: "from-rose-500/25 to-pink-500/10" },
+  ] as const;
 
   const maxBar = Math.max(1, ...((chart ?? []).flatMap((c) => [c.faturado, c.recebido])));
 
   return (
-    <div className="space-y-8">
-      {/* Header executivo */}
-      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-6">
-        <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Painel Executivo
-          </p>
-          <h1
-            className="mt-1 text-3xl font-semibold tracking-tight text-primary"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            Performance Financeira
-          </h1>
+    <div className="space-y-6">
+      {/* Hero */}
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-950/60 via-[#141432]/70 to-[#0a0a1a]/40 p-8 backdrop-blur-xl"
+      >
+        <div className="absolute inset-0 bg-grid-lines opacity-50" />
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
+        <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-[#7c3aed]/30 blur-3xl" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">
+              <Sparkles className="h-3 w-3" />
+              Painel Executivo
+            </div>
+            <h1 className="mt-2 text-4xl font-black tracking-tight text-white md:text-5xl" style={{ fontFamily: "Urbanist" }}>
+              Performance{" "}
+              <span className="text-gradient-primary">Financeira</span>
+            </h1>
+            <p className="mt-2 text-sm capitalize text-muted-foreground">{mesAtual}</p>
+          </div>
+          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-muted-foreground backdrop-blur">
+            <Zap className="h-3.5 w-3.5 text-primary" />
+            Sistema atualizado em tempo real
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground">Referência</p>
-          <p className="text-sm font-medium capitalize text-foreground">{mesAtual}</p>
-        </div>
-      </header>
+      </motion.header>
 
-      {/* Alerta de contas a vencer */}
       {contasVencendo && contasVencendo.length > 0 && <PayablesAlert rows={contasVencendo} />}
 
-      {/* KPIs */}
-
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((c) => {
+      {/* KPIs bento */}
+      <div className="bento-grid">
+        {kpis.map((c, i) => {
           const Icon = c.icon;
-          const dark = c.tone === "primary";
+          const toneColor =
+            c.tone === "success" ? "text-success" :
+            c.tone === "warning" ? "text-warning" :
+            c.tone === "destructive" ? "text-destructive" :
+            "text-primary";
           return (
-            <Card
+            <motion.div
               key={c.label}
-              className={
-                dark
-                  ? "rounded-sm border-transparent bg-primary text-primary-foreground shadow-lg"
-                  : "rounded-sm border-border bg-card shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]"
-              }
+              className="bento-quarter"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08, duration: 0.4 }}
             >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <p
-                    className={`text-[10px] font-bold uppercase tracking-[0.18em] ${
-                      dark ? "text-primary-foreground/70" : "text-muted-foreground"
-                    }`}
-                  >
-                    {c.label}
+              <Card3D className="h-full">
+                <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-70`} />
+                <div className="relative p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      {c.label}
+                    </p>
+                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-white/[0.04] ring-1 ring-white/10 ${toneColor}`}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <p className={`number-display mt-6 text-3xl ${toneColor}`}>
+                    {isLoading ? "—" : c.value}
                   </p>
-                  <Icon
-                    className={`h-4 w-4 shrink-0 ${
-                      dark ? "text-primary-foreground/60" : "text-muted-foreground/60"
-                    }`}
-                  />
+                  <p className="mt-2 text-xs text-muted-foreground/80">{c.sub}</p>
                 </div>
-                <p
-                  className={`mt-4 text-2xl font-bold tracking-tight ${
-                    c.tone === "danger" ? "text-destructive" : dark ? "" : "text-primary"
-                  }`}
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  {isLoading ? "—" : c.value}
-                </p>
-                <p
-                  className={`mt-2 text-[11px] ${
-                    dark ? "text-primary-foreground/70" : "text-muted-foreground"
-                  }`}
-                >
-                  {c.sub}
-                </p>
-              </CardContent>
-            </Card>
+              </Card3D>
+            </motion.div>
           );
         })}
-      </section>
+      </div>
 
-      {/* Gráfico + Meta */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="rounded-sm border-border bg-card shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
-            <CardTitle className="text-sm font-semibold tracking-tight">
-              Faturamento vs Recebido (6 meses)
-            </CardTitle>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-primary" />
-                <span className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">
-                  Faturado
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-muted" />
-                <span className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">
-                  Recebido
-                </span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-48 items-end justify-between gap-3 px-2">
-              {(chart ?? []).map((c, idx) => {
-                const isLast = idx === (chart ?? []).length - 1;
-                const hF = `${Math.max(4, (c.faturado / maxBar) * 100)}%`;
-                const hR = `${Math.max(4, (c.recebido / maxBar) * 100)}%`;
-                return (
-                  <div key={idx} className="flex w-full flex-col items-center gap-2">
-                    <div className="flex h-32 w-full items-end gap-1" title={`${brl(c.faturado)} / ${brl(c.recebido)}`}>
-                      <div
-                        className={`w-1/2 rounded-t-sm bg-primary ${isLast ? "" : "opacity-60"}`}
-                        style={{ height: hF }}
-                      />
-                      <div className="w-1/2 rounded-t-sm bg-muted" style={{ height: hR }} />
+      {/* Gráfico + Meta bento */}
+      <div className="bento-grid">
+        <motion.div
+          className="bento-hero md:col-span-8"
+          style={{ gridColumn: "span 12" }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <div className="md:!col-span-8" style={{ gridColumn: "span 12" }}>
+            <Card3D intensity={4} className="h-full">
+              <div className="p-6 md:p-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                      Tendência
                     </div>
-                    <span
-                      className={`text-[10px] uppercase ${
-                        isLast ? "font-bold text-primary" : "text-muted-foreground"
-                      }`}
-                    >
-                      {c.mes}
-                    </span>
+                    <h3 className="mt-1 text-xl font-bold text-white" style={{ fontFamily: "Urbanist" }}>
+                      Faturamento × Recebido
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">Últimos 6 meses</p>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Meta Mensal */}
-        <Card className="relative overflow-hidden rounded-sm border-transparent bg-primary text-primary-foreground shadow-lg">
-          <CardContent className="flex h-full flex-col justify-between gap-8 p-8">
-            <div className="relative z-10 flex items-center gap-2">
-              {metaAtingida ? (
-                <Trophy className="h-4 w-4 text-primary-foreground/80" />
-              ) : (
-                <Target className="h-4 w-4 text-primary-foreground/80" />
-              )}
-              <h3 className="text-sm font-semibold text-primary-foreground/80">Meta Mensal</h3>
-            </div>
-
-            <div className="relative z-10">
-              <p
-                className="text-4xl font-bold"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
-              </p>
-              <p className="mt-2 text-xs text-primary-foreground/70">
-                {meta > 0
-                  ? `${brl(recebido)} de ${brl(meta)}`
-                  : isAdmin
-                    ? "Defina uma meta abaixo"
-                    : "Nenhuma meta definida"}
-              </p>
-            </div>
-
-            <div className="relative z-10 space-y-3">
-              {meta > 0 && (
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary-foreground/15">
-                  <div
-                    className="h-full rounded-full bg-primary-foreground shadow-[0_0_8px_rgba(255,255,255,0.4)] transition-all"
-                    style={{ width: `${progresso}%` }}
-                  />
+                  <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-primary shadow-[0_0_10px_rgba(129,140,248,0.7)]" />
+                      <span className="text-muted-foreground">Faturado</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-success shadow-[0_0_10px_rgba(74,222,128,0.7)]" />
+                      <span className="text-muted-foreground">Recebido</span>
+                    </div>
+                  </div>
                 </div>
-              )}
-              {isAdmin && (
-                <form
-                  className="flex items-center gap-2 pt-2"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const v = Number(metaDraft);
-                    if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
-                  }}
-                >
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder={meta ? brl(meta) : "Definir meta"}
-                    value={metaDraft}
-                    onChange={(e) => setMetaDraft(e.target.value)}
-                    className="h-8 border-primary-foreground/20 bg-primary-foreground/10 text-xs text-primary-foreground placeholder:text-primary-foreground/50"
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="secondary"
-                    disabled={!metaDraft || saveMeta.isPending}
-                    className="h-8"
-                  >
-                    Salvar
-                  </Button>
-                </form>
-              )}
-            </div>
+                <div className="mt-8 flex h-52 items-end justify-between gap-4">
+                  {(chart ?? []).map((c, idx) => {
+                    const isLast = idx === (chart ?? []).length - 1;
+                    const hF = Math.max(4, (c.faturado / maxBar) * 100);
+                    const hR = Math.max(4, (c.recebido / maxBar) * 100);
+                    return (
+                      <div key={idx} className="flex flex-1 flex-col items-center gap-3">
+                        <div className="flex h-40 w-full items-end justify-center gap-1.5" title={`${brl(c.faturado)} / ${brl(c.recebido)}`}>
+                          <motion.div
+                            className="w-3 rounded-t-md bg-gradient-to-t from-primary to-primary/50 shadow-[0_0_20px_rgba(129,140,248,0.4)]"
+                            initial={{ height: 0 }}
+                            animate={{ height: `${hF}%` }}
+                            transition={{ delay: 0.5 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+                            style={{ opacity: isLast ? 1 : 0.85 }}
+                          />
+                          <motion.div
+                            className="w-3 rounded-t-md bg-gradient-to-t from-success to-success/50 shadow-[0_0_20px_rgba(74,222,128,0.4)]"
+                            initial={{ height: 0 }}
+                            animate={{ height: `${hR}%` }}
+                            transition={{ delay: 0.55 + idx * 0.06, duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+                            style={{ opacity: isLast ? 1 : 0.85 }}
+                          />
+                        </div>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isLast ? "text-primary" : "text-muted-foreground/70"}`}>
+                          {c.mes}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Card3D>
+          </div>
+        </motion.div>
 
-            <div className="pointer-events-none absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-primary-foreground/[0.04]" />
-          </CardContent>
-        </Card>
-      </section>
+        {/* Meta */}
+        <motion.div
+          className="bento-third"
+          style={{ gridColumn: "span 12" }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <div className="md:col-span-4" style={{ gridColumn: "span 12" }}>
+            <Card3D glow className="h-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-primary/15 to-transparent" />
+              <div className="absolute -top-20 -right-20 h-48 w-48 rounded-full bg-primary/30 blur-3xl" />
+              <div className="relative flex h-full flex-col justify-between gap-6 p-6 md:p-8">
+                <div className="flex items-center gap-2">
+                  {metaAtingida ? (
+                    <Trophy className="h-4 w-4 text-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                  ) : (
+                    <Target className="h-4 w-4 text-primary" />
+                  )}
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
+                    Meta Mensal
+                  </h3>
+                </div>
+                <div>
+                  <p className="number-display text-5xl text-white">
+                    {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
+                  </p>
+                  <p className="mt-2 text-xs text-white/70">
+                    {meta > 0
+                      ? `${brl(recebido)} de ${brl(meta)}`
+                      : isAdmin
+                        ? "Defina uma meta abaixo"
+                        : "Nenhuma meta definida"}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  {meta > 0 && (
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-black/30 ring-1 ring-white/10">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-primary via-indigo-400 to-primary shadow-[0_0_12px_rgba(129,140,248,0.8)]"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progresso}%` }}
+                        transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
+                      />
+                    </div>
+                  )}
+                  {isAdmin && (
+                    <form
+                      className="flex items-center gap-2 pt-1"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const v = Number(metaDraft);
+                        if (!isNaN(v) && v >= 0) saveMeta.mutate(v);
+                      }}
+                    >
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder={meta ? brl(meta) : "Definir meta"}
+                        value={metaDraft}
+                        onChange={(e) => setMetaDraft(e.target.value)}
+                        className="h-9 border-white/15 bg-white/5 text-xs text-white placeholder:text-white/40"
+                      />
+                      <Button type="submit" size="sm" disabled={!metaDraft || saveMeta.isPending} className="h-9">
+                        Salvar
+                      </Button>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </Card3D>
+          </div>
+        </motion.div>
+      </div>
 
+      {/* Quick actions bento */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="bento-grid"
+      >
+        {[
+          { to: "/atendimentos", label: "Novo atendimento", icon: ClipboardCheck, color: "from-indigo-500/40 to-blue-500/10" },
+          { to: "/recebimentos", label: "Recebimentos", icon: Wallet, color: "from-emerald-500/40 to-teal-500/10" },
+          { to: "/notas-fiscais", label: "Notas Fiscais", icon: TrendingUp, color: "from-purple-500/40 to-pink-500/10" },
+          { to: "/relatorios", label: "Relatórios", icon: Target, color: "from-amber-500/40 to-orange-500/10" },
+        ].map((q) => {
+          const Icon = q.icon;
+          return (
+            <Link key={q.to} to={q.to} className="bento-quarter">
+              <Card3D intensity={5} className="h-full">
+                <div className={`absolute inset-0 bg-gradient-to-br ${q.color} opacity-60`} />
+                <div className="relative flex items-center justify-between gap-3 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/[0.06] ring-1 ring-white/10">
+                      <Icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-semibold text-white">{q.label}</span>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 text-white/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </div>
+              </Card3D>
+            </Link>
+          );
+        })}
+      </motion.div>
     </div>
   );
 }
@@ -428,77 +449,68 @@ function PayablesAlert({ rows }: { rows: PayableAlertRow[] }) {
   const critical = vencidas.length > 0;
 
   return (
-    <Card
-      className={`rounded-sm border-l-4 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] ${
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={`relative overflow-hidden rounded-2xl border p-6 backdrop-blur-xl ${
         critical
-          ? "border-l-destructive bg-destructive/5"
-          : "border-l-warning bg-warning/5"
+          ? "border-destructive/40 bg-destructive/[0.08] pulse-glow"
+          : "border-warning/40 bg-warning/[0.08]"
       }`}
     >
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+      <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div
-            className={`grid h-10 w-10 place-items-center rounded-full ${
-              critical ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"
-            }`}
-          >
+          <div className={`grid h-11 w-11 place-items-center rounded-xl ring-1 ${critical ? "bg-destructive/20 text-destructive ring-destructive/40" : "bg-warning/20 text-warning ring-warning/40"}`}>
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div>
-            <CardTitle className={`text-sm font-semibold ${critical ? "text-destructive" : "text-warning"}`}>
+            <h3 className={`text-base font-bold ${critical ? "text-destructive" : "text-warning"}`} style={{ fontFamily: "Urbanist" }}>
               {critical
                 ? `${vencidas.length} conta${vencidas.length > 1 ? "s" : ""} vencida${vencidas.length > 1 ? "s" : ""}`
                 : `${proximas.length} conta${proximas.length > 1 ? "s" : ""} a vencer em até ${ALERT_DAYS} dias`}
-            </CardTitle>
+            </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Total: <span className="font-semibold text-foreground">{brl(total)}</span>
+              Total: <span className="font-semibold text-white">{brl(total)}</span>
               {critical && proximas.length > 0 && ` · +${proximas.length} próximas`}
             </p>
           </div>
         </div>
         <Link
           to="/contas-pagar"
-          className={`text-xs font-medium hover:underline ${critical ? "text-destructive" : "text-warning"}`}
+          className={`flex items-center gap-1 text-xs font-semibold hover:underline ${critical ? "text-destructive" : "text-warning"}`}
         >
-          Ver todas →
+          Ver todas <ArrowUpRight className="h-3 w-3" />
         </Link>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <ul className="divide-y divide-border">
-          {rows.slice(0, 5).map((r) => {
-            const isVenc = r.data_vencimento < hoje;
-            return (
-              <li key={r.id} className="flex items-center justify-between gap-3 py-2.5">
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-medium">{r.fornecedor}</div>
-                  <div className="text-xs text-muted-foreground">
-                    Vence em {fmtDate(r.data_vencimento)}
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-sm font-semibold">{brl(Number(r.valor))}</span>
-                  <Badge
-                    variant="outline"
-                    className={
-                      isVenc
-                        ? "border-destructive/40 bg-destructive/10 text-destructive"
-                        : "border-warning/40 bg-warning/10 text-warning"
-                    }
-                  >
-                    {diasAte(r.data_vencimento)}
-                  </Badge>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-        {rows.length > 5 && (
-          <p className="pt-3 text-center text-xs text-muted-foreground">
-            +{rows.length - 5} outras contas
-          </p>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      <ul className="divide-y divide-white/5">
+        {rows.slice(0, 5).map((r) => {
+          const isVenc = r.data_vencimento < hoje;
+          return (
+            <li key={r.id} className="flex items-center justify-between gap-3 py-2.5">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-medium text-white">{r.fornecedor}</div>
+                <div className="text-xs text-muted-foreground">Vence em {fmtDate(r.data_vencimento)}</div>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-sm font-semibold tabular-nums text-white">{brl(Number(r.valor))}</span>
+                <Badge
+                  variant="outline"
+                  className={
+                    isVenc
+                      ? "border-destructive/50 bg-destructive/15 text-destructive"
+                      : "border-warning/50 bg-warning/15 text-warning"
+                  }
+                >
+                  {diasAte(r.data_vencimento)}
+                </Badge>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      {rows.length > 5 && (
+        <p className="pt-3 text-center text-xs text-muted-foreground">+{rows.length - 5} outras contas</p>
+      )}
+    </motion.div>
   );
 }
-

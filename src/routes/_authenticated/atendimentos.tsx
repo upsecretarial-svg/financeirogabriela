@@ -69,6 +69,7 @@ function Atendimentos() {
   const navigate = useNavigate();
   const wasNewRef = useRef(false);
   const { isAdmin } = useAuth();
+  const { edit: editParam } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);
   const [open, setOpen] = useState(false);

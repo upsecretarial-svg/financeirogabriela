@@ -25,6 +25,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/atendimentos")({
   head: () => ({ meta: [{ title: "Atendimentos" }] }),
+  validateSearch: z.object({ edit: z.string().optional() }),
   component: Atendimentos,
 });
 

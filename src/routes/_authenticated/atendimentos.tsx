@@ -17,9 +17,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2 } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste } from "lucide-react";
 import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
+import { useServerFn } from "@tanstack/react-start";
+import { extractTutorFromImage } from "@/lib/tutor-extract.functions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";

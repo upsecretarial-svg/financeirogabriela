@@ -1,13 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Search, AlertCircle, CheckCircle2, Pencil, Trash2 } from "lucide-react";
 import { TableState } from "@/components/data-state";
+import { TableActions, TableAction } from "@/components/table-actions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pendencias")({
   head: () => ({ meta: [{ title: "Centro de Pendências" }] }),
@@ -23,6 +26,9 @@ function diasEm(date: string) {
 }
 
 function Pendencias() {
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["pendencias-unpaid", search],
@@ -37,6 +43,23 @@ function Pendencias() {
       const { data } = await q;
       return data ?? [];
     },
+  });
+
+  const del = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("appointments")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pendencias-unpaid"] });
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
+      toast.success("Atendimento excluído.");
+    },
+    onError: (e: Error) => toast.error("Erro", { description: e.message }),
   });
 
   const total = (data ?? []).reduce((s, a: any) => s + Number(a.valor ?? 0), 0);
@@ -84,12 +107,13 @@ function Pendencias() {
                 <TableHead>Tutor / Pet</TableHead>
                 <TableHead>Clínica</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
               <TableState
-                colSpan={6}
+                colSpan={7}
                 isLoading={isLoading}
                 isError={isError}
                 error={error as Error | null}
@@ -116,6 +140,23 @@ function Pendencias() {
                     </TableCell>
                     <TableCell className="text-sm">{p.clinics?.nome ?? "—"}</TableCell>
                     <TableCell className="text-right text-sm font-medium">{brl(p.valor)}</TableCell>
+                    <TableCell className="text-right">
+                      <TableActions>
+                        <TableAction
+                          label="Editar atendimento"
+                          icon={Pencil}
+                          onClick={() => navigate({ to: "/atendimentos", search: { edit: p.id } })}
+                        />
+                        {isAdmin && (
+                          <TableAction
+                            label="Excluir atendimento"
+                            icon={Trash2}
+                            tone="destructive"
+                            onClick={() => confirm("Excluir este atendimento?") && del.mutate(p.id)}
+                          />
+                        )}
+                      </TableActions>
+                    </TableCell>
                   </TableRow>
                 );
               })}

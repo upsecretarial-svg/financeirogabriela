@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 const schema = z.object({
@@ -26,7 +25,6 @@ function parseResponse(content: string): ExtractedTutor {
 }
 
 export const extractTutorFromImage = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: { mimeType: string; base64: string }) => schema.parse(input))
   .handler(async ({ data }): Promise<ExtractedTutor> => {
     const apiKey = process.env.LOVABLE_API_KEY;

@@ -599,3 +599,64 @@ function Atendimentos() {
   );
 }
 
+function NfAttachField({ path, onChange }: { path: string | null; onChange: (path: string | null) => void }) {
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    try {
+      const ext = (file.name.split(".").pop() || "pdf").toLowerCase();
+      const key = `atendimentos/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("notas-fiscais")
+        .upload(key, file, { contentType: file.type || "application/octet-stream", upsert: false });
+      if (error) throw error;
+      onChange(key);
+      toast.success("Anexo enviado.");
+    } catch (e) {
+      toast.error("Erro no upload", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="rounded-md border border-border/60 bg-background/40 p-3 space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Paperclip className="h-4 w-4 text-primary" />
+          <div>
+            <Label className="text-xs font-medium">Anexo da NF-e (PDF ou imagem)</Label>
+            <p className="text-[11px] text-muted-foreground">Opcional — você também pode anexar depois em Notas Fiscais.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {path && (
+            <Badge variant="outline" className="gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+              <Check className="h-3 w-3" /> Anexado
+            </Badge>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf,image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }}
+          />
+          <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
+            <span className="ml-1.5">{path ? "Substituir" : "Anexar"}</span>
+          </Button>
+          {path && (
+            <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={() => onChange(null)}>
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+

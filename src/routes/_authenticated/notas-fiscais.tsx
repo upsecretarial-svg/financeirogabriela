@@ -422,13 +422,14 @@ function Page() {
                 label="PDF da Nota Fiscal"
                 path={edit.nf_pdf_path}
                 prefix="nf"
-                onChange={(p) => setEdit({ ...edit, nf_pdf_path: p })}
+                onChange={(p) => setEdit((cur) => cur ? { ...cur, nf_pdf_path: p, nf_emitida: p ? true : cur.nf_emitida } : cur)}
                 onExtract={(x) => setEdit((cur) => cur ? {
                   ...cur,
                   nf_numero: cur.nf_numero || x.nf_numero || cur.nf_numero,
                   tutor_cpf: cur.tutor_cpf || x.tutor_cpf || cur.tutor_cpf,
                 } : cur)}
               />
+
             </div>
           )}
           <DialogFooter>

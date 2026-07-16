@@ -394,6 +394,15 @@ function Atendimentos() {
           </DialogHeader>
           {editing && (
             <div className="space-y-4 pt-2">
+              {!editing.id && (
+                <TutorSmartPaste
+                  onExtracted={(d) => setEditing((cur) => cur ? {
+                    ...cur,
+                    tutor: cur.tutor || d.nome || cur.tutor,
+                    tutor_cpf: cur.tutor_cpf || d.cpf || cur.tutor_cpf,
+                  } : cur)}
+                />
+              )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Tutor *</Label>

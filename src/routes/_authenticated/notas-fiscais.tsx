@@ -610,7 +610,16 @@ function NfInlineFile({ row }: { row: Row }) {
       const key = `nf/${crypto.randomUUID()}.${ext}`;
       const up = await supabase.storage.from("notas-fiscais").upload(key, file, { contentType: file.type || "application/pdf" });
       if (up.error) throw up.error;
-      const update: { nf_pdf_path: string; nf_numero?: string; tutor_cpf?: string } = { nf_pdf_path: key };
+      const today = new Date().toISOString().slice(0, 10);
+      const update: {
+        nf_pdf_path: string;
+        nf_emitida: boolean;
+        nf_numero?: string;
+        tutor_cpf?: string;
+        pago?: boolean;
+        data_pagamento?: string;
+        valor_recebido?: number;
+      } = { nf_pdf_path: key, nf_emitida: true };
       try {
         const base64 = await fileToBase64(file);
         const extracted = await extract({
@@ -621,16 +630,31 @@ function NfInlineFile({ row }: { row: Row }) {
       } catch (err) {
         toast.warning("NF anexada, sem extração.", { description: (err as Error).message });
       }
+      // Auto-baixa financeira: se ainda não estava paga, marca como paga com o valor do atendimento
+      const { data: current } = await supabase
+        .from("appointments")
+        .select("pago,valor,valor_recebido,data_pagamento")
+        .eq("id", row.id)
+        .maybeSingle();
+      if (current && !current.pago) {
+        update.pago = true;
+        update.data_pagamento = current.data_pagamento ?? today;
+        update.valor_recebido = current.valor_recebido ?? current.valor ?? 0;
+      }
       const { error } = await supabase.from("appointments").update(update).eq("id", row.id);
       if (error) throw error;
-      toast.success("NF anexada.");
+      toast.success("NF anexada, emitida e baixa financeira realizada.");
       qc.invalidateQueries({ queryKey: ["nf-list"] });
+      qc.invalidateQueries({ queryKey: ["appointments"] });
+      qc.invalidateQueries({ queryKey: ["pendencias"] });
+      qc.invalidateQueries({ queryKey: ["recebimentos"] });
     } catch (e) {
       toast.error("Erro ao anexar", { description: (e as Error).message });
     } finally {
       setBusy(false);
     }
   };
+
 
   return (
     <>

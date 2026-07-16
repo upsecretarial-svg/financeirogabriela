@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
   Bar,
@@ -15,6 +15,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Card3D } from "@/components/card-3d";
 import { Button } from "@/components/ui/button";
@@ -166,23 +167,36 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {(["month", "quarter", "year"] as Period[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={cn(
-                  "rounded-xl border px-4 py-2 text-xs font-semibold transition-all",
-                  period === p
-                    ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-                    : "border-white/10 bg-white/[0.02] text-muted-foreground hover:text-white",
-                )}
-              >
-                {p === "month" ? "Mês" : p === "quarter" ? "Trimestre" : "Ano"}
-              </button>
-            ))}
+            <div className="flex rounded-2xl border border-white/10 bg-white/[0.02] p-1 backdrop-blur-xl">
+              {(["month", "quarter", "year"] as Period[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={cn(
+                    "relative rounded-xl px-4 py-2 text-xs font-semibold transition-colors",
+                    period === p ? "text-white" : "text-muted-foreground hover:text-white",
+                  )}
+                >
+                  {period === p && (
+                    <motion.span
+                      layoutId="period-halo"
+                      className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-indigo-500/20 shadow-[0_0_24px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  {p === "month" ? "Mês" : p === "quarter" ? "Trimestre" : "Ano"}
+                </button>
+              ))}
+            </div>
             <Link to="/contas-pagar">
-              <Button variant="outline" size="sm" className="gap-1.5 border-white/10 bg-white/[0.03]">
-                Gerenciar <ArrowRight className="h-3.5 w-3.5" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="group relative gap-1.5 overflow-hidden rounded-xl border-white/10 bg-white/[0.03] backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:shadow-[0_10px_30px_-10px_rgba(16,185,129,0.5)]"
+              >
+                <span aria-hidden className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                Gerenciar
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Button>
             </Link>
           </div>
@@ -191,11 +205,12 @@ function Page() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Pago" icon={CheckCircle2} value={brl(stats.pagoTotal)} sub={`${stats.pagoQtd} conta(s)`} tone="emerald" delay={0.05} />
-        <KpiCard label="Pendente" icon={Clock} value={brl(stats.pendenteTotal)} sub={`${stats.pendenteQtd} a vencer`} tone="amber" delay={0.1} />
-        <KpiCard label="Vencido" icon={AlertTriangle} value={brl(stats.vencidoTotal)} sub={`${stats.vencidoQtd} em atraso`} tone="rose" delay={0.15} />
-        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} />
+        <KpiCard label="Pago" icon={CheckCircle2} value={brl(stats.pagoTotal)} sub={`${stats.pagoQtd} conta(s)`} tone="emerald" delay={0.05} share={stats.total ? stats.pagoTotal / stats.total : 0} />
+        <KpiCard label="Pendente" icon={Clock} value={brl(stats.pendenteTotal)} sub={`${stats.pendenteQtd} a vencer`} tone="amber" delay={0.1} share={stats.total ? stats.pendenteTotal / stats.total : 0} />
+        <KpiCard label="Vencido" icon={AlertTriangle} value={brl(stats.vencidoTotal)} sub={`${stats.vencidoQtd} em atraso`} tone="rose" delay={0.15} share={stats.total ? stats.vencidoTotal / stats.total : 0} />
+        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} share={1} />
       </div>
+
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
@@ -269,24 +284,36 @@ function Page() {
       {/* Filters + table */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          {(["all", "pago", "pendente", "vencido"] as StatusFilter[]).map((s) => {
-            const active = status === s;
-            const label = s === "all" ? "Todos" : s === "pago" ? "Pagos" : s === "pendente" ? "Pendentes" : "Vencidos";
-            return (
-              <button
-                key={s}
-                onClick={() => setStatus(s)}
-                className={cn(
-                  "rounded-xl border px-4 py-2 text-xs font-semibold transition-all",
-                  active
-                    ? "border-indigo-400/50 bg-indigo-500/15 text-indigo-100"
-                    : "border-white/10 bg-white/[0.02] text-muted-foreground hover:text-white",
-                )}
-              >
-                {label}
-              </button>
-            );
-          })}
+          <div className="flex flex-wrap gap-1.5 rounded-2xl border border-white/10 bg-white/[0.02] p-1 backdrop-blur-xl">
+            {(["all", "pago", "pendente", "vencido"] as StatusFilter[]).map((s) => {
+              const active = status === s;
+              const label = s === "all" ? "Todos" : s === "pago" ? "Pagos" : s === "pendente" ? "Pendentes" : "Vencidos";
+              const activeTone =
+                s === "pago" ? "from-emerald-500/30 to-emerald-500/10 ring-emerald-400/40"
+                : s === "vencido" ? "from-rose-500/30 to-rose-500/10 ring-rose-400/40"
+                : s === "pendente" ? "from-amber-500/30 to-amber-500/10 ring-amber-400/40"
+                : "from-indigo-500/30 to-fuchsia-500/10 ring-indigo-400/40";
+              return (
+                <button
+                  key={s}
+                  onClick={() => setStatus(s)}
+                  className={cn(
+                    "relative rounded-xl px-4 py-2 text-xs font-semibold transition-colors",
+                    active ? "text-white" : "text-muted-foreground hover:text-white",
+                  )}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="status-halo"
+                      className={cn("absolute inset-0 -z-10 rounded-xl bg-gradient-to-br ring-1", activeTone)}
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  {label}
+                </button>
+              );
+            })}
+          </div>
           <div className="ml-auto text-xs text-muted-foreground">
             {filtered.length} de {rows.length} registro(s)
           </div>
@@ -312,27 +339,41 @@ function Page() {
                 {!isLoading && filtered.length === 0 && (
                   <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Nenhum lançamento encontrado.</td></tr>
                 )}
-                {filtered.map((r) => {
-                  const isVencido = r.status !== "pago" && r.status !== "cancelado" && r.data_vencimento < today;
-                  const effective = r.status === "pago" ? "pago" : isVencido ? "vencido" : "pendente";
-                  const tone = effective === "pago"
-                    ? "bg-emerald-400/15 text-emerald-200 border-emerald-400/30"
-                    : effective === "vencido"
-                    ? "bg-rose-400/15 text-rose-200 border-rose-400/30"
-                    : "bg-amber-400/15 text-amber-200 border-amber-400/30";
-                  return (
-                    <tr key={r.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                      <td className="px-4 py-3 font-medium text-white">{r.fornecedor}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{r.categoria ?? "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{fmtDate(r.data_vencimento)}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{r.data_pagamento ? fmtDate(r.data_pagamento) : "—"}</td>
-                      <td className="px-4 py-3 text-right font-mono text-white">{brl(Number(r.valor))}</td>
-                      <td className="px-4 py-3">
-                        <Badge className={cn("border capitalize", tone)} variant="outline">{effective}</Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
+                <AnimatePresence mode="popLayout">
+                  {filtered.map((r, idx) => {
+                    const isVencido = r.status !== "pago" && r.status !== "cancelado" && r.data_vencimento < today;
+                    const effective = r.status === "pago" ? "pago" : isVencido ? "vencido" : "pendente";
+                    const tone = effective === "pago"
+                      ? "bg-emerald-400/15 text-emerald-200 border-emerald-400/30"
+                      : effective === "vencido"
+                      ? "bg-rose-400/15 text-rose-200 border-rose-400/30"
+                      : "bg-amber-400/15 text-amber-200 border-amber-400/30";
+                    const accent = effective === "pago" ? "bg-emerald-400" : effective === "vencido" ? "bg-rose-400" : "bg-amber-400";
+                    return (
+                      <motion.tr
+                        key={r.id}
+                        layout
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ delay: Math.min(idx * 0.015, 0.2), duration: 0.25 }}
+                        className="group border-b border-white/5 last:border-0 transition-colors hover:bg-white/[0.03]"
+                      >
+                        <td className="relative px-4 py-3 font-medium text-white">
+                          <span className={cn("absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r opacity-0 transition-opacity group-hover:opacity-100", accent)} />
+                          {r.fornecedor}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">{r.categoria ?? "—"}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{fmtDate(r.data_vencimento)}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{r.data_pagamento ? fmtDate(r.data_pagamento) : "—"}</td>
+                        <td className="px-4 py-3 text-right font-mono text-white">{brl(Number(r.valor))}</td>
+                        <td className="px-4 py-3">
+                          <Badge className={cn("border capitalize", tone)} variant="outline">{effective}</Badge>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
               </tbody>
             </table>
           </div>
@@ -349,6 +390,7 @@ function KpiCard({
   sub,
   tone,
   delay,
+  share,
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -356,23 +398,45 @@ function KpiCard({
   sub: string;
   tone: "emerald" | "amber" | "rose" | "indigo";
   delay: number;
+  share: number;
 }) {
   const tones = {
-    emerald: "from-emerald-500/20 to-emerald-500/5 text-emerald-300",
-    amber: "from-amber-500/20 to-amber-500/5 text-amber-300",
-    rose: "from-rose-500/20 to-rose-500/5 text-rose-300",
-    indigo: "from-indigo-500/20 to-indigo-500/5 text-indigo-300",
+    emerald: { grad: "from-emerald-500/25 to-emerald-500/5 text-emerald-300", bar: "from-emerald-400 to-teal-300", glow: "hover:shadow-[0_20px_60px_-20px_rgba(16,185,129,0.55)] hover:border-emerald-400/30" },
+    amber: { grad: "from-amber-500/25 to-amber-500/5 text-amber-300", bar: "from-amber-400 to-orange-300", glow: "hover:shadow-[0_20px_60px_-20px_rgba(245,158,11,0.55)] hover:border-amber-400/30" },
+    rose: { grad: "from-rose-500/25 to-rose-500/5 text-rose-300", bar: "from-rose-400 to-pink-300", glow: "hover:shadow-[0_20px_60px_-20px_rgba(244,63,94,0.55)] hover:border-rose-400/30" },
+    indigo: { grad: "from-indigo-500/25 to-indigo-500/5 text-indigo-300", bar: "from-indigo-400 to-fuchsia-300", glow: "hover:shadow-[0_20px_60px_-20px_rgba(99,102,241,0.55)] hover:border-indigo-400/30" },
   };
+  const t = tones[tone];
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}>
+    <motion.div
+      initial={{ opacity: 0, y: 16, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4 }}
+      className={cn("group rounded-2xl border border-white/10 transition-all duration-300", t.glow)}
+    >
       <Card3D className="h-full p-6" glow>
-        <div className={cn("mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br", tones[tone])}>
-          <Icon className="h-6 w-6" />
+        <div className="flex items-start justify-between">
+          <div className={cn("grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3", t.grad)}>
+            <Icon className="h-6 w-6" />
+          </div>
+          <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+            {Math.round(share * 100)}%
+          </span>
         </div>
-        <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
+        <div className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
         <div className="mt-1 text-3xl font-black tracking-tight text-white">{value}</div>
         <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min(share * 100, 100)}%` }}
+            transition={{ delay: delay + 0.15, duration: 0.9, ease: "easeOut" }}
+            className={cn("h-full rounded-full bg-gradient-to-r", t.bar)}
+          />
+        </div>
       </Card3D>
     </motion.div>
   );
 }
+

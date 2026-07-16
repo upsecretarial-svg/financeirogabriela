@@ -17,9 +17,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2 } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste } from "lucide-react";
 import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
+import { useServerFn } from "@tanstack/react-start";
+import { extractTutorFromImage } from "@/lib/tutor-extract.functions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -392,6 +394,15 @@ function Atendimentos() {
           </DialogHeader>
           {editing && (
             <div className="space-y-4 pt-2">
+              {!editing.id && (
+                <TutorSmartPaste
+                  onExtracted={(d) => setEditing((cur) => cur ? {
+                    ...cur,
+                    tutor: cur.tutor || d.nome || cur.tutor,
+                    tutor_cpf: cur.tutor_cpf || d.cpf || cur.tutor_cpf,
+                  } : cur)}
+                />
+              )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Tutor *</Label>
@@ -658,5 +669,113 @@ function NfAttachField({ path, onChange }: { path: string | null; onChange: (pat
     </div>
   );
 }
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const idx = result.indexOf(",");
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string | null; cpf: string | null }) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const extract = useServerFn(extractTutorFromImage);
+
+  const process = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Envie uma imagem (JPG, PNG, WEBP).");
+      return;
+    }
+    setBusy(true);
+    setPreview(URL.createObjectURL(file));
+    try {
+      const base64 = await fileToBase64(file);
+      const result = await extract({ data: { mimeType: file.type, base64 } });
+      if (!result.nome && !result.cpf) {
+        toast.warning("Nada identificado", { description: "A IA não encontrou nome ou CPF nesta imagem." });
+      } else {
+        onExtracted(result);
+        toast.success("Dados extraídos", {
+          description: [result.nome, result.cpf ? formatCpfPreview(result.cpf) : null].filter(Boolean).join(" • "),
+        });
+      }
+    } catch (e) {
+      toast.error("Erro ao extrair", { description: (e as Error).message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onPaste = async (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const item = Array.from(e.clipboardData.items).find((it) => it.type.startsWith("image/"));
+    if (!item) return;
+    e.preventDefault();
+    const file = item.getAsFile();
+    if (file) await process(file);
+  };
+
+  const onDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) await process(file);
+  };
+
+  return (
+    <div
+      tabIndex={0}
+      onPaste={onPaste}
+      onDrop={onDrop}
+      onDragOver={(e) => e.preventDefault()}
+      className="group relative rounded-lg border border-dashed border-primary/30 bg-primary/5 p-3 outline-none transition focus-visible:border-primary/60 focus-visible:bg-primary/10 hover:border-primary/50"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/15 text-primary">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium">Preenchimento inteligente</Label>
+            <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] text-primary">IA</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Cole (Ctrl+V), arraste ou anexe uma imagem (RG, CNH, print) para extrair <strong>nome</strong> e <strong>CPF</strong>.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) process(f); e.target.value = ""; }}
+          />
+          <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
+            <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" /> Anexar
+          </Button>
+        </div>
+      </div>
+      {preview && (
+        <div className="mt-3 flex items-center gap-2">
+          <img src={preview} alt="Prévia" className="h-16 w-16 rounded-md border border-border/60 object-cover" />
+          <p className="text-[11px] text-muted-foreground">A imagem não é salva — usada apenas para extração.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatCpfPreview(digits: string): string {
+  const d = digits.replace(/\D/g, "").padEnd(11, "").slice(0, 11);
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
+}
+
 
 

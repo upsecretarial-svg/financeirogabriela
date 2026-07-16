@@ -28,6 +28,7 @@ import {
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
 

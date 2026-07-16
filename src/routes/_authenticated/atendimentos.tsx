@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/atendimentos")({
   head: () => ({ meta: [{ title: "Atendimentos" }] }),
+  validateSearch: z.object({ edit: z.string().optional() }),
   component: Atendimentos,
 });
 
@@ -67,6 +69,7 @@ function Atendimentos() {
   const navigate = useNavigate();
   const wasNewRef = useRef(false);
   const { isAdmin } = useAuth();
+  const { edit: editParam } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);
   const [open, setOpen] = useState(false);
@@ -250,6 +253,24 @@ function Atendimentos() {
     setServiceId(matched?.id ?? "");
     setOpen(true);
   };
+
+  const openedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!editParam || openedRef.current === editParam || !services) return;
+    openedRef.current = editParam;
+    (async () => {
+      const { data } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("id", editParam)
+        .maybeSingle();
+      if (data) {
+        await startEdit(data as AppointmentRow);
+        navigate({ to: "/atendimentos", search: {}, replace: true });
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editParam, services]);
 
   const statusColor: Record<string, string> = {
     finalizado: "bg-success/15 text-success border-success/30",

@@ -242,28 +242,26 @@ function Relatorios() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nº</TableHead><TableHead>Data</TableHead><TableHead>Tutor / Pet</TableHead><TableHead>Clínica</TableHead>
-                <TableHead className="text-right">Valor</TableHead><TableHead className="text-right">Recebido</TableHead><TableHead className="text-right">Repasse</TableHead>
+                <TableHead>Nº</TableHead><TableHead>Data</TableHead><TableHead>Tutor / Pet</TableHead>
+                <TableHead className="text-right">Valor</TableHead><TableHead className="text-right">Recebido</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={7} className="py-6 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={5} className="py-6 text-center text-sm text-muted-foreground">Carregando…</TableCell></TableRow>}
               {data?.map((a: any) => {
                 const recebido = Number(a.valor_recebido ?? 0);
-                const repasse = (recebido * Number(a.clinics?.percentual_repasse ?? 0)) / 100;
                 return (
                   <TableRow key={a.id}>
                     <TableCell className="font-mono text-xs">{a.numero_interno}</TableCell>
                     <TableCell className="text-sm">{a.data_atendimento}</TableCell>
                     <TableCell className="text-sm">{a.tutor} / {a.pet}</TableCell>
-                    <TableCell className="text-sm">{a.clinics?.nome ?? "—"}</TableCell>
                     <TableCell className="text-right text-sm">{brl(Number(a.valor ?? 0))}</TableCell>
                     <TableCell className="text-right text-sm">{brl(recebido)}</TableCell>
-                    <TableCell className="text-right text-sm">{brl(repasse)}</TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
+
           </Table>
         </CardContent>
       </Card>

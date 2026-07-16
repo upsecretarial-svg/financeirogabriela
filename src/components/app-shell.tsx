@@ -63,6 +63,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/notas-fiscais", label: "Notas Fiscais", icon: FileText },
       { to: "/recebimentos", label: "Recebimentos", icon: Wallet },
       { to: "/contas-pagar", label: "Contas a Pagar", icon: Receipt },
+      { to: "/painel-contas", label: "Painel de Contas", icon: BarChart3 },
       { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
       { to: "/formas-pagamento", label: "Formas de Pagamento", icon: CreditCard, adminOnly: true },
     ],

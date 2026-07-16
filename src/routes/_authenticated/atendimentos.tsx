@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText } from "lucide-react";
 import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 
@@ -459,9 +460,88 @@ function Atendimentos() {
                   <Textarea rows={3} value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
                 </div>
               </div>
+
+              {/* Baixa financeira */}
+              <div className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-success" />
+                    <div>
+                      <Label className="text-sm font-medium">Dar baixa no financeiro</Label>
+                      <p className="text-xs text-muted-foreground">Marque para registrar o recebimento agora.</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={!!editing.pago}
+                    onCheckedChange={(v) => setEditing({
+                      ...editing,
+                      pago: v,
+                      data_pagamento: v ? (editing.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
+                      valor_recebido: v ? (editing.valor_recebido ?? editing.valor ?? null) : null,
+                    })}
+                  />
+                </div>
+                {editing.pago && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs">Forma de pagamento</Label>
+                      <Select value={editing.payment_method_id ?? ""} onValueChange={(v) => setEditing({ ...editing, payment_method_id: v })}>
+                        <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+                        <SelectContent>
+                          {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">Valor recebido</Label>
+                      <Input type="number" step="0.01" min="0" value={editing.valor_recebido ?? ""} onChange={(e) => setEditing({ ...editing, valor_recebido: e.target.value ? Number(e.target.value) : null })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">Data</Label>
+                      <Input type="date" value={editing.data_pagamento ?? ""} onChange={(e) => setEditing({ ...editing, data_pagamento: e.target.value })} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* NF-e */}
+              <div className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <div>
+                      <Label className="text-sm font-medium">NF-e emitida</Label>
+                      <p className="text-xs text-muted-foreground">O anexo do PDF pode ser feito depois em Notas Fiscais.</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={!!editing.nf_emitida}
+                    onCheckedChange={(v) => setEditing({ ...editing, nf_emitida: v })}
+                  />
+                </div>
+                {editing.nf_emitida && (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label className="text-xs">Nº da NF-e</Label>
+                      <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} placeholder="Opcional" />
+                    </div>
+                    <div className="flex items-end">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 accent-primary"
+                          checked={!!editing.nf_enviada}
+                          onChange={(e) => setEditing({ ...editing, nf_enviada: e.target.checked })}
+                        />
+                        NF enviada ao cliente
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <p className="rounded-md bg-accent/40 p-3 text-xs text-muted-foreground">
-                Notas fiscais e recebimentos deste atendimento são gerenciados nas páginas
-                <strong> Notas Fiscais</strong> e <strong>Recebimentos</strong> no menu lateral.
+                Dica: você pode <strong>dar baixa</strong> na venda agora e <strong>anexar o PDF da NF-e</strong> depois na página Notas Fiscais — o status será atualizado automaticamente.
               </p>
             </div>
           )}

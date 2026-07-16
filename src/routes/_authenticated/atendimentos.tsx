@@ -254,6 +254,24 @@ function Atendimentos() {
     setOpen(true);
   };
 
+  const openedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!editParam || openedRef.current === editParam || !services) return;
+    openedRef.current = editParam;
+    (async () => {
+      const { data } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("id", editParam)
+        .maybeSingle();
+      if (data) {
+        await startEdit(data as AppointmentRow);
+        navigate({ to: "/atendimentos", search: {}, replace: true });
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editParam, services]);
+
   const statusColor: Record<string, string> = {
     finalizado: "bg-success/15 text-success border-success/30",
     pago: "bg-success/15 text-success border-success/30",

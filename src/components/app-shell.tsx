@@ -345,6 +345,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {currentTitle || "Painel"}
             </div>
           </div>
+          <ThemeToggle />
           <div className="hidden text-xs text-muted-foreground sm:block">{user?.email}</div>
         </header>
 

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
   Bar,
@@ -15,6 +15,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Card3D } from "@/components/card-3d";
 import { Button } from "@/components/ui/button";

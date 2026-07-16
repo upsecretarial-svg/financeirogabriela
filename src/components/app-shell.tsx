@@ -28,6 +28,7 @@ import {
 import logoAsset from "@/assets/logo-kronhardt.png.asset.json";
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const SUPER_ADMIN_EMAIL = "upsecretarial@gmail.com";
 
@@ -344,6 +345,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {currentTitle || "Painel"}
             </div>
           </div>
+          <ThemeToggle />
           <div className="hidden text-xs text-muted-foreground sm:block">{user?.email}</div>
         </header>
 

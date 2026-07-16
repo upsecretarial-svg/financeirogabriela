@@ -167,23 +167,36 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {(["month", "quarter", "year"] as Period[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={cn(
-                  "rounded-xl border px-4 py-2 text-xs font-semibold transition-all",
-                  period === p
-                    ? "border-emerald-400/50 bg-emerald-500/15 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.25)]"
-                    : "border-white/10 bg-white/[0.02] text-muted-foreground hover:text-white",
-                )}
-              >
-                {p === "month" ? "Mês" : p === "quarter" ? "Trimestre" : "Ano"}
-              </button>
-            ))}
+            <div className="flex rounded-2xl border border-white/10 bg-white/[0.02] p-1 backdrop-blur-xl">
+              {(["month", "quarter", "year"] as Period[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={cn(
+                    "relative rounded-xl px-4 py-2 text-xs font-semibold transition-colors",
+                    period === p ? "text-white" : "text-muted-foreground hover:text-white",
+                  )}
+                >
+                  {period === p && (
+                    <motion.span
+                      layoutId="period-halo"
+                      className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-emerald-500/30 to-indigo-500/20 shadow-[0_0_24px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  {p === "month" ? "Mês" : p === "quarter" ? "Trimestre" : "Ano"}
+                </button>
+              ))}
+            </div>
             <Link to="/contas-pagar">
-              <Button variant="outline" size="sm" className="gap-1.5 border-white/10 bg-white/[0.03]">
-                Gerenciar <ArrowRight className="h-3.5 w-3.5" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="group relative gap-1.5 overflow-hidden rounded-xl border-white/10 bg-white/[0.03] backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:shadow-[0_10px_30px_-10px_rgba(16,185,129,0.5)]"
+              >
+                <span aria-hidden className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                Gerenciar
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Button>
             </Link>
           </div>
@@ -192,11 +205,12 @@ function Page() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Pago" icon={CheckCircle2} value={brl(stats.pagoTotal)} sub={`${stats.pagoQtd} conta(s)`} tone="emerald" delay={0.05} />
-        <KpiCard label="Pendente" icon={Clock} value={brl(stats.pendenteTotal)} sub={`${stats.pendenteQtd} a vencer`} tone="amber" delay={0.1} />
-        <KpiCard label="Vencido" icon={AlertTriangle} value={brl(stats.vencidoTotal)} sub={`${stats.vencidoQtd} em atraso`} tone="rose" delay={0.15} />
-        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} />
+        <KpiCard label="Pago" icon={CheckCircle2} value={brl(stats.pagoTotal)} sub={`${stats.pagoQtd} conta(s)`} tone="emerald" delay={0.05} share={stats.total ? stats.pagoTotal / stats.total : 0} />
+        <KpiCard label="Pendente" icon={Clock} value={brl(stats.pendenteTotal)} sub={`${stats.pendenteQtd} a vencer`} tone="amber" delay={0.1} share={stats.total ? stats.pendenteTotal / stats.total : 0} />
+        <KpiCard label="Vencido" icon={AlertTriangle} value={brl(stats.vencidoTotal)} sub={`${stats.vencidoQtd} em atraso`} tone="rose" delay={0.15} share={stats.total ? stats.vencidoTotal / stats.total : 0} />
+        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} share={1} />
       </div>
+
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">

@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText } from "lucide-react";
 import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 

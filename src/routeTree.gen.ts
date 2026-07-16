@@ -19,6 +19,7 @@ import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedRecebimentosRouteImport } from './routes/_authenticated/recebimentos'
 import { Route as AuthenticatedPendenciasRouteImport } from './routes/_authenticated/pendencias'
+import { Route as AuthenticatedPainelContasRouteImport } from './routes/_authenticated/painel-contas'
 import { Route as AuthenticatedNotasFiscaisRouteImport } from './routes/_authenticated/notas-fiscais'
 import { Route as AuthenticatedLixeiraRouteImport } from './routes/_authenticated/lixeira'
 import { Route as AuthenticatedLinksAcessoRouteImport } from './routes/_authenticated/links-acesso'
@@ -78,6 +79,12 @@ const AuthenticatedPendenciasRoute = AuthenticatedPendenciasRouteImport.update({
   path: '/pendencias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPainelContasRoute =
+  AuthenticatedPainelContasRouteImport.update({
+    id: '/painel-contas',
+    path: '/painel-contas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotasFiscaisRoute =
   AuthenticatedNotasFiscaisRouteImport.update({
     id: '/notas-fiscais',
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
+  '/painel-contas': typeof AuthenticatedPainelContasRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
   '/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/lixeira': typeof AuthenticatedLixeiraRoute
   '/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
+  '/painel-contas': typeof AuthenticatedPainelContasRoute
   '/pendencias': typeof AuthenticatedPendenciasRoute
   '/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/links-acesso': typeof AuthenticatedLinksAcessoRoute
   '/_authenticated/lixeira': typeof AuthenticatedLixeiraRoute
   '/_authenticated/notas-fiscais': typeof AuthenticatedNotasFiscaisRoute
+  '/_authenticated/painel-contas': typeof AuthenticatedPainelContasRoute
   '/_authenticated/pendencias': typeof AuthenticatedPendenciasRoute
   '/_authenticated/recebimentos': typeof AuthenticatedRecebimentosRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/links-acesso'
     | '/lixeira'
     | '/notas-fiscais'
+    | '/painel-contas'
     | '/pendencias'
     | '/recebimentos'
     | '/relatorios'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/links-acesso'
     | '/lixeira'
     | '/notas-fiscais'
+    | '/painel-contas'
     | '/pendencias'
     | '/recebimentos'
     | '/relatorios'
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/_authenticated/links-acesso'
     | '/_authenticated/lixeira'
     | '/_authenticated/notas-fiscais'
+    | '/_authenticated/painel-contas'
     | '/_authenticated/pendencias'
     | '/_authenticated/recebimentos'
     | '/_authenticated/relatorios'
@@ -323,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPendenciasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/painel-contas': {
+      id: '/_authenticated/painel-contas'
+      path: '/painel-contas'
+      fullPath: '/painel-contas'
+      preLoaderRoute: typeof AuthenticatedPainelContasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notas-fiscais': {
       id: '/_authenticated/notas-fiscais'
       path: '/notas-fiscais'
@@ -391,6 +411,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLinksAcessoRoute: typeof AuthenticatedLinksAcessoRoute
   AuthenticatedLixeiraRoute: typeof AuthenticatedLixeiraRoute
   AuthenticatedNotasFiscaisRoute: typeof AuthenticatedNotasFiscaisRoute
+  AuthenticatedPainelContasRoute: typeof AuthenticatedPainelContasRoute
   AuthenticatedPendenciasRoute: typeof AuthenticatedPendenciasRoute
   AuthenticatedRecebimentosRoute: typeof AuthenticatedRecebimentosRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
@@ -408,6 +429,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLinksAcessoRoute: AuthenticatedLinksAcessoRoute,
   AuthenticatedLixeiraRoute: AuthenticatedLixeiraRoute,
   AuthenticatedNotasFiscaisRoute: AuthenticatedNotasFiscaisRoute,
+  AuthenticatedPainelContasRoute: AuthenticatedPainelContasRoute,
   AuthenticatedPendenciasRoute: AuthenticatedPendenciasRoute,
   AuthenticatedRecebimentosRoute: AuthenticatedRecebimentosRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,

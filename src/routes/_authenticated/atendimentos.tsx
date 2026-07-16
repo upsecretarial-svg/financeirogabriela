@@ -520,22 +520,28 @@ function Atendimentos() {
                   />
                 </div>
                 {editing.nf_emitida && (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label className="text-xs">Nº da NF-e</Label>
-                      <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} placeholder="Opcional" />
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Nº da NF-e</Label>
+                        <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} placeholder="Opcional" />
+                      </div>
+                      <div className="flex items-end">
+                        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 accent-primary"
+                            checked={!!editing.nf_enviada}
+                            onChange={(e) => setEditing({ ...editing, nf_enviada: e.target.checked })}
+                          />
+                          NF enviada ao cliente
+                        </label>
+                      </div>
                     </div>
-                    <div className="flex items-end">
-                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 accent-primary"
-                          checked={!!editing.nf_enviada}
-                          onChange={(e) => setEditing({ ...editing, nf_enviada: e.target.checked })}
-                        />
-                        NF enviada ao cliente
-                      </label>
-                    </div>
+                    <NfAttachField
+                      path={editing.nf_pdf_path ?? null}
+                      onChange={(p) => setEditing((cur) => cur ? { ...cur, nf_pdf_path: p } : cur)}
+                    />
                   </div>
                 )}
               </div>

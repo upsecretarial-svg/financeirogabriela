@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { usePasteUppercase } from "../lib/use-paste-uppercase";
 
 function NotFoundComponent() {
   return (
@@ -123,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  usePasteUppercase();
 
   return (
     <QueryClientProvider client={queryClient}>

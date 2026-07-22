@@ -22,6 +22,7 @@ import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 import { useServerFn } from "@tanstack/react-start";
 import { extractTutorFromImage } from "@/lib/tutor-extract.functions";
+import { extractNfFromFile } from "@/lib/nf-extract.functions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -552,7 +553,9 @@ function Atendimentos() {
                     <NfAttachField
                       path={editing.nf_pdf_path ?? null}
                       onChange={(p) => setEditing((cur) => cur ? { ...cur, nf_pdf_path: p } : cur)}
+                      onNumeroExtraido={(n) => setEditing((cur) => cur && !cur.nf_numero ? { ...cur, nf_numero: n } : cur)}
                     />
+
                   </div>
                 )}
               </div>
@@ -610,9 +613,10 @@ function Atendimentos() {
   );
 }
 
-function NfAttachField({ path, onChange }: { path: string | null; onChange: (path: string | null) => void }) {
+function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | null; onChange: (path: string | null) => void; onNumeroExtraido?: (numero: string) => void }) {
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const extract = useServerFn(extractNfFromFile);
 
   const upload = async (file: File) => {
     setBusy(true);
@@ -625,12 +629,26 @@ function NfAttachField({ path, onChange }: { path: string | null; onChange: (pat
       if (error) throw error;
       onChange(key);
       toast.success("Anexo enviado.");
+      // Tenta extrair automaticamente o número da NF.
+      if (onNumeroExtraido) {
+        try {
+          const base64 = await fileToBase64(file);
+          const result = await extract({ data: { filename: file.name, mimeType: file.type || "application/pdf", base64 } });
+          if (result.nf_numero) {
+            onNumeroExtraido(result.nf_numero);
+            toast.success("Nº da NF extraído automaticamente.");
+          }
+        } catch {
+          // silencioso — extração é opcional
+        }
+      }
     } catch (e) {
       toast.error("Erro no upload", { description: (e as Error).message });
     } finally {
       setBusy(false);
     }
   };
+
 
   return (
     <div className="rounded-md border border-border/60 bg-background/40 p-3 space-y-2">

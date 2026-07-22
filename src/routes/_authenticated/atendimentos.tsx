@@ -22,6 +22,7 @@ import { TableState } from "@/components/data-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 import { useServerFn } from "@tanstack/react-start";
 import { extractTutorFromImage } from "@/lib/tutor-extract.functions";
+import { extractNfFromFile } from "@/lib/nf-extract.functions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";

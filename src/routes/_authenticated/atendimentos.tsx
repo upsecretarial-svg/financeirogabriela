@@ -553,7 +553,9 @@ function Atendimentos() {
                     <NfAttachField
                       path={editing.nf_pdf_path ?? null}
                       onChange={(p) => setEditing((cur) => cur ? { ...cur, nf_pdf_path: p } : cur)}
+                      onNumeroExtraido={(n) => setEditing((cur) => cur && !cur.nf_numero ? { ...cur, nf_numero: n } : cur)}
                     />
+
                   </div>
                 )}
               </div>

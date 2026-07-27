@@ -37,10 +37,11 @@ export const extractTutorFromImage = createServerFn({ method: "POST" })
       throw new Error("Envie uma imagem (JPG, PNG, WEBP).");
     }
 
-    const prompt = `Você é um extrator de dados cadastrais brasileiros. Analise a imagem (RG, CNH, comprovante, print de cadastro, etc.) e responda APENAS um JSON válido, sem markdown, com as chaves:
-{"nome": string|null, "cpf": string|null}
-- nome: NOME COMPLETO do titular/tutor (sem títulos, sem abreviações). Se houver vários nomes, escolha o do titular principal.
+    const prompt = `Você é um extrator de dados cadastrais brasileiros de clínicas veterinárias. Analise a imagem (RG, CNH, comprovante, print de cadastro/prontuário, ficha do pet, etc.) e responda APENAS um JSON válido, sem markdown, com as chaves:
+{"nome": string|null, "cpf": string|null, "pet": string|null}
+- nome: NOME COMPLETO do titular/tutor EM MAIÚSCULAS (sem títulos, sem abreviações). Se houver vários nomes, escolha o do titular principal.
 - cpf: CPF no formato "000.000.000-00". Se for CNPJ ou não houver CPF válido, retorne null.
+- pet: NOME DO ANIMAL/PACIENTE EM MAIÚSCULAS (apenas o nome, sem espécie/raça). Se não houver, retorne null.
 Se não conseguir identificar um campo, retorne null nele. Não invente dados.`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

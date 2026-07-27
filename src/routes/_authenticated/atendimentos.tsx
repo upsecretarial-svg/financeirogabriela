@@ -718,12 +718,12 @@ function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string |
     try {
       const base64 = await fileToBase64(file);
       const result = await extract({ data: { mimeType: file.type, base64 } });
-      if (!result.nome && !result.cpf) {
-        toast.warning("Nada identificado", { description: "A IA não encontrou nome ou CPF nesta imagem." });
+      if (!result.nome && !result.cpf && !result.pet) {
+        toast.warning("Nada identificado", { description: "A IA não encontrou nome, CPF ou pet nesta imagem." });
       } else {
         onExtracted(result);
         toast.success("Dados extraídos", {
-          description: [result.nome, result.cpf ? formatCpfPreview(result.cpf) : null].filter(Boolean).join(" • "),
+          description: [result.nome, result.pet, result.cpf ? formatCpfPreview(result.cpf) : null].filter(Boolean).join(" • "),
         });
       }
     } catch (e) {

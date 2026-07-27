@@ -702,7 +702,7 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string | null; cpf: string | null }) => void }) {
+function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string | null; cpf: string | null; pet: string | null }) => void }) {
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);

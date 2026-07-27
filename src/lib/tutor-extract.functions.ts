@@ -9,6 +9,7 @@ const schema = z.object({
 export interface ExtractedTutor {
   nome: string | null;
   cpf: string | null;
+  pet: string | null;
 }
 
 function parseResponse(content: string): ExtractedTutor {
@@ -16,10 +17,12 @@ function parseResponse(content: string): ExtractedTutor {
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Não foi possível interpretar a resposta da IA.");
   const parsed = JSON.parse(match[0]) as Partial<ExtractedTutor>;
-  const nome = parsed.nome != null ? String(parsed.nome).trim() : "";
+  const nome = parsed.nome != null ? String(parsed.nome).trim().toUpperCase() : "";
+  const pet = parsed.pet != null ? String(parsed.pet).trim().toUpperCase() : "";
   const cpfRaw = parsed.cpf != null ? String(parsed.cpf).replace(/\D/g, "") : "";
   return {
     nome: nome || null,
+    pet: pet || null,
     cpf: cpfRaw.length === 11 ? cpfRaw : null,
   };
 }

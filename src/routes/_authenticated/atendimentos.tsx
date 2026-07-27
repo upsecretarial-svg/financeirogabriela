@@ -399,8 +399,9 @@ function Atendimentos() {
                 <TutorSmartPaste
                   onExtracted={(d) => setEditing((cur) => cur ? {
                     ...cur,
-                    tutor: cur.tutor || d.nome || cur.tutor,
+                    tutor: cur.tutor || (d.nome ? d.nome.toUpperCase() : cur.tutor),
                     tutor_cpf: cur.tutor_cpf || d.cpf || cur.tutor_cpf,
+                    pet: cur.pet || (d.pet ? d.pet.toUpperCase() : cur.pet),
                   } : cur)}
                 />
               )}

@@ -22,6 +22,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Card3D } from "@/components/card-3d";
+import { cn } from "@/lib/utils";
 
 const ALERT_DAYS = 7;
 
@@ -198,12 +199,20 @@ function Dashboard() {
   const now = new Date();
   const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 
-  const kpis = [
+  const kpis: {
+    label: string;
+    value: string;
+    icon: any;
+    tone: "primary" | "success" | "warning" | "destructive";
+    sub: string;
+    gradient: string;
+    variation?: number;
+  }[] = [
     { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10", variation: stats?.varFaturado },
     { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10", variation: stats?.varRecebido },
     { label: "Em aberto", value: brl(stats?.pendente), icon: Clock, tone: "warning", sub: `${stats?.nfPendentes ?? 0} NF pendentes`, gradient: "from-amber-500/25 to-orange-500/10" },
     { label: "Pendências", value: String(stats?.pendencias ?? 0), icon: ClipboardCheck, tone: "destructive", sub: "Sem baixa", gradient: "from-rose-500/25 to-pink-500/10" },
-  ] as const;
+  ];
 
   const maxBar = Math.max(1, ...((chart ?? []).flatMap((c) => [c.faturado, c.recebido])));
 

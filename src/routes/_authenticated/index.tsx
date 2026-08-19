@@ -47,8 +47,13 @@ function Dashboard() {
       const startMes = new Date(y, m - 1, 1);
       const endMes = new Date(y, m, 0, 23, 59, 59, 999);
       
+      const startPrev = new Date(y, m - 2, 1);
+      const endPrev = new Date(y, m - 1, 0, 23, 59, 59, 999);
+
       const inicio = startMes.toISOString().slice(0, 10);
       const fim = endMes.toISOString().slice(0, 10);
+      const inicioPrev = startPrev.toISOString().slice(0, 10);
+      const fimPrev = endPrev.toISOString().slice(0, 10);
 
       const { data: mes } = await supabase
         .from("appointments")
@@ -57,12 +62,28 @@ function Dashboard() {
         .gte("data_atendimento", inicio)
         .lte("data_atendimento", fim);
 
+      const { data: prev } = await supabase
+        .from("appointments")
+        .select("valor, valor_recebido")
+        .is("deleted_at", null)
+        .gte("data_atendimento", inicioPrev)
+        .lte("data_atendimento", fimPrev);
+
       const { count: pendCount } = await supabase
         .from("pendencias_view")
         .select("*", { count: "exact", head: true });
 
       const faturado = (mes ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
       const recebido = (mes ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
+      
+      const faturadoPrev = (prev ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
+      const recebidoPrev = (prev ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
+
+      const calcVar = (curr: number, old: number) => {
+        if (old === 0) return curr > 0 ? 100 : 0;
+        return ((curr - old) / old) * 100;
+      };
+
       return {
         faturado,
         recebido,
@@ -70,6 +91,8 @@ function Dashboard() {
         qtd: mes?.length ?? 0,
         nfPendentes: (mes ?? []).filter((a) => !a.nf_emitida).length,
         pendencias: pendCount ?? 0,
+        varFaturado: calcVar(faturado, faturadoPrev),
+        varRecebido: calcVar(recebido, recebidoPrev),
       };
     },
   });
@@ -176,8 +199,8 @@ function Dashboard() {
   const mesAtual = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 
   const kpis = [
-    { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10" },
-    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10" },
+    { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10", variation: stats?.varFaturado },
+    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10", variation: stats?.varRecebido },
     { label: "Em aberto", value: brl(stats?.pendente), icon: Clock, tone: "warning", sub: `${stats?.nfPendentes ?? 0} NF pendentes`, gradient: "from-amber-500/25 to-orange-500/10" },
     { label: "Pendências", value: String(stats?.pendencias ?? 0), icon: ClipboardCheck, tone: "destructive", sub: "Sem baixa", gradient: "from-rose-500/25 to-pink-500/10" },
   ] as const;
@@ -253,9 +276,20 @@ function Dashboard() {
                       <Icon className="h-4 w-4" />
                     </div>
                   </div>
-                  <p className={`number-display mt-6 text-3xl ${toneColor}`}>
-                    {isLoading ? "—" : c.value}
-                  </p>
+                  <div className="mt-6 flex items-baseline justify-between gap-2">
+                    <p className={`number-display text-3xl ${toneColor}`}>
+                      {isLoading ? "—" : c.value}
+                    </p>
+                    {c.variation !== undefined && (
+                      <div className={cn(
+                        "flex items-center gap-0.5 text-[10px] font-bold",
+                        c.variation >= 0 ? "text-success" : "text-destructive"
+                      )}>
+                        {c.variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-90" />}
+                        {Math.abs(c.variation).toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
                   <p className="mt-2 text-xs text-muted-foreground/80">{c.sub}</p>
                 </div>
               </Card3D>

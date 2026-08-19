@@ -299,10 +299,12 @@ function Atendimentos() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Atendimentos</h1>
+          <h1 className="bg-gradient-to-r from-foreground via-indigo-600 to-fuchsia-600 bg-clip-text text-2xl font-black tracking-tight text-transparent dark:from-foreground dark:via-indigo-100 dark:to-fuchsia-200">
+            Atendimentos
+          </h1>
           <p className="text-sm text-muted-foreground">Cadastre e acompanhe atendimentos clínicos.</p>
         </div>
-        <Button onClick={startNew} size="lg" className="shadow-sm">
+        <Button onClick={startNew} size="lg" className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400">
           <Plus className="mr-2 h-4 w-4" /> Novo atendimento
         </Button>
       </header>

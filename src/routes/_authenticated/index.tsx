@@ -35,21 +35,32 @@ function brl(n: number | null | undefined) {
 }
 
 function Dashboard() {
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
+
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["dashboard-stats"],
+    queryKey: ["dashboard-stats", selectedMonth],
     queryFn: async () => {
-      const startMes = new Date();
-      startMes.setDate(1);
-      startMes.setHours(0, 0, 0, 0);
+      const [y, m] = selectedMonth.split("-").map(Number);
+      const startMes = new Date(y, m - 1, 1);
+      const endMes = new Date(y, m, 0, 23, 59, 59, 999);
+      
       const inicio = startMes.toISOString().slice(0, 10);
+      const fim = endMes.toISOString().slice(0, 10);
+
       const { data: mes } = await supabase
         .from("appointments")
         .select("valor, valor_recebido, pago, nf_emitida")
         .is("deleted_at", null)
-        .gte("data_atendimento", inicio);
+        .gte("data_atendimento", inicio)
+        .lte("data_atendimento", fim);
+
       const { count: pendCount } = await supabase
         .from("pendencias_view")
         .select("*", { count: "exact", head: true });
+
       const faturado = (mes ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
       const recebido = (mes ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
       return {
@@ -195,7 +206,15 @@ function Dashboard() {
               Performance{" "}
               <span className="text-gradient-primary">Financeira</span>
             </h1>
-            <p className="mt-2 text-sm capitalize text-muted-foreground">{mesAtual}</p>
+            <div className="mt-2 flex items-center gap-3">
+              <p className="text-sm capitalize text-muted-foreground">{mesAtual}</p>
+              <Input
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="h-8 w-40 border-white/10 bg-white/5 text-xs text-white"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-muted-foreground backdrop-blur">
             <Zap className="h-3.5 w-3.5 text-primary" />

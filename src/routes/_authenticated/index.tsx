@@ -220,7 +220,7 @@ function Dashboard() {
     { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10", variation: stats?.varFaturado, absVariation: stats?.absFaturado },
     { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10", variation: stats?.varRecebido, absVariation: stats?.absRecebido },
     { label: "Em aberto", value: brl(stats?.pendente), icon: Clock, tone: "warning", sub: `${stats?.nfPendentes ?? 0} NF pendentes`, gradient: "from-amber-500/25 to-orange-500/10" },
-    { label: "Pendências", value: String(stats?.pendencias ?? 0), icon: ClipboardCheck, tone: "destructive", sub: "Sem baixa", gradient: "from-rose-500/25 to-pink-500/10" },
+    
   ];
 
   const maxBar = Math.max(1, ...((chart ?? []).flatMap((c) => [c.faturado, c.recebido])));

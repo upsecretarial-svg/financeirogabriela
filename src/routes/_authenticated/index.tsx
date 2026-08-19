@@ -81,9 +81,15 @@ function Dashboard() {
       const recebidoPrev = (prev ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
 
       const calcVar = (curr: number, old: number) => {
-        if (old === 0) return curr > 0 ? 100 : 0;
-        return ((curr - old) / old) * 100;
+        if (old === 0) return { pct: curr > 0 ? 100 : 0, abs: curr };
+        return {
+          pct: ((curr - old) / old) * 100,
+          abs: curr - old,
+        };
       };
+
+      const varFat = calcVar(faturado, faturadoPrev);
+      const varRec = calcVar(recebido, recebidoPrev);
 
       return {
         faturado,
@@ -92,8 +98,10 @@ function Dashboard() {
         qtd: mes?.length ?? 0,
         nfPendentes: (mes ?? []).filter((a) => !a.nf_emitida).length,
         pendencias: pendCount ?? 0,
-        varFaturado: calcVar(faturado, faturadoPrev),
-        varRecebido: calcVar(recebido, recebidoPrev),
+        varFaturado: varFat.pct,
+        absFaturado: varFat.abs,
+        varRecebido: varRec.pct,
+        absRecebido: varRec.abs,
       };
     },
   });
@@ -207,9 +215,10 @@ function Dashboard() {
     sub: string;
     gradient: string;
     variation?: number;
+    absVariation?: number;
   }[] = [
-    { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10", variation: stats?.varFaturado },
-    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10", variation: stats?.varRecebido },
+    { label: "Faturado", value: brl(stats?.faturado), icon: TrendingUp, tone: "primary", sub: `${stats?.qtd ?? 0} atendimentos`, gradient: "from-indigo-500/30 to-blue-500/10", variation: stats?.varFaturado, absVariation: stats?.absFaturado },
+    { label: "Recebido", value: brl(stats?.recebido), icon: Wallet, tone: "success", sub: stats?.faturado ? `${Math.round(((stats?.recebido ?? 0) / stats.faturado) * 100)}% do faturado` : "—", gradient: "from-emerald-500/30 to-teal-500/10", variation: stats?.varRecebido, absVariation: stats?.absRecebido },
     { label: "Em aberto", value: brl(stats?.pendente), icon: Clock, tone: "warning", sub: `${stats?.nfPendentes ?? 0} NF pendentes`, gradient: "from-amber-500/25 to-orange-500/10" },
     { label: "Pendências", value: String(stats?.pendencias ?? 0), icon: ClipboardCheck, tone: "destructive", sub: "Sem baixa", gradient: "from-rose-500/25 to-pink-500/10" },
   ];
@@ -290,12 +299,22 @@ function Dashboard() {
                       {isLoading ? "—" : c.value}
                     </p>
                     {c.variation !== undefined && (
-                      <div className={cn(
-                        "flex items-center gap-0.5 text-[10px] font-bold",
-                        c.variation >= 0 ? "text-success" : "text-destructive"
-                      )}>
-                        {c.variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-90" />}
-                        {Math.abs(c.variation).toFixed(1)}%
+                      <div className="flex flex-col items-end">
+                        <div className={cn(
+                          "flex items-center gap-0.5 text-[10px] font-bold",
+                          c.variation >= 0 ? "text-success" : "text-destructive"
+                        )}>
+                          {c.variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-90" />}
+                          {Math.abs(c.variation).toFixed(1)}%
+                        </div>
+                        {c.absVariation !== undefined && (
+                          <div className={cn(
+                            "text-[9px] font-medium opacity-70",
+                            c.absVariation >= 0 ? "text-success" : "text-destructive"
+                          )}>
+                            {c.absVariation >= 0 ? "+" : ""}{brl(c.absVariation)}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

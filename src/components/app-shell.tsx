@@ -342,7 +342,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 Online
               </span>
             </div>
-            <div className="truncate text-sm font-bold text-white" style={{ fontFamily: "Urbanist" }}>
+            <div className="truncate text-sm font-bold text-foreground" style={{ fontFamily: "Urbanist" }}>
               {currentTitle || "Painel"}
             </div>
           </div>

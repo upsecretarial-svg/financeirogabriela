@@ -99,11 +99,11 @@
 
 /* Light theme override */
 .light {
-  --background: oklch(0.985 0.005 260);
+  --background: oklch(0.99 0.005 260);
   --foreground: oklch(0.20 0.03 275);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0 / 85%);
   --card-foreground: oklch(0.20 0.03 275);
-  --popover: oklch(1 0 0);
+  --popover: oklch(1 0 0 / 95%);
   --popover-foreground: oklch(0.20 0.03 275);
   --primary: oklch(0.55 0.22 275);
   --primary-foreground: oklch(0.99 0.005 260);
@@ -119,16 +119,16 @@
   --success-foreground: oklch(0.99 0.005 155);
   --warning: oklch(0.70 0.17 78);
   --warning-foreground: oklch(0.20 0.03 275);
-  --border: oklch(0.20 0.03 275 / 12%);
-  --input: oklch(0.20 0.03 275 / 14%);
+  --border: oklch(0.20 0.03 275 / 10%);
+  --input: oklch(0.20 0.03 275 / 12%);
   --ring: oklch(0.55 0.22 275);
-  --sidebar: oklch(0.98 0.008 265);
+  --sidebar: oklch(0.98 0.008 265 / 90%);
   --sidebar-foreground: oklch(0.22 0.04 275);
   --sidebar-primary: oklch(0.55 0.22 275);
   --sidebar-primary-foreground: oklch(0.99 0.005 260);
   --sidebar-accent: oklch(0.93 0.05 275);
   --sidebar-accent-foreground: oklch(0.22 0.06 275);
-  --sidebar-border: oklch(0.20 0.03 275 / 10%);
+  --sidebar-border: oklch(0.20 0.03 275 / 8%);
   --sidebar-ring: oklch(0.55 0.22 275);
 }
 
@@ -140,27 +140,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    background: #0a0a1a;
-  }
-  html.light {
-    background: #f5f6fb;
-  }
-  body {
-    background: radial-gradient(ellipse at 20% -10%, rgba(79, 70, 229, 0.35), transparent 55%),
-      radial-gradient(ellipse at 90% 10%, rgba(30, 30, 90, 0.55), transparent 60%),
-      radial-gradient(ellipse at 50% 120%, rgba(120, 60, 200, 0.28), transparent 55%),
-      linear-gradient(180deg, #0a0a1a 0%, #0d0d24 100%);
-    background-attachment: fixed;
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv02", "cv03";
-    min-height: 100vh;
+    background: var(--background);
   }
   html.light body {
-    background: radial-gradient(ellipse at 20% -10%, rgba(99, 102, 241, 0.18), transparent 55%),
-      radial-gradient(ellipse at 90% 10%, rgba(129, 140, 248, 0.15), transparent 60%),
-      radial-gradient(ellipse at 50% 120%, rgba(165, 180, 252, 0.22), transparent 55%),
-      linear-gradient(180deg, #f5f6fb 0%, #eef0fa 100%);
+    background: radial-gradient(ellipse at 20% -10%, rgba(99, 102, 241, 0.15), transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(129, 140, 248, 0.12), transparent 60%),
+      radial-gradient(ellipse at 50% 120%, rgba(165, 180, 252, 0.18), transparent 55%),
+      linear-gradient(180deg, var(--background) 0%, oklch(0.97 0.005 260) 100%);
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--foreground);
   }
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
@@ -208,7 +199,7 @@
   line-height: 1.05;
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 50%, #818cf8 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 70%, white) 50%, color-mix(in oklab, var(--primary) 40%, white) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -221,7 +212,7 @@
 }
 
 @utility glass-panel {
-  background: linear-gradient(135deg, rgba(30, 30, 90, 0.55) 0%, rgba(20, 20, 50, 0.35) 100%);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--card) 60%, transparent) 0%, color-mix(in oklab, var(--card) 40%, transparent) 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px) saturate(140%);
   border-radius: var(--radius);
@@ -229,7 +220,7 @@
 }
 
 @utility surface-card {
-  background: linear-gradient(150deg, rgba(30, 30, 90, 0.6) 0%, rgba(20, 20, 55, 0.55) 100%);
+  background: linear-gradient(150deg, color-mix(in oklab, var(--card) 70%, transparent) 0%, color-mix(in oklab, var(--card) 60%, transparent) 100%);
   color: var(--color-card-foreground);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
@@ -282,7 +273,7 @@
 }
 
 @utility text-gradient-primary {
-  background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 80%, white) 50%, color-mix(in oklab, var(--primary) 60%, white) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

@@ -243,7 +243,7 @@ function Dashboard() {
               <Sparkles className="h-3 w-3" />
               Painel Executivo
             </div>
-            <h1 className="mt-2 text-4xl font-black tracking-tight text-white md:text-5xl" style={{ fontFamily: "Urbanist" }}>
+            <h1 className="mt-2 text-4xl font-black tracking-tight text-foreground md:text-5xl" style={{ fontFamily: "Urbanist" }}>
               Performance{" "}
               <span className="text-gradient-primary">Financeira</span>
             </h1>
@@ -253,7 +253,7 @@ function Dashboard() {
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="h-8 w-40 border-white/10 bg-white/5 text-xs text-white"
+                className="h-8 w-40 border-border bg-white/5 text-xs text-foreground"
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ function Dashboard() {
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                     Tendência
                   </div>
-                  <h3 className="mt-1 text-xl font-bold text-white" style={{ fontFamily: "Urbanist" }}>
+                  <h3 className="mt-1 text-xl font-bold text-foreground" style={{ fontFamily: "Urbanist" }}>
                     Faturamento × Recebido
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">Últimos 6 meses</p>
@@ -413,7 +413,7 @@ function Dashboard() {
                 </h3>
               </div>
               <div>
-                <p className="number-display text-5xl text-white">
+                <p className="number-display text-5xl text-foreground">
                   {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
                 </p>
                 <p className="mt-2 text-xs text-white/70">

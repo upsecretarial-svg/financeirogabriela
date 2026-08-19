@@ -415,6 +415,7 @@ function KpiCard({
   tone,
   delay,
   share,
+  variation,
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -423,6 +424,7 @@ function KpiCard({
   tone: "emerald" | "amber" | "rose" | "indigo";
   delay: number;
   share: number;
+  variation?: number;
 }) {
   const tones = {
     emerald: { grad: "from-emerald-500/25 to-emerald-500/5 text-emerald-300", bar: "from-emerald-400 to-teal-300", glow: "hover:shadow-[0_20px_60px_-20px_rgba(16,185,129,0.55)] hover:border-emerald-400/30" },

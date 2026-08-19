@@ -183,7 +183,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-emerald-200">
               <Sparkles className="h-3.5 w-3.5" /> Dashboard Executivo
             </div>
-            <h1 className="bg-gradient-to-r from-white via-emerald-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-foreground via-emerald-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
               Painel de Contas
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -243,7 +243,7 @@ function Page() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Evolução mensal</div>
-                <div className="mt-1 text-lg font-bold text-white">Pago vs Pendente vs Vencido</div>
+                <div className="mt-1 text-lg font-bold text-foreground">Pago vs Pendente vs Vencido</div>
               </div>
               <TrendingUp className="h-5 w-5 text-emerald-300" />
             </div>
@@ -271,7 +271,7 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="mb-4">
               <div className="text-xs font-semibold uppercase tracking-widest text-fuchsia-300">Distribuição</div>
-              <div className="mt-1 text-lg font-bold text-white">Por categoria</div>
+              <div className="mt-1 text-lg font-bold text-foreground">Por categoria</div>
             </div>
             {byCategory.length === 0 ? (
               <div className="grid h-64 place-items-center text-sm text-muted-foreground">Sem dados no período.</div>

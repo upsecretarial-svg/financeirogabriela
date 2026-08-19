@@ -116,19 +116,32 @@ function Page() {
   const [extracting, setExtracting] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [from, setFrom] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+  });
+  const [to, setTo] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10);
+  });
   const extractRef = useRef<HTMLInputElement>(null);
   const getFile = useServerFn(getStorageFile);
   const extractFn = useServerFn(extractPayableFromPdf);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["payables"],
+    queryKey: ["payables", from, to],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let q = supabase
         .from("payables")
         .select("id,fornecedor,descricao,valor,data_vencimento,data_pagamento,status,anexo_path,paid_by_name,payment_method_id,recorrente,recorrencia_parcela,recorrencia_total")
         .is("deleted_at", null)
         .order("data_vencimento", { ascending: true })
         .limit(500);
+      
+      if (from) q = q.gte("data_vencimento", from);
+      if (to) q = q.lte("data_vencimento", to);
+      
+      const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Payable[];
     },
@@ -431,44 +444,85 @@ function Page() {
         transition={{ delay: 0.3 }}
         className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-xl"
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-10 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-rose-400/40"
-              placeholder="Buscar por fornecedor ou descrição…"
-              value={search} onChange={(e) => setSearch(e.target.value)}
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-10 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-rose-400/40"
+                placeholder="Buscar por fornecedor ou descrição…"
+                value={search} onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {filtros.map((f) => {
+                const active = filter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => setFilter(f.key)}
+                    className={cn(
+                      "relative rounded-xl border px-4 py-2 text-xs font-semibold transition-all",
+                      active
+                        ? "border-rose-400/50 bg-rose-500/15 text-rose-100 shadow-[0_0_20px_rgba(244,63,94,0.25)]"
+                        : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-white",
+                    )}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="payables-filter-halo"
+                        className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-rose-500/20 to-indigo-500/10"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
+                    )}
+                    {f.label}
+                    <span className={cn(
+                      "ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                      active ? "bg-rose-400/30 text-white" : "bg-white/10 text-muted-foreground",
+                    )}>{f.count}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {filtros.map((f) => {
-              const active = filter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
-                  className={cn(
-                    "relative rounded-xl border px-4 py-2 text-xs font-semibold transition-all",
-                    active
-                      ? "border-rose-400/50 bg-rose-500/15 text-rose-100 shadow-[0_0_20px_rgba(244,63,94,0.25)]"
-                      : "border-white/10 bg-white/[0.02] text-muted-foreground hover:border-white/20 hover:text-white",
-                  )}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="payables-filter-halo"
-                      className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-rose-500/20 to-indigo-500/10"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
-                  )}
-                  {f.label}
-                  <span className={cn(
-                    "ml-2 rounded-full px-1.5 py-0.5 text-[10px] font-bold",
-                    active ? "bg-rose-400/30 text-white" : "bg-white/10 text-muted-foreground",
-                  )}>{f.count}</span>
-                </button>
-              );
-            })}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr]">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="month"
+                  value={`${from.slice(0, 7)}`}
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    const [y, m] = e.target.value.split("-");
+                    setFrom(new Date(Number(y), Number(m) - 1, 1).toISOString().slice(0, 10));
+                    setTo(new Date(Number(y), Number(m), 0).toISOString().slice(0, 10));
+                  }}
+                  className="h-11 w-[180px] rounded-xl border-white/10 bg-white/[0.03] pl-9 text-xs"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-9 text-xs"
+                />
+              </div>
+              <span className="text-muted-foreground">até</span>
+              <div className="relative flex-1">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="date"
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
+                  className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-9 text-xs"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

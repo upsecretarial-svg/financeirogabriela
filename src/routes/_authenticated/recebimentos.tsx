@@ -388,7 +388,23 @@ function Page() {
               })}
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto]">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr_auto_auto]">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="month"
+                  value={`${from.slice(0, 7)}`}
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    const [y, m] = e.target.value.split("-");
+                    setFrom(new Date(Number(y), Number(m) - 1, 1).toISOString().slice(0, 10));
+                    setTo(new Date(Number(y), Number(m), 0).toISOString().slice(0, 10));
+                  }}
+                  className="h-11 w-[180px] rounded-xl border-white/10 bg-white/[0.03] pl-9 text-xs"
+                />
+              </div>
+            </div>
             <Select value={methodFilter} onValueChange={setMethodFilter}>
               <SelectTrigger className="h-11 rounded-xl border-white/10 bg-white/[0.03]" aria-label="Forma de pagamento">
                 <CreditCard className="mr-1.5 h-4 w-4 text-muted-foreground" />

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { FileDown, FileSpreadsheet, FileText, Package } from "lucide-react";
+import { FileDown, FileSpreadsheet, FileText, Package, BarChart3 } from "lucide-react";
 import { exportCSV, exportPDF, exportXLSX, exportXLSXMultiSheet } from "@/lib/export";
 import { toast } from "sonner";
 
@@ -88,6 +88,65 @@ function Relatorios() {
       rows.map((r) => [r.Numero, r.Data, `${r.Tutor} / ${r.Pet}`, r.Clinica, brl(r.Valor), brl(r.Recebido), brl(r.Repasse)]),
       summary,
     );
+
+  const onPDFComparativo = async () => {
+    try {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + 1;
+
+      const startCurr = new Date(y, m - 1, 1).toISOString().slice(0, 10);
+      const endCurr = new Date(y, m, 0).toISOString().slice(0, 10);
+      const startPrev = new Date(y, m - 2, 1).toISOString().slice(0, 10);
+      const endPrev = new Date(y, m - 1, 0).toISOString().slice(0, 10);
+
+      const [currData, prevData] = await Promise.all([
+        supabase.from("appointments").select("valor, valor_recebido").is("deleted_at", null).gte("data_atendimento", startCurr).lte("data_atendimento", endCurr),
+        supabase.from("appointments").select("valor, valor_recebido").is("deleted_at", null).gte("data_atendimento", startPrev).lte("data_atendimento", endPrev),
+      ]);
+
+      const faturadoCurr = (currData.data ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
+      const recebidoCurr = (currData.data ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
+      const faturadoPrev = (prevData.data ?? []).reduce((s, a) => s + Number(a.valor ?? 0), 0);
+      const recebidoPrev = (prevData.data ?? []).reduce((s, a) => s + Number(a.valor_recebido ?? 0), 0);
+
+      const calc = (curr: number, old: number) => {
+        const pct = old === 0 ? (curr > 0 ? 100 : 0) : ((curr - old) / old) * 100;
+        return { pct: pct.toFixed(1) + "%", abs: brl(curr - old) };
+      };
+
+      const varFat = calc(faturadoCurr, faturadoPrev);
+      const varRec = calc(recebidoCurr, recebidoPrev);
+
+      const compSummary = {
+        "Mês Atual": now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
+        "--- FATURAMENTO ---": " ",
+        "Faturado Atual": brl(faturadoCurr),
+        "Faturado Anterior": brl(faturadoPrev),
+        "Variação Faturado (Abs.)": varFat.abs,
+        "Variação Faturado (%)": varFat.pct,
+        "--- RECEBIMENTO ---": "  ",
+        "Recebido Atual": brl(recebidoCurr),
+        "Recebido Anterior": brl(recebidoPrev),
+        "Variação Recebido (Abs.)": varRec.abs,
+        "Variação Recebido (%)": varRec.pct,
+      };
+
+      exportPDF(
+        `comparativo_${y}_${m}`,
+        "Relatório Comparativo Mensal",
+        ["Indicador", "Mês Anterior", "Mês Atual", "Variação Abs.", "Variação %"],
+        [
+          ["Faturado", brl(faturadoPrev), brl(faturadoCurr), varFat.abs, varFat.pct],
+          ["Recebido", brl(recebidoPrev), brl(recebidoCurr), varRec.abs, varRec.pct],
+        ],
+        compSummary
+      );
+      toast.success("PDF Comparativo gerado com sucesso.");
+    } catch (e) {
+      toast.error("Erro ao gerar PDF comparativo");
+    }
+  };
 
   const onConsolidado = async () => {
     try {
@@ -219,6 +278,9 @@ function Relatorios() {
           </Button>
           <Button size="sm" onClick={onConsolidado}>
             <Package className="mr-2 h-4 w-4" /> Excel consolidado
+          </Button>
+          <Button size="sm" variant="secondary" onClick={onPDFComparativo}>
+            <BarChart3 className="mr-2 h-4 w-4" /> Comparativo PDF
           </Button>
         </div>
       </header>

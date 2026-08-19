@@ -252,7 +252,7 @@ function Page() {
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorEmitido)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
               </div>
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-400/15 text-emerald-300">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
                 <TrendingUp className="h-6 w-6" />
               </div>
             </div>
@@ -275,7 +275,7 @@ function Page() {
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorPendente)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{stats.pendentes} pendência(s)</div>
               </div>
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-400/15 text-amber-300">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertCircle className="h-6 w-6" />
               </div>
             </div>

@@ -384,7 +384,7 @@ function Page() {
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.aberto)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
               </div>
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-400/15 text-rose-300">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/20 text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
                 <TrendingDown className="h-6 w-6" />
               </div>
             </div>
@@ -408,7 +408,7 @@ function Page() {
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.vencidasValor)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
               </div>
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-400/15 text-amber-300">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertTriangle className="h-6 w-6" />
               </div>
             </div>

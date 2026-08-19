@@ -116,19 +116,32 @@ function Page() {
   const [extracting, setExtracting] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [from, setFrom] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+  });
+  const [to, setTo] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10);
+  });
   const extractRef = useRef<HTMLInputElement>(null);
   const getFile = useServerFn(getStorageFile);
   const extractFn = useServerFn(extractPayableFromPdf);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["payables"],
+    queryKey: ["payables", from, to],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let q = supabase
         .from("payables")
         .select("id,fornecedor,descricao,valor,data_vencimento,data_pagamento,status,anexo_path,paid_by_name,payment_method_id,recorrente,recorrencia_parcela,recorrencia_total")
         .is("deleted_at", null)
         .order("data_vencimento", { ascending: true })
         .limit(500);
+      
+      if (from) q = q.gte("data_vencimento", from);
+      if (to) q = q.lte("data_vencimento", to);
+      
+      const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Payable[];
     },

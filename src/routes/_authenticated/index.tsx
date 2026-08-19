@@ -284,13 +284,13 @@ function Dashboard() {
               transition={{ delay: i * 0.08, duration: 0.4 }}
             >
               <Card3D className="h-full">
-                <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-20 dark:opacity-70`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-40 dark:opacity-70`} />
                 <div className="relative p-6">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       {c.label}
                     </p>
-                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-background/50 ring-1 ring-border ${toneColor} dark:bg-white/[0.04] dark:ring-white/10`}>
+                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-background/80 ring-1 ring-border shadow-sm ${toneColor} dark:bg-white/[0.04] dark:ring-white/10 dark:shadow-none`}>
                       <Icon className="h-4 w-4" />
                     </div>
                   </div>

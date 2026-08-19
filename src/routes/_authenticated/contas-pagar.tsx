@@ -344,7 +344,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-rose-200">
               <Sparkles className="h-3.5 w-3.5" /> Central de Pagamentos
             </div>
-            <h1 className="bg-gradient-to-r from-foreground via-rose-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
+            <h1 className="bg-gradient-to-r from-foreground via-rose-600 to-indigo-600 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-foreground dark:via-rose-100 dark:to-indigo-200">
               Contas a Pagar
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -364,7 +364,7 @@ function Page() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) onExtractPdf(f); e.target.value = ""; }}
             />
             <Button
-              variant="outline" className="rounded-xl border-white/10 bg-white/[0.03]"
+              variant="outline" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]"
               onClick={() => extractRef.current?.click()} disabled={extracting}
             >
               <Sparkles className="mr-2 h-4 w-4" />

@@ -183,7 +183,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-emerald-200">
               <Sparkles className="h-3.5 w-3.5" /> Dashboard Executivo
             </div>
-            <h1 className="bg-gradient-to-r from-foreground via-emerald-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
+            <h1 className="bg-gradient-to-r from-foreground via-emerald-600 to-indigo-600 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-foreground dark:via-emerald-100 dark:to-indigo-200">
               Painel de Contas
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -216,7 +216,7 @@ function Page() {
               <Button
                 variant="outline"
                 size="sm"
-                className="group relative gap-1.5 overflow-hidden rounded-xl border-white/10 bg-white/[0.03] backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:shadow-[0_10px_30px_-10px_rgba(16,185,129,0.5)]"
+                className="group relative gap-1.5 overflow-hidden rounded-xl border-border bg-background/50 backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-emerald-500/10 hover:shadow-[0_10px_30px_-10px_rgba(16,185,129,0.5)] dark:border-white/10 dark:bg-white/[0.03]"
               >
                 <span aria-hidden className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 Gerenciar

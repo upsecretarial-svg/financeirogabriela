@@ -76,13 +76,21 @@ function Atendimentos() {
   const { edit: editParam } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Partial<AppointmentRow> | null>(null);
+  const [from, setFrom] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+  });
+  const [to, setTo] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10);
+  });
   const [open, setOpen] = useState(false);
   const [serviceId, setServiceId] = useState<string>("");
   const [quickServiceOpen, setQuickServiceOpen] = useState(false);
   const [quickService, setQuickService] = useState<{ nome: string; valor: string }>({ nome: "", valor: "" });
 
   const { data: appts, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["appointments", search],
+    queryKey: ["appointments", search, from, to],
     queryFn: async () => {
       let q = supabase
         .from("appointments")
@@ -90,6 +98,8 @@ function Atendimentos() {
         .is("deleted_at", null)
         .order("data_atendimento", { ascending: false })
         .limit(200);
+      if (from) q = q.gte("data_atendimento", from);
+      if (to) q = q.lte("data_atendimento", to);
       if (search) {
         q = q.or(`tutor.ilike.%${search}%,pet.ilike.%${search}%,numero_interno.ilike.%${search}%`);
       }
@@ -300,14 +310,32 @@ function Atendimentos() {
       <Card className="border-border/60">
         <CardHeader>
           <CardTitle className="text-base">Lista</CardTitle>
-          <div className="relative mt-2">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por tutor, pet ou nº..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por tutor, pet ou nº..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Input
+                type="month"
+                className="h-9 w-40 text-xs"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const [y, m] = e.target.value.split("-").map(Number);
+                    setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
+                    setTo(new Date(y, m, 0).toISOString().slice(0, 10));
+                  }
+                }}
+              />
+              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-36 text-xs" />
+              <span className="text-muted-foreground">até</span>
+              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-36 text-xs" />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">

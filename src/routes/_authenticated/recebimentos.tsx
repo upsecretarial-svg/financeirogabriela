@@ -400,7 +400,7 @@ function Page() {
                 {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
               </SelectContent>
             </Select>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="relative">
                 <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -419,9 +419,10 @@ function Page() {
                 <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="De" className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-9" />
               </div>
-            <div className="relative">
-              <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Até" className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-9" />
+              <div className="relative">
+                <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Até" className="h-11 rounded-xl border-white/10 bg-white/[0.03] pl-9" />
+              </div>
             </div>
           </div>
         </div>

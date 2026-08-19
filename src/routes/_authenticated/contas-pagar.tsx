@@ -344,7 +344,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-rose-200">
               <Sparkles className="h-3.5 w-3.5" /> Central de Pagamentos
             </div>
-            <h1 className="bg-gradient-to-r from-white via-rose-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-foreground via-rose-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
               Contas a Pagar
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -381,7 +381,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-rose-300">Total a pagar</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-white">{brl(kpis.aberto)}</div>
+                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.aberto)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-400/15 text-rose-300">
@@ -405,7 +405,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-amber-300">Vencidas</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-white">{brl(kpis.vencidasValor)}</div>
+                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.vencidasValor)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-400/15 text-amber-300">

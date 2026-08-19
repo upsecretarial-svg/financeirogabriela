@@ -227,7 +227,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-indigo-200">
               <Sparkles className="h-3.5 w-3.5" /> Central de Notas Fiscais
             </div>
-            <h1 className="bg-gradient-to-r from-white via-indigo-100 to-fuchsia-200 bg-clip-text text-4xl font-black tracking-tight text-transparent">
+            <h1 className="bg-gradient-to-r from-foreground via-indigo-100 to-fuchsia-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
               Notas Fiscais
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -249,7 +249,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Valor emitido</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-white">{brl(stats.valorEmitido)}</div>
+                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorEmitido)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-400/15 text-emerald-300">
@@ -272,7 +272,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-fuchsia-300">A emitir</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-white">{brl(stats.valorPendente)}</div>
+                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorPendente)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{stats.pendentes} pendência(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-400/15 text-amber-300">

@@ -232,7 +232,7 @@ function Dashboard() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-950/60 via-[#141432]/70 to-[#0a0a1a]/40 p-8 backdrop-blur-xl"
+        className="relative overflow-hidden rounded-2xl border border-border bg-card/50 p-8 backdrop-blur-xl dark:border-white/10 dark:bg-gradient-to-br dark:from-indigo-950/60 dark:via-[#141432]/70 dark:to-[#0a0a1a]/40"
       >
         <div className="absolute inset-0 bg-grid-lines opacity-50" />
         <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
@@ -253,11 +253,11 @@ function Dashboard() {
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="h-8 w-40 border-border bg-white/5 text-xs text-foreground"
+                className="h-8 w-40 border-border bg-background/50 text-xs text-foreground"
               />
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-muted-foreground backdrop-blur">
+          <div className="flex items-center gap-2 rounded-full border border-border bg-background/30 px-4 py-2 text-xs text-muted-foreground backdrop-blur dark:border-white/10 dark:bg-white/[0.03]">
             <Zap className="h-3.5 w-3.5 text-primary" />
             Sistema atualizado em tempo real
           </div>
@@ -284,13 +284,13 @@ function Dashboard() {
               transition={{ delay: i * 0.08, duration: 0.4 }}
             >
               <Card3D className="h-full">
-                <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-70`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-20 dark:opacity-70`} />
                 <div className="relative p-6">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                       {c.label}
                     </p>
-                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-white/[0.04] ring-1 ring-white/10 ${toneColor}`}>
+                    <div className={`grid h-9 w-9 place-items-center rounded-xl bg-background/50 ring-1 ring-border ${toneColor} dark:bg-white/[0.04] dark:ring-white/10`}>
                       <Icon className="h-4 w-4" />
                     </div>
                   </div>

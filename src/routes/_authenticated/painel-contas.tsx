@@ -451,7 +451,18 @@ function KpiCard({
           </span>
         </div>
         <div className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
-        <div className="mt-1 text-3xl font-black tracking-tight text-white">{value}</div>
+        <div className="mt-1 flex items-baseline gap-2">
+          <div className="text-3xl font-black tracking-tight text-white">{value}</div>
+          {variation !== undefined && (
+            <div className={cn(
+              "flex items-center gap-0.5 text-[10px] font-bold",
+              variation <= 0 ? "text-emerald-400" : "text-rose-400"
+            )}>
+              {variation <= 0 ? <TrendingUp className="h-3 w-3 rotate-180" /> : <TrendingUp className="h-3 w-3" />}
+              {Math.abs(variation).toFixed(1)}%
+            </div>
+          )}
+        </div>
         <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
           <motion.div

@@ -227,7 +227,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-indigo-200">
               <Sparkles className="h-3.5 w-3.5" /> Central de Notas Fiscais
             </div>
-            <h1 className="bg-gradient-to-r from-foreground via-indigo-100 to-fuchsia-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
+            <h1 className="bg-gradient-to-r from-foreground via-indigo-600 to-fuchsia-600 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-foreground dark:via-indigo-100 dark:to-fuchsia-200">
               Notas Fiscais
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">

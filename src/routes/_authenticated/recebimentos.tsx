@@ -255,7 +255,7 @@ function Page() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-emerald-200">
               <Sparkles className="h-3.5 w-3.5" /> Central de Recebimentos
             </div>
-            <h1 className="bg-gradient-to-r from-foreground via-emerald-100 to-indigo-200 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-white">
+            <h1 className="bg-gradient-to-r from-foreground via-emerald-600 to-indigo-600 bg-clip-text text-4xl font-black tracking-tight text-transparent dark:from-foreground dark:via-emerald-100 dark:to-indigo-200">
               Recebimentos
             </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -263,13 +263,13 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
               <FileDown className="mr-2 h-4 w-4" /> CSV
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
               <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
               <FileText className="mr-2 h-4 w-4" /> PDF
             </Button>
           </div>

@@ -82,18 +82,42 @@ function Page() {
   const { data, isLoading } = useQuery({
     queryKey: ["painel-contas", range.from, range.to],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Current period
+      const { data: current, error } = await supabase
         .from("payables")
         .select("id,fornecedor,categoria,valor,status,data_vencimento,data_pagamento")
         .is("deleted_at", null)
         .or(`and(data_vencimento.gte.${range.from},data_vencimento.lte.${range.to}),and(data_pagamento.gte.${range.from},data_pagamento.lte.${range.to})`)
         .order("data_vencimento", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as Payable[];
+
+      // Previous period for comparison
+      const dFrom = new Date(range.from);
+      const dTo = new Date(range.to);
+      const diff = dTo.getTime() - dFrom.getTime();
+      const prevFrom = new Date(dFrom.getTime() - diff - 86400000).toISOString().slice(0, 10);
+      const prevTo = new Date(dFrom.getTime() - 86400000).toISOString().slice(0, 10);
+
+      const { data: prev } = await supabase
+        .from("payables")
+        .select("valor,status")
+        .is("deleted_at", null)
+        .or(`and(data_vencimento.gte.${prevFrom},data_vencimento.lte.${prevTo}),and(data_pagamento.gte.${prevFrom},data_pagamento.lte.${prevTo})`);
+
+      const totalCurrent = (current ?? []).filter(r => r.status !== 'cancelado').reduce((s, r) => s + Number(r.valor), 0);
+      const totalPrev = (prev ?? []).filter(r => r.status !== 'cancelado').reduce((s, r) => s + Number(r.valor), 0);
+      
+      const variation = totalPrev === 0 ? (totalCurrent > 0 ? 100 : 0) : ((totalCurrent - totalPrev) / totalPrev) * 100;
+
+      return {
+        rows: (current ?? []) as Payable[],
+        totalVariation: variation
+      };
     },
   });
 
-  const rows = data ?? [];
+  const rows = data?.rows ?? [];
+  const totalVariation = data?.totalVariation ?? 0;
   const today = new Date().toISOString().slice(0, 10);
 
   const stats = useMemo(() => {
@@ -208,7 +232,7 @@ function Page() {
         <KpiCard label="Pago" icon={CheckCircle2} value={brl(stats.pagoTotal)} sub={`${stats.pagoQtd} conta(s)`} tone="emerald" delay={0.05} share={stats.total ? stats.pagoTotal / stats.total : 0} />
         <KpiCard label="Pendente" icon={Clock} value={brl(stats.pendenteTotal)} sub={`${stats.pendenteQtd} a vencer`} tone="amber" delay={0.1} share={stats.total ? stats.pendenteTotal / stats.total : 0} />
         <KpiCard label="Vencido" icon={AlertTriangle} value={brl(stats.vencidoTotal)} sub={`${stats.vencidoQtd} em atraso`} tone="rose" delay={0.15} share={stats.total ? stats.vencidoTotal / stats.total : 0} />
-        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} share={1} />
+        <KpiCard label="Total do período" icon={Wallet} value={brl(stats.total)} sub={`${rows.length} lançamento(s)`} tone="indigo" delay={0.2} share={1} variation={totalVariation} />
       </div>
 
 

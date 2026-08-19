@@ -267,7 +267,7 @@ function Dashboard() {
       {contasVencendo && contasVencendo.length > 0 && <PayablesAlert rows={contasVencendo} />}
 
       {/* KPIs bento */}
-      <div className="bento-grid">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {kpis.map((c, i) => {
           const Icon = c.icon;
           const toneColor =

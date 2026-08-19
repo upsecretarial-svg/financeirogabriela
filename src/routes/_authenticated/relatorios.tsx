@@ -120,16 +120,16 @@ function Relatorios() {
 
       const compSummary = {
         "Mês Atual": now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
-        "--- FATURAMENTO ---": "",
+        "--- FATURAMENTO ---": " ",
         "Faturado Atual": brl(faturadoCurr),
         "Faturado Anterior": brl(faturadoPrev),
-        "Variação (Absoluta)": varFat.abs,
-        "Variação (%)": varFat.pct,
-        "--- RECEBIMENTO ---": "",
+        "Variação Faturado (Abs.)": varFat.abs,
+        "Variação Faturado (%)": varFat.pct,
+        "--- RECEBIMENTO ---": "  ",
         "Recebido Atual": brl(recebidoCurr),
         "Recebido Anterior": brl(recebidoPrev),
-        "Variação (Absoluta)": varRec.abs,
-        "Variação (%)": varRec.pct,
+        "Variação Recebido (Abs.)": varRec.abs,
+        "Variação Recebido (%)": varRec.pct,
       };
 
       exportPDF(

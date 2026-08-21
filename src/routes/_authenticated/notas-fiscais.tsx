@@ -235,9 +235,9 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <StatMini label="Emitidas" value={stats.emitidas} tone="success" />
-            <StatMini label="Pendentes" value={stats.pendentes} tone="warn" />
-            <StatMini label="Total" value={stats.total} tone="neutral" />
+            <StatMini label="Emitidas" value={stats.emitidas} tone="success" className="h-10 px-4" />
+            <StatMini label="Pendentes" value={stats.pendentes} tone="warn" className="h-10 px-4" />
+            <StatMini label="Total" value={stats.total} tone="neutral" className="h-10 px-4" />
           </div>
         </div>
       </motion.header>

@@ -263,13 +263,13 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
               <FileDown className="mr-2 h-4 w-4" /> CSV
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
               <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
               <FileText className="mr-2 h-4 w-4" /> PDF
             </Button>
           </div>

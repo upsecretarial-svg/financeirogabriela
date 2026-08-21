@@ -364,7 +364,6 @@ function Page() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) onExtractPdf(f); e.target.value = ""; }}
             />
             <Button
-            <Button
               variant="outline" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]"
               onClick={() => extractRef.current?.click()} disabled={extracting}
             >

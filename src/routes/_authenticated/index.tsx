@@ -248,12 +248,12 @@ function Dashboard() {
               <span className="text-gradient-primary">Financeira</span>
             </h1>
             <div className="mt-2 flex items-center gap-3">
-              <p className="text-sm capitalize text-muted-foreground">{mesAtual}</p>
+              <p className="text-sm font-bold capitalize text-muted-foreground">{mesAtual}</p>
               <Input
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="h-8 w-40 border-border bg-background/50 text-xs text-foreground"
+                className="h-10 w-44 border-border bg-background/50 text-sm font-bold text-foreground"
               />
             </div>
           </div>

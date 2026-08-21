@@ -364,10 +364,11 @@ function Page() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) onExtractPdf(f); e.target.value = ""; }}
             />
             <Button
-              variant="outline" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]"
+            <Button
+              variant="outline" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]"
               onClick={() => extractRef.current?.click()} disabled={extracting}
             >
-              <Sparkles className="mr-2 h-4 w-4" />
+              <Sparkles className="mr-2 h-4 w-4 text-primary" />
               {extracting ? "Lendo boleto…" : "Ler boleto (PDF)"}
             </Button>
           </div>

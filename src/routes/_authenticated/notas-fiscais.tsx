@@ -442,15 +442,15 @@ function Page() {
   );
 }
 
-function StatMini({ label, value, tone }: { label: string; value: number; tone: "success" | "warn" | "neutral" }) {
+function StatMini({ label, value, tone, className }: { label: string; value: number; tone: "success" | "warn" | "neutral"; className?: string }) {
   const tones = {
-    success: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
-    warn: "border-amber-400/30 bg-amber-400/10 text-amber-200",
-    neutral: "border-white/10 bg-white/5 text-white",
+    success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
+    warn: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200",
+    neutral: "border-border bg-background/50 text-foreground dark:border-white/10 dark:bg-white/5 dark:text-white",
   };
   return (
-    <div className={cn("rounded-2xl border px-4 py-3 backdrop-blur", tones[tone])}>
-      <div className="text-[10px] font-semibold uppercase tracking-widest opacity-80">{label}</div>
+    <div className={cn("rounded-2xl border px-4 py-3 backdrop-blur", tones[tone], className)}>
+      <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">{label}</div>
       <div className="text-2xl font-black leading-tight">{value}</div>
     </div>
   );

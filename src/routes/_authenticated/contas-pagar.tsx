@@ -353,7 +353,7 @@ function Page() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
-              className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
+              className="h-10 rounded-xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 font-bold shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-500 hover:to-fuchsia-500"
               onClick={() => setEdit({ ...emptyForm })}
             >
               <Plus className="mr-2 h-4 w-4" /> Nova conta

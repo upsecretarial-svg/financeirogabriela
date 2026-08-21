@@ -246,7 +246,7 @@ function Page() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-500/10 via-indigo-500/5 to-transparent p-8"
+        className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card/50 p-8 backdrop-blur-3xl dark:border-white/10 dark:from-emerald-500/10 dark:via-indigo-500/5 dark:to-transparent"
       >
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -558,8 +558,8 @@ function MiniBentoStat({
         <div className={cn("mb-4 grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br", colors[color])}>
           <Icon className="h-5 w-5" />
         </div>
-        <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className={cn("mt-1 font-black text-white", isMoney ? "text-xl" : "text-3xl")}>{value}</div>
+        <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground/90">{label}</div>
+        <div className={cn("mt-1 font-black text-foreground", isMoney ? "text-2xl" : "text-4xl")}>{value}</div>
       </Card3D>
     </motion.div>
   );

@@ -380,9 +380,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-rose-300">Total a pagar</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-rose-400">Total a pagar</div>
                 <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(kpis.aberto)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/20 text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
                 <TrendingDown className="h-6 w-6" />
@@ -396,7 +396,7 @@ function Page() {
                 className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 shadow-[0_0_20px_rgba(52,211,153,0.5)]"
               />
             </div>
-            <div className="mt-2 text-[11px] font-medium text-emerald-200/80">{pctPago.toFixed(1)}% já quitado ({brl(kpis.totalPago)})</div>
+            <div className="mt-2 text-xs font-bold text-emerald-300">{pctPago.toFixed(1)}% já quitado ({brl(kpis.totalPago)})</div>
           </Card3D>
         </motion.div>
 
@@ -404,9 +404,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-amber-300">Vencidas</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-amber-400">Vencidas</div>
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.vencidasValor)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertTriangle className="h-6 w-6" />

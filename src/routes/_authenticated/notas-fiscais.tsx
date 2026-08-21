@@ -248,9 +248,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Valor emitido</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-indigo-400">Valor emitido</div>
                 <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(stats.valorEmitido)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
                 <TrendingUp className="h-6 w-6" />
@@ -271,9 +271,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-fuchsia-300">A emitir</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-fuchsia-400">A emitir</div>
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorPendente)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{stats.pendentes} pendência(s)</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{stats.pendentes} pendência(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertCircle className="h-6 w-6" />

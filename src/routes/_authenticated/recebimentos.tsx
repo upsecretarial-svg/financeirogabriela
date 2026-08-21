@@ -283,7 +283,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-emerald-300">Total recebido</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(totals.recebido)}</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(totals.recebido)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">de {brl(totals.valor)} faturados</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">

@@ -40,10 +40,10 @@ export function Card3D({ children, className, glow = false, intensity = 8 }: Car
       onMouseLeave={reset}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1200 }}
       className={cn(
-        "group relative overflow-hidden rounded-[var(--radius)] transition-shadow duration-300",
-        "border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] backdrop-blur-xl",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_20px_40px_-20px_rgba(0,0,0,0.6)]",
-        "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_30px_60px_-15px_rgba(79,70,229,0.5)]",
+        "group relative overflow-hidden rounded-[var(--radius)] transition-all duration-300",
+        "border border-border bg-card/60 backdrop-blur-2xl dark:border-white/10 dark:bg-gradient-to-br dark:from-white/[0.08] dark:to-white/[0.03]",
+        "shadow-sm hover:shadow-xl dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_20px_40px_-20px_rgba(0,0,0,0.6)]",
+        "dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_30px_60px_-15px_rgba(79,70,229,0.5)]",
         glow && "hover:ring-1 hover:ring-primary/50",
         className,
       )}

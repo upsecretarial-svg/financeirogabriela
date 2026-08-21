@@ -295,7 +295,7 @@ function Dashboard() {
                     </div>
                   </div>
                   <div className="mt-6 flex items-baseline justify-between gap-2">
-                    <p className={`number-display text-3xl ${toneColor}`}>
+                    <p className={`number-display text-4xl font-black ${toneColor}`}>
                       {isLoading ? "—" : c.value}
                     </p>
                     {c.variation !== undefined && (

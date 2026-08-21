@@ -381,7 +381,7 @@ function Page() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-widest text-rose-300">Total a pagar</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.aberto)}</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(kpis.aberto)}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/20 text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">

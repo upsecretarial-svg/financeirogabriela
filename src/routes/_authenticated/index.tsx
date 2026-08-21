@@ -301,7 +301,7 @@ function Dashboard() {
                     {c.variation !== undefined && (
                       <div className="flex flex-col items-end">
                         <div className={cn(
-                          "flex items-center gap-0.5 text-sm font-black tracking-tight",
+                          "flex items-center gap-1 rounded-full bg-background/50 px-2 py-0.5 text-sm font-black tracking-tight shadow-sm dark:bg-white/5",
                           c.variation >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {c.variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-90" />}
@@ -413,7 +413,7 @@ function Dashboard() {
                 </h3>
               </div>
               <div>
-                <p className="number-display text-5xl text-foreground">
+                <p className="number-display text-6xl font-black tracking-tighter text-foreground">
                   {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
                 </p>
                 <p className="mt-2 text-xs text-white/70">

@@ -335,7 +335,7 @@ function Page() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-rose-500/10 via-indigo-500/5 to-transparent p-8"
+        className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card/50 p-8 backdrop-blur-3xl dark:border-white/10 dark:from-rose-500/10 dark:via-indigo-500/5 dark:to-transparent"
       >
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-rose-500/20 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -353,7 +353,7 @@ function Page() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
-              className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
+              className="h-10 rounded-xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 font-bold shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-500 hover:to-fuchsia-500"
               onClick={() => setEdit({ ...emptyForm })}
             >
               <Plus className="mr-2 h-4 w-4" /> Nova conta
@@ -364,10 +364,10 @@ function Page() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) onExtractPdf(f); e.target.value = ""; }}
             />
             <Button
-              variant="outline" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]"
+              variant="outline" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]"
               onClick={() => extractRef.current?.click()} disabled={extracting}
             >
-              <Sparkles className="mr-2 h-4 w-4" />
+              <Sparkles className="mr-2 h-4 w-4 text-primary" />
               {extracting ? "Lendo boleto…" : "Ler boleto (PDF)"}
             </Button>
           </div>
@@ -380,9 +380,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-rose-300">Total a pagar</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.aberto)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-rose-400">Total a pagar</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(kpis.aberto)}</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{kpis.pendentes} conta(s) em aberto</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/20 text-rose-600 dark:bg-rose-400/15 dark:text-rose-300">
                 <TrendingDown className="h-6 w-6" />
@@ -396,7 +396,7 @@ function Page() {
                 className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 shadow-[0_0_20px_rgba(52,211,153,0.5)]"
               />
             </div>
-            <div className="mt-2 text-[11px] font-medium text-emerald-200/80">{pctPago.toFixed(1)}% já quitado ({brl(kpis.totalPago)})</div>
+            <div className="mt-2 text-xs font-bold text-emerald-300">{pctPago.toFixed(1)}% já quitado ({brl(kpis.totalPago)})</div>
           </Card3D>
         </motion.div>
 
@@ -404,9 +404,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-amber-300">Vencidas</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-amber-400">Vencidas</div>
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(kpis.vencidasValor)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{kpis.vencidas} conta(s) em atraso</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertTriangle className="h-6 w-6" />
@@ -735,8 +735,8 @@ function MiniBentoStat({
         <div className={cn("mb-4 grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br", colors[color])}>
           <Icon className="h-5 w-5" />
         </div>
-        <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className={cn("mt-1 font-black text-white", isMoney ? "text-xl" : "text-3xl")}>{value}</div>
+        <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground/90">{label}</div>
+        <div className={cn("mt-1 font-black text-foreground", isMoney ? "text-2xl" : "text-4xl")}>{value}</div>
       </Card3D>
     </motion.div>
   );

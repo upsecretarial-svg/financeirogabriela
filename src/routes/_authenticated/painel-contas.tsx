@@ -446,24 +446,24 @@ function KpiCard({
           <div className={cn("grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3", t.grad)}>
             <Icon className="h-6 w-6" />
           </div>
-          <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+          <span className="rounded-full bg-background/50 px-2 py-0.5 text-xs font-black text-muted-foreground/80 dark:bg-white/5">
             {Math.round(share * 100)}%
           </span>
         </div>
-        <div className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</div>
+        <div className="mt-4 text-sm font-bold uppercase tracking-widest text-muted-foreground/90">{label}</div>
         <div className="mt-1 flex items-baseline gap-2">
-          <div className="text-3xl font-black tracking-tight text-white">{value}</div>
+          <div className="text-4xl font-black tracking-tighter text-foreground">{value}</div>
           {variation !== undefined && (
             <div className={cn(
-              "flex items-center gap-0.5 text-[10px] font-bold",
-              variation <= 0 ? "text-emerald-400" : "text-rose-400"
+              "flex items-center gap-1 rounded-full bg-background/50 px-2 py-0.5 text-sm font-black shadow-sm dark:bg-white/5",
+              variation <= 0 ? "text-success" : "text-destructive"
             )}>
               {variation <= 0 ? <TrendingUp className="h-3 w-3 rotate-180" /> : <TrendingUp className="h-3 w-3" />}
               {Math.abs(variation).toFixed(1)}%
             </div>
           )}
         </div>
-        <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+        <div className="mt-2 text-sm font-medium text-muted-foreground">{sub}</div>
         <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5">
           <motion.div
             initial={{ width: 0 }}

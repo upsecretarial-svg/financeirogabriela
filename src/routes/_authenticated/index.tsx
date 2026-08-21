@@ -248,12 +248,12 @@ function Dashboard() {
               <span className="text-gradient-primary">Financeira</span>
             </h1>
             <div className="mt-2 flex items-center gap-3">
-              <p className="text-sm capitalize text-muted-foreground">{mesAtual}</p>
+              <p className="text-sm font-bold capitalize text-muted-foreground">{mesAtual}</p>
               <Input
                 type="month"
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="h-8 w-40 border-border bg-background/50 text-xs text-foreground"
+                className="h-10 w-44 border-border bg-background/50 text-sm font-bold text-foreground"
               />
             </div>
           </div>
@@ -287,7 +287,7 @@ function Dashboard() {
                 <div className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-40 dark:opacity-70`} />
                 <div className="relative p-6">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground/90">
                       {c.label}
                     </p>
                     <div className={`grid h-9 w-9 place-items-center rounded-xl bg-background/80 ring-1 ring-border shadow-sm ${toneColor} dark:bg-white/[0.04] dark:ring-white/10 dark:shadow-none`}>
@@ -295,13 +295,13 @@ function Dashboard() {
                     </div>
                   </div>
                   <div className="mt-6 flex items-baseline justify-between gap-2">
-                    <p className={`number-display text-3xl ${toneColor}`}>
+                    <p className={`number-display text-4xl font-black ${toneColor}`}>
                       {isLoading ? "—" : c.value}
                     </p>
                     {c.variation !== undefined && (
                       <div className="flex flex-col items-end">
                         <div className={cn(
-                          "flex items-center gap-0.5 text-[10px] font-bold",
+                          "flex items-center gap-1 rounded-full bg-background/50 px-2 py-0.5 text-sm font-black tracking-tight shadow-sm dark:bg-white/5",
                           c.variation >= 0 ? "text-success" : "text-destructive"
                         )}>
                           {c.variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-90" />}
@@ -309,7 +309,7 @@ function Dashboard() {
                         </div>
                         {c.absVariation !== undefined && (
                           <div className={cn(
-                            "text-[9px] font-medium opacity-70",
+                            "text-xs font-bold",
                             c.absVariation >= 0 ? "text-success" : "text-destructive"
                           )}>
                             {c.absVariation >= 0 ? "+" : ""}{brl(c.absVariation)}
@@ -318,7 +318,7 @@ function Dashboard() {
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 text-xs text-muted-foreground/80">{c.sub}</p>
+                  <p className="mt-2 text-sm font-medium text-muted-foreground">{c.sub}</p>
                 </div>
               </Card3D>
             </motion.div>
@@ -413,7 +413,7 @@ function Dashboard() {
                 </h3>
               </div>
               <div>
-                <p className="number-display text-5xl text-foreground">
+                <p className="number-display text-6xl font-black tracking-tighter text-foreground">
                   {meta > 0 ? `${progresso.toFixed(0)}%` : "—"}
                 </p>
                 <p className="mt-2 text-xs text-white/70">

@@ -218,7 +218,7 @@ function Page() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-500/10 via-fuchsia-500/5 to-transparent p-8"
+        className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card/50 p-8 backdrop-blur-3xl dark:border-white/10 dark:from-indigo-500/10 dark:via-fuchsia-500/5 dark:to-transparent"
       >
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-fuchsia-500/10 blur-3xl" />
@@ -235,9 +235,9 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <StatMini label="Emitidas" value={stats.emitidas} tone="success" />
-            <StatMini label="Pendentes" value={stats.pendentes} tone="warn" />
-            <StatMini label="Total" value={stats.total} tone="neutral" />
+            <StatMini label="Emitidas" value={stats.emitidas} tone="success" className="h-10 px-4" />
+            <StatMini label="Pendentes" value={stats.pendentes} tone="warn" className="h-10 px-4" />
+            <StatMini label="Total" value={stats.total} tone="neutral" className="h-10 px-4" />
           </div>
         </div>
       </motion.header>
@@ -248,9 +248,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Valor emitido</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorEmitido)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-indigo-400">Valor emitido</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(stats.valorEmitido)}</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{stats.emitidas} nota(s) emitida(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
                 <TrendingUp className="h-6 w-6" />
@@ -271,9 +271,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-fuchsia-300">A emitir</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-fuchsia-400">A emitir</div>
                 <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(stats.valorPendente)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{stats.pendentes} pendência(s)</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{stats.pendentes} pendência(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertCircle className="h-6 w-6" />
@@ -442,15 +442,15 @@ function Page() {
   );
 }
 
-function StatMini({ label, value, tone }: { label: string; value: number; tone: "success" | "warn" | "neutral" }) {
+function StatMini({ label, value, tone, className }: { label: string; value: number; tone: "success" | "warn" | "neutral"; className?: string }) {
   const tones = {
-    success: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
-    warn: "border-amber-400/30 bg-amber-400/10 text-amber-200",
-    neutral: "border-white/10 bg-white/5 text-white",
+    success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-200",
+    warn: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200",
+    neutral: "border-border bg-background/50 text-foreground dark:border-white/10 dark:bg-white/5 dark:text-white",
   };
   return (
-    <div className={cn("rounded-2xl border px-4 py-3 backdrop-blur", tones[tone])}>
-      <div className="text-[10px] font-semibold uppercase tracking-widest opacity-80">{label}</div>
+    <div className={cn("rounded-2xl border px-4 py-3 backdrop-blur", tones[tone], className)}>
+      <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">{label}</div>
       <div className="text-2xl font-black leading-tight">{value}</div>
     </div>
   );
@@ -481,8 +481,8 @@ function MiniBentoStat({
         <div className={cn("mb-4 grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br", colors[color])}>
           <Icon className="h-5 w-5" />
         </div>
-        <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className="mt-1 text-3xl font-black text-white">{value}</div>
+        <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground/90">{label}</div>
+        <div className="mt-1 text-4xl font-black text-foreground">{value}</div>
       </Card3D>
     </motion.div>
   );

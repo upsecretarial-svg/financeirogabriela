@@ -246,7 +246,7 @@ function Page() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-500/10 via-indigo-500/5 to-transparent p-8"
+        className="relative overflow-hidden rounded-[var(--radius)] border border-border bg-card/50 p-8 backdrop-blur-3xl dark:border-white/10 dark:from-emerald-500/10 dark:via-indigo-500/5 dark:to-transparent"
       >
         <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
@@ -263,13 +263,13 @@ function Page() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportCSV(filename, exportRows)} disabled={!exportRows.length}>
               <FileDown className="mr-2 h-4 w-4" /> CSV
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={() => exportXLSX(filename, exportRows)} disabled={!exportRows.length}>
               <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl border-border bg-background/50 dark:border-white/10 dark:bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-border bg-background/50 font-bold dark:border-white/10 dark:bg-white/[0.03]" onClick={onPDF} disabled={!exportRows.length}>
               <FileText className="mr-2 h-4 w-4" /> PDF
             </Button>
           </div>
@@ -282,9 +282,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-emerald-300">Total recebido</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(totals.recebido)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">de {brl(totals.valor)} faturados</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-emerald-400">Total recebido</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(totals.recebido)}</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">de {brl(totals.valor)} faturados</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/20 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
                 <TrendingUp className="h-6 w-6" />
@@ -298,7 +298,7 @@ function Page() {
                 className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 shadow-[0_0_20px_rgba(52,211,153,0.5)]"
               />
             </div>
-            <div className="mt-2 text-[11px] font-medium text-emerald-200/80">{pctRecebido.toFixed(1)}% da meta</div>
+            <div className="mt-2 text-xs font-bold text-emerald-300">{pctRecebido.toFixed(1)}% da meta</div>
           </Card3D>
         </motion.div>
 
@@ -306,9 +306,9 @@ function Page() {
           <Card3D className="h-full p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-amber-300">Em aberto</div>
-                <div className="mt-2 text-4xl font-black tracking-tight text-foreground">{brl(totals.aberto)}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{totals.qtd - totals.pagos} pendência(s)</div>
+                <div className="text-sm font-bold uppercase tracking-widest text-amber-400">Em aberto</div>
+                <div className="mt-2 text-5xl font-black tracking-tighter text-foreground">{brl(totals.aberto)}</div>
+                <div className="mt-1 text-sm font-medium text-muted-foreground">{totals.qtd - totals.pagos} pendência(s)</div>
               </div>
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300">
                 <AlertCircle className="h-6 w-6" />
@@ -558,8 +558,8 @@ function MiniBentoStat({
         <div className={cn("mb-4 grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br", colors[color])}>
           <Icon className="h-5 w-5" />
         </div>
-        <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className={cn("mt-1 font-black text-white", isMoney ? "text-xl" : "text-3xl")}>{value}</div>
+        <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground/90">{label}</div>
+        <div className={cn("mt-1 font-black text-foreground", isMoney ? "text-2xl" : "text-4xl")}>{value}</div>
       </Card3D>
     </motion.div>
   );

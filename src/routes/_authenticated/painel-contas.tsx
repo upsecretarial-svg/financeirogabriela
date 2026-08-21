@@ -455,7 +455,7 @@ function KpiCard({
           <div className="text-4xl font-black tracking-tighter text-foreground">{value}</div>
           {variation !== undefined && (
             <div className={cn(
-              "flex items-center gap-0.5 text-sm font-black",
+              "flex items-center gap-1 rounded-full bg-background/50 px-2 py-0.5 text-sm font-black shadow-sm dark:bg-white/5",
               variation <= 0 ? "text-success" : "text-destructive"
             )}>
               {variation <= 0 ? <TrendingUp className="h-3 w-3 rotate-180" /> : <TrendingUp className="h-3 w-3" />}

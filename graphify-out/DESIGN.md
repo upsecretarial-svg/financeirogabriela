@@ -1,0 +1,222 @@
+# Design system
+
+Generated: 2026-10-02T23:31:30.984288+00:00
+
+## Tokens
+- --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
+- --radius-md: calc(var(--radius) - 2px) (src/styles.css)
+- --radius-lg: var(--radius) (src/styles.css)
+- --radius-xl: calc(var(--radius) + 4px) (src/styles.css)
+- --radius-2xl: calc(var(--radius) + 8px) (src/styles.css)
+- --font-sans: "Epilogue", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif (src/styles.css)
+- --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif (src/styles.css)
+- --color-background: var(--background) (src/styles.css)
+- --color-foreground: var(--foreground) (src/styles.css)
+- --color-card: var(--card) (src/styles.css)
+- --color-card-foreground: var(--card-foreground) (src/styles.css)
+- --color-popover: var(--popover) (src/styles.css)
+- --color-popover-foreground: var(--popover-foreground) (src/styles.css)
+- --color-primary: var(--primary) (src/styles.css)
+- --color-primary-foreground: var(--primary-foreground) (src/styles.css)
+- --color-secondary: var(--secondary) (src/styles.css)
+- --color-secondary-foreground: var(--secondary-foreground) (src/styles.css)
+- --color-muted: var(--muted) (src/styles.css)
+- --color-muted-foreground: var(--muted-foreground) (src/styles.css)
+- --color-accent: var(--accent) (src/styles.css)
+- --color-accent-foreground: var(--accent-foreground) (src/styles.css)
+- --color-destructive: var(--destructive) (src/styles.css)
+- --color-destructive-foreground: var(--destructive-foreground) (src/styles.css)
+- --color-success: var(--success) (src/styles.css)
+- --color-success-foreground: var(--success-foreground) (src/styles.css)
+- --color-warning: var(--warning) (src/styles.css)
+- --color-warning-foreground: var(--warning-foreground) (src/styles.css)
+- --color-border: var(--border) (src/styles.css)
+- --color-input: var(--input) (src/styles.css)
+- --color-ring: var(--ring) (src/styles.css)
+- --color-chart-1: var(--chart-1) (src/styles.css)
+- --color-chart-2: var(--chart-2) (src/styles.css)
+- --color-chart-3: var(--chart-3) (src/styles.css)
+- --color-chart-4: var(--chart-4) (src/styles.css)
+- --color-chart-5: var(--chart-5) (src/styles.css)
+- --color-sidebar: var(--sidebar) (src/styles.css)
+- --color-sidebar-foreground: var(--sidebar-foreground) (src/styles.css)
+- --color-sidebar-primary: var(--sidebar-primary) (src/styles.css)
+- --color-sidebar-primary-foreground: var(--sidebar-primary-foreground) (src/styles.css)
+- --color-sidebar-accent: var(--sidebar-accent) (src/styles.css)
+- --color-sidebar-accent-foreground: var(--sidebar-accent-foreground) (src/styles.css)
+- --color-sidebar-border: var(--sidebar-border) (src/styles.css)
+- --color-sidebar-ring: var(--sidebar-ring) (src/styles.css)
+- --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.1) (src/styles.css)
+- --shadow-sm: 0 4px 12px -2px rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08) (src/styles.css)
+- --shadow-md: 0 12px 32px -8px rgba(15, 15, 60, 0.25), 0 8px 16px -4px rgba(0, 0, 0, 0.1) (src/styles.css)
+- --shadow-lg: 0 32px 64px -16px rgba(79, 70, 229, 0.35), 0 16px 32px -8px rgba(0, 0, 0, 0.2) (src/styles.css)
+- --shadow-glow: 0 0 60px -12px rgba(99, 102, 241, 0.6) (src/styles.css)
+- --radius: 1.25rem (src/styles.css)
+- --background: oklch(0.14 0.045 275) (src/styles.css)
+- --foreground: oklch(0.97 0.01 260) (src/styles.css)
+- --card: oklch(0.19 0.06 275) (src/styles.css)
+- --card-foreground: oklch(0.97 0.01 260) (src/styles.css)
+- --popover: oklch(0.20 0.06 275) (src/styles.css)
+- --popover-foreground: oklch(0.97 0.01 260) (src/styles.css)
+- --primary: oklch(0.66 0.22 275) (src/styles.css)
+- --primary-foreground: oklch(0.98 0.01 260) (src/styles.css)
+- --secondary: oklch(0.24 0.07 275) (src/styles.css)
+- --secondary-foreground: oklch(0.96 0.01 260) (src/styles.css)
+- --muted: oklch(0.22 0.05 275) (src/styles.css)
+- --muted-foreground: oklch(0.72 0.03 265) (src/styles.css)
+- --accent: oklch(0.30 0.11 275) (src/styles.css)
+- --accent-foreground: oklch(0.98 0.01 260) (src/styles.css)
+- --destructive: oklch(0.65 0.25 22) (src/styles.css)
+- --destructive-foreground: oklch(0.98 0.01 25) (src/styles.css)
+- --success: oklch(0.74 0.18 155) (src/styles.css)
+- --success-foreground: oklch(0.14 0.045 275) (src/styles.css)
+- --warning: oklch(0.80 0.16 78) (src/styles.css)
+- --warning-foreground: oklch(0.14 0.045 275) (src/styles.css)
+- --border: oklch(1 0 0 / 10%) (src/styles.css)
+- --input: oklch(1 0 0 / 12%) (src/styles.css)
+- --ring: oklch(0.70 0.22 275) (src/styles.css)
+- --chart-1: oklch(0.66 0.22 275) (src/styles.css)
+- --chart-2: oklch(0.72 0.15 220) (src/styles.css)
+- --chart-3: oklch(0.74 0.18 155) (src/styles.css)
+- --chart-4: oklch(0.78 0.17 78) (src/styles.css)
+- --chart-5: oklch(0.68 0.22 320) (src/styles.css)
+- --sidebar: oklch(0.13 0.05 275) (src/styles.css)
+- --sidebar-foreground: oklch(0.94 0.015 260) (src/styles.css)
+- --sidebar-primary: oklch(0.68 0.22 275) (src/styles.css)
+- --sidebar-primary-foreground: oklch(0.14 0.045 275) (src/styles.css)
+- --sidebar-accent: oklch(0.24 0.09 275) (src/styles.css)
+- --sidebar-accent-foreground: oklch(0.97 0.01 260) (src/styles.css)
+- --sidebar-border: oklch(1 0 0 / 8%) (src/styles.css)
+- --sidebar-ring: oklch(0.70 0.22 275) (src/styles.css)
+- --background: oklch(0.98 0.005 260) (src/styles.css)
+- --foreground: oklch(0.15 0.02 275) (src/styles.css)
+- --card: oklch(1 0 0) (src/styles.css)
+- --card-foreground: oklch(0.15 0.02 275) (src/styles.css)
+- --popover: oklch(1 0 0) (src/styles.css)
+- --popover-foreground: oklch(0.15 0.02 275) (src/styles.css)
+- --primary: oklch(0.55 0.22 275) (src/styles.css)
+- --primary-foreground: oklch(0.99 0.005 260) (src/styles.css)
+- --secondary: oklch(0.95 0.01 265) (src/styles.css)
+- --secondary-foreground: oklch(0.20 0.03 275) (src/styles.css)
+- --muted: oklch(0.93 0.01 265) (src/styles.css)
+- --muted-foreground: oklch(0.40 0.03 265) (src/styles.css)
+- --accent: oklch(0.91 0.04 275) (src/styles.css)
+- --accent-foreground: oklch(0.20 0.05 275) (src/styles.css)
+- --destructive: oklch(0.55 0.24 22) (src/styles.css)
+- --destructive-foreground: oklch(0.99 0.005 25) (src/styles.css)
+- --success: oklch(0.58 0.22 155) (src/styles.css)
+- --success-foreground: oklch(0.99 0.005 155) (src/styles.css)
+- --warning: oklch(0.68 0.20 78) (src/styles.css)
+- --warning-foreground: oklch(0.15 0.02 275) (src/styles.css)
+- --border: oklch(0.15 0.02 275 / 10%) (src/styles.css)
+- --input: oklch(0.15 0.02 275 / 12%) (src/styles.css)
+- --ring: oklch(0.55 0.22 275) (src/styles.css)
+- --sidebar: oklch(0.97 0.005 265) (src/styles.css)
+- --sidebar-foreground: oklch(0.20 0.03 275) (src/styles.css)
+- --sidebar-primary: oklch(0.55 0.22 275) (src/styles.css)
+- --sidebar-primary-foreground: oklch(0.99 0.005 260) (src/styles.css)
+- --sidebar-accent: oklch(0.93 0.03 275) (src/styles.css)
+- --sidebar-accent-foreground: oklch(0.20 0.04 275) (src/styles.css)
+- --sidebar-border: oklch(0.15 0.02 275 / 8%) (src/styles.css)
+- --sidebar-ring: oklch(0.55 0.22 275) (src/styles.css)
+
+## UI components
+- accordion
+- alert
+- alert-dialog
+- aspect-ratio
+- avatar
+- badge
+- breadcrumb
+- button
+- calendar
+- card
+- carousel
+- chart
+- checkbox
+- collapsible
+- command
+- context-menu
+- dialog
+- drawer
+- dropdown-menu
+- form
+- hover-card
+- input
+- input-otp
+- label
+- menubar
+- navigation-menu
+- pagination
+- popover
+- progress
+- radio-group
+- resizable
+- scroll-area
+- select
+- separator
+- sheet
+- sidebar
+- skeleton
+- slider
+- sonner
+- switch
+- table
+- tabs
+- textarea
+- toggle
+- toggle-group
+- tooltip
+
+## Project components
+- src/components/app-shell.tsx
+- src/components/card-3d.tsx
+- src/components/data-state.tsx
+- src/components/table-actions.tsx
+- src/components/theme-toggle.tsx
+- src/components/ui/accordion.tsx
+- src/components/ui/alert-dialog.tsx
+- src/components/ui/alert.tsx
+- src/components/ui/aspect-ratio.tsx
+- src/components/ui/avatar.tsx
+- src/components/ui/badge.tsx
+- src/components/ui/breadcrumb.tsx
+- src/components/ui/button.tsx
+- src/components/ui/calendar.tsx
+- src/components/ui/card.tsx
+- src/components/ui/carousel.tsx
+- src/components/ui/chart.tsx
+- src/components/ui/checkbox.tsx
+- src/components/ui/collapsible.tsx
+- src/components/ui/command.tsx
+- src/components/ui/context-menu.tsx
+- src/components/ui/dialog.tsx
+- src/components/ui/drawer.tsx
+- src/components/ui/dropdown-menu.tsx
+- src/components/ui/form.tsx
+- src/components/ui/hover-card.tsx
+- src/components/ui/input-otp.tsx
+- src/components/ui/input.tsx
+- src/components/ui/label.tsx
+- src/components/ui/menubar.tsx
+- src/components/ui/navigation-menu.tsx
+- src/components/ui/pagination.tsx
+- src/components/ui/popover.tsx
+- src/components/ui/progress.tsx
+- src/components/ui/radio-group.tsx
+- src/components/ui/resizable.tsx
+- src/components/ui/scroll-area.tsx
+- src/components/ui/select.tsx
+- src/components/ui/separator.tsx
+- src/components/ui/sheet.tsx
+- src/components/ui/sidebar.tsx
+- src/components/ui/skeleton.tsx
+- src/components/ui/slider.tsx
+- src/components/ui/sonner.tsx
+- src/components/ui/switch.tsx
+- src/components/ui/table.tsx
+- src/components/ui/tabs.tsx
+- src/components/ui/textarea.tsx
+- src/components/ui/toggle-group.tsx
+- src/components/ui/toggle.tsx
+- src/components/ui/tooltip.tsx

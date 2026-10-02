@@ -503,7 +503,7 @@ function NfCard({
     ? row.nf_enviada
       ? { label: "Emitida & Enviada", tone: "bg-emerald-400/15 text-emerald-200 border-emerald-400/30" }
       : { label: "Emitida", tone: "bg-sky-400/15 text-sky-200 border-sky-400/30" }
-    : { label: "Pendente", tone: "bg-red-400/15 text-red-200 border-red-400/30" };
+    : { label: "Pendente", tone: "bg-rose-400/15 text-rose-200 border-rose-400/30" };
 
   return (
     <Card3D className="flex h-full flex-col p-5" glow intensity={6}>

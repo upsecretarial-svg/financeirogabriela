@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-14T05:10:50.798559+00:00
+Generated: 2026-10-14T05:28:43.186351+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -172,6 +172,9 @@ Generated: 2026-10-14T05:10:50.798559+00:00
 - src/components/app-shell.tsx
 - src/components/card-3d.tsx
 - src/components/data-state.tsx
+- src/components/feedback-state.tsx
+- src/components/list-toolbar.tsx
+- src/components/page-header.tsx
 - src/components/table-actions.tsx
 - src/components/theme-toggle.tsx
 - src/components/ui/accordion.tsx

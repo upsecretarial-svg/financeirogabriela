@@ -17,7 +17,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste, User, Stethoscope, CalendarDays, Building2, Wallet, ChevronRight, CheckCircle2 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { ListToolbar } from "@/components/list-toolbar";
 import { FeedbackState } from "@/components/feedback-state";
@@ -28,6 +28,7 @@ import { extractNfFromFile } from "@/lib/nf-extract.functions";
 
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/atendimentos")({
   head: () => ({ meta: [{ title: "Atendimentos" }] }),
@@ -470,12 +471,46 @@ function Atendimentos() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editing?.id ? `Atendimento ${(editing as AppointmentRow).numero_interno ?? ""}` : "Novo atendimento"}</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-h-[94vh] max-w-4xl gap-0 overflow-hidden border-border/60 bg-background p-0 shadow-2xl">
+          {/* Header premium com gradiente */}
+          <div className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-indigo-600/30 via-violet-600/20 to-fuchsia-600/20 px-6 py-5">
+            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-fuchsia-500/20 blur-3xl" />
+            <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-indigo-500/20 blur-3xl" />
+            <div className="relative flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-lg shadow-indigo-500/30">
+                  <ClipboardList className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Atendimento</span>
+                    {editing?.id && (
+                      <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] text-primary">
+                        Editando
+                      </Badge>
+                    )}
+                  </div>
+                  <DialogTitle className="mt-0.5 text-xl font-bold text-foreground" style={{ fontFamily: "Urbanist" }}>
+                    {editing?.id ? `${(editing as AppointmentRow).numero_interno ?? "Atendimento"}` : "Novo atendimento"}
+                  </DialogTitle>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Preencha os dados do atendimento em 3 etapas visuais.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="grid h-8 w-8 place-items-center rounded-lg border border-border/60 bg-background/40 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                aria-label="Fechar"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
           {editing && (
-            <div className="space-y-4 pt-2">
+            <div className="max-h-[calc(94vh-180px)] space-y-5 overflow-y-auto px-6 py-5">
               {!editing.id && (
                 <TutorSmartPaste
                   onExtracted={(d) => setEditing((cur) => cur ? {
@@ -486,43 +521,85 @@ function Atendimentos() {
                   } : cur)}
                 />
               )}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Tutor *</Label>
-                  <Input value={editing.tutor ?? ""} onChange={(e) => setEditing({ ...editing, tutor: e.target.value })} />
+
+              {/* ETAPA 1 - Identificacao */}
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
+                    <span className="text-xs font-bold">1</span>
+                  </div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Identificacao</h3>
+                  <div className="h-px flex-1 bg-border/60" />
                 </div>
-                <div className="space-y-2">
-                  <Label>CPF do tutor (NF-e)</Label>
-                  <Input
-                    inputMode="numeric"
-                    maxLength={14}
-                    placeholder="000.000.000-00"
-                    value={formatCpf(editing.tutor_cpf ?? "")}
-                    onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
-                  />
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field label="Tutor" required icon={User}>
+                    <Input
+                      value={editing.tutor ?? ""}
+                      onChange={(e) => setEditing({ ...editing, tutor: e.target.value })}
+                      placeholder="Nome completo"
+                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                    />
+                  </Field>
+                  <Field label="CPF do tutor" hint="Para NF-e" icon={User}>
+                    <Input
+                      inputMode="numeric"
+                      maxLength={14}
+                      placeholder="000.000.000-00"
+                      value={formatCpf(editing.tutor_cpf ?? "")}
+                      onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
+                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                    />
+                  </Field>
+                  <Field label="Pet" required icon={Stethoscope}>
+                    <Input
+                      value={editing.pet ?? ""}
+                      onChange={(e) => setEditing({ ...editing, pet: e.target.value })}
+                      placeholder="Nome do pet"
+                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                    />
+                  </Field>
+                  <Field label="Data" required icon={CalendarDays}>
+                    <Input
+                      type="date"
+                      value={editing.data_atendimento ?? ""}
+                      onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })}
+                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                    />
+                  </Field>
+                  <div className="sm:col-span-2">
+                    <Field label="Clinica" icon={Building2}>
+                      <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
+                        <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
+                          <SelectValue placeholder="Selecione a clinica" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Pet *</Label>
-                  <Input value={editing.pet ?? ""} onChange={(e) => setEditing({ ...editing, pet: e.target.value })} />
+              </section>
+
+              {/* ETAPA 2 - Servico e valor */}
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
+                    <span className="text-xs font-bold">2</span>
+                  </div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Servico e valor</h3>
+                  <div className="h-px flex-1 bg-border/60" />
                 </div>
-                <div className="space-y-2">
-                  <Label>Data *</Label>
-                  <Input type="date" value={editing.data_atendimento ?? ""} onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Clinica</Label>
-                  <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-                    <SelectContent>
-                      {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Serviço realizado</Label>
-                    <Button type="button" variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => setQuickServiceOpen(true)}>
-                      <Plus className="mr-1 h-3 w-3" /> Novo serviço
+
+                <div className="rounded-xl border border-border/60 bg-card/30 p-4 backdrop-blur-sm">
+                  <div className="flex items-center justify-between gap-2 pb-2">
+                    <Label className="flex items-center gap-1.5 text-sm font-medium">
+                      <Stethoscope className="h-3.5 w-3.5 text-primary" />
+                      Servico realizado
+                    </Label>
+                    <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 rounded-md px-2 text-xs text-primary hover:bg-primary/10" onClick={() => setQuickServiceOpen(true)}>
+                      <Plus className="h-3 w-3" /> Novo servico
                     </Button>
                   </div>
                   <Select
@@ -535,7 +612,9 @@ function Atendimentos() {
                       }
                     }}
                   >
-                    <SelectTrigger><SelectValue placeholder="Selecione um servico..." /></SelectTrigger>
+                    <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
+                      <SelectValue placeholder="Selecione um servico..." />
+                    </SelectTrigger>
                     <SelectContent>
                       {services?.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
@@ -544,116 +623,194 @@ function Atendimentos() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label>Valor (R$)</Label>
-                  <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label>Observacoes</Label>
-                  <Textarea rows={3} value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
-                </div>
-              </div>
 
-              {/* Baixa financeira */}
-              <div className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-success" />
-                    <div>
-                      <Label className="text-sm font-medium">Dar baixa no financeiro</Label>
-                      <p className="text-xs text-muted-foreground">Marque para registrar o recebimento agora.</p>
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">Valor (R$)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={editing.valor ?? ""}
+                        onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })}
+                        className="h-11 rounded-lg border-border/60 bg-background/60 text-base font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">Observacoes</Label>
+                      <Textarea
+                        rows={2}
+                        value={editing.observacoes ?? ""}
+                        onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })}
+                        placeholder="Anotacoes sobre o atendimento..."
+                        className="rounded-lg border-border/60 bg-background/60 text-sm"
+                      />
                     </div>
                   </div>
-                  <Switch
-                    checked={!!editing.pago}
-                    onCheckedChange={(v) => setEditing({
-                      ...editing,
-                      pago: v,
-                      data_pagamento: v ? (editing.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
-                      valor_recebido: v ? (editing.valor_recebido ?? editing.valor ?? null) : null,
-                    })}
-                  />
                 </div>
-                {editing.pago && (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label className="text-xs">Forma de pagamento</Label>
-                      <Select value={editing.payment_method_id ?? ""} onValueChange={(v) => setEditing({ ...editing, payment_method_id: v })}>
-                        <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-                        <SelectContent>
-                          {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs">Valor recebido</Label>
-                      <Input type="number" step="0.01" min="0" value={editing.valor_recebido ?? ""} onChange={(e) => setEditing({ ...editing, valor_recebido: e.target.value ? Number(e.target.value) : null })} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs">Data</Label>
-                      <Input type="date" value={editing.data_pagamento ?? ""} onChange={(e) => setEditing({ ...editing, data_pagamento: e.target.value })} />
-                    </div>
-                  </div>
-                )}
-              </div>
+              </section>
 
-              {/* NF-e */}
-              <div className="rounded-lg border border-border/60 bg-card/50 p-4 space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-primary" />
-                    <div>
-                      <Label className="text-sm font-medium">NF-e emitida</Label>
-                      <p className="text-xs text-muted-foreground">O anexo do PDF pode ser feito depois em Notas Fiscais.</p>
-                    </div>
+              {/* ETAPA 3 - Baixa financeira */}
+              <section className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
+                    <span className="text-xs font-bold">3</span>
                   </div>
-                  <Switch
-                    checked={!!editing.nf_emitida}
-                    onCheckedChange={(v) => setEditing({ ...editing, nf_emitida: v })}
-                  />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Financeiro e NF-e</h3>
+                  <div className="h-px flex-1 bg-border/60" />
                 </div>
-                {editing.nf_emitida && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label className="text-xs">Nº da NF-e</Label>
-                        <Input value={editing.nf_numero ?? ""} onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })} placeholder="Opcional" />
+
+                <div className={cn(
+                  "overflow-hidden rounded-xl border transition-all",
+                  editing.pago ? "border-success/40 bg-success/[0.05]" : "border-border/60 bg-card/30",
+                )}>
+                  <div className="flex items-center justify-between gap-4 p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "grid h-10 w-10 place-items-center rounded-lg transition-all",
+                        editing.pago ? "bg-success/20 text-success" : "bg-muted text-muted-foreground",
+                      )}>
+                        <DollarSign className="h-5 w-5" />
                       </div>
-                      <div className="flex items-end">
-                        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Dar baixa no financeiro</p>
+                        <p className="text-xs text-muted-foreground">
+                          {editing.pago ? "Recebimento registrado." : "Marque para registrar o recebimento agora."}
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={!!editing.pago}
+                      onCheckedChange={(v) => setEditing({
+                        ...editing,
+                        pago: v,
+                        data_pagamento: v ? (editing.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
+                        valor_recebido: v ? (editing.valor_recebido ?? editing.valor ?? null) : null,
+                      })}
+                    />
+                  </div>
+                  {editing.pago && (
+                    <div className="grid grid-cols-1 gap-3 border-t border-success/20 bg-success/[0.03] p-4 sm:grid-cols-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground">Forma</Label>
+                        <Select value={editing.payment_method_id ?? ""} onValueChange={(v) => setEditing({ ...editing, payment_method_id: v })}>
+                          <SelectTrigger className="h-10 rounded-lg border-success/30 bg-background/60">
+                            <SelectValue placeholder="Selecione..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground">Valor recebido</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editing.valor_recebido ?? ""}
+                          onChange={(e) => setEditing({ ...editing, valor_recebido: e.target.value ? Number(e.target.value) : null })}
+                          className="h-10 rounded-lg border-success/30 bg-background/60 font-semibold text-success"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium text-muted-foreground">Data</Label>
+                        <Input
+                          type="date"
+                          value={editing.data_pagamento ?? ""}
+                          onChange={(e) => setEditing({ ...editing, data_pagamento: e.target.value })}
+                          className="h-10 rounded-lg border-success/30 bg-background/60"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* NF-e */}
+                <div className={cn(
+                  "overflow-hidden rounded-xl border transition-all",
+                  editing.nf_emitida ? "border-primary/40 bg-primary/[0.05]" : "border-border/60 bg-card/30",
+                )}>
+                  <div className="flex items-center justify-between gap-4 p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "grid h-10 w-10 place-items-center rounded-lg transition-all",
+                        editing.nf_emitida ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground",
+                      )}>
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">NF-e emitida</p>
+                        <p className="text-xs text-muted-foreground">
+                          {editing.nf_emitida ? "NF-e registrada." : "O PDF pode ser anexado depois em Notas Fiscais."}
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={!!editing.nf_emitida}
+                      onCheckedChange={(v) => setEditing({ ...editing, nf_emitida: v })}
+                    />
+                  </div>
+                  {editing.nf_emitida && (
+                    <div className="space-y-3 border-t border-primary/20 bg-primary/[0.03] p-4">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-medium text-muted-foreground">Nº da NF-e</Label>
+                          <Input
+                            value={editing.nf_numero ?? ""}
+                            onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })}
+                            placeholder="Opcional"
+                            className="h-10 rounded-lg border-primary/30 bg-background/60"
+                          />
+                        </div>
+                        <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-primary/30 bg-background/40 px-3 text-xs text-foreground">
                           <input
                             type="checkbox"
-                            className="h-4 w-4 accent-primary"
+                            className="h-4 w-4 cursor-pointer accent-primary"
                             checked={!!editing.nf_enviada}
                             onChange={(e) => setEditing({ ...editing, nf_enviada: e.target.checked })}
                           />
                           NF enviada ao cliente
                         </label>
                       </div>
+                      <NfAttachField
+                        path={editing.nf_pdf_path ?? null}
+                        onChange={(p) => setEditing((cur) => cur ? { ...cur, nf_pdf_path: p } : cur)}
+                        onNumeroExtraido={(n) => setEditing((cur) => cur && !cur.nf_numero ? { ...cur, nf_numero: n } : cur)}
+                      />
                     </div>
-                    <NfAttachField
-                      path={editing.nf_pdf_path ?? null}
-                      onChange={(p) => setEditing((cur) => cur ? { ...cur, nf_pdf_path: p } : cur)}
-                      onNumeroExtraido={(n) => setEditing((cur) => cur && !cur.nf_numero ? { ...cur, nf_numero: n } : cur)}
-                    />
+                  )}
+                </div>
 
-                  </div>
-                )}
-              </div>
-
-              <p className="rounded-md bg-accent/40 p-3 text-xs text-muted-foreground">
-                Dica: voce pode <strong>dar baixa</strong> na venda agora e <strong>anexar o PDF da NF-e</strong> depois na pagina Notas Fiscais — o status sera atualizado automaticamente.
-              </p>
+                <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/[0.04] p-3 text-xs text-muted-foreground">
+                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                  <p>
+                    Voce pode <strong className="text-foreground">dar baixa</strong> na venda agora e <strong className="text-foreground">anexar o PDF da NF-e</strong> depois na pagina Notas Fiscais — o status sera atualizado automaticamente.
+                  </p>
+                </div>
+              </section>
             </div>
           )}
 
-          <DialogFooter>
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Fechar</Button>
-            <Button type="button" disabled={save.isPending} onClick={() => editing && save.mutate(editing)}>
-              {save.isPending ? "Salvando…" : "Salvar"}
-            </Button>
-          </DialogFooter>
+          <div className="flex items-center justify-between gap-3 border-t border-border/60 bg-card/40 px-6 py-4 backdrop-blur-sm">
+            <div className="hidden text-xs text-muted-foreground sm:block">
+              {editing?.id ? "Atualizando atendimento existente" : "Criando novo atendimento"}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="rounded-lg">
+                Fechar
+              </Button>
+              <Button
+                type="button"
+                disabled={save.isPending}
+                onClick={() => editing && save.mutate(editing)}
+                className="rounded-lg bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 shadow-lg shadow-indigo-500/30 hover:from-indigo-400 hover:to-fuchsia-400"
+              >
+                {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                {save.isPending ? "Salvando…" : "Salvar atendimento"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -695,6 +852,20 @@ function Atendimentos() {
   );
 }
 
+function Field({ label, required, hint, icon: Icon, children }: { label: string; required?: boolean; hint?: string; icon: typeof User; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+        {label}
+        {required && <span className="text-destructive">*</span>}
+        {hint && <span className="text-[10px] text-muted-foreground/70">· {hint}</span>}
+      </Label>
+      {children}
+    </div>
+  );
+}
+
 function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | null; onChange: (path: string | null) => void; onNumeroExtraido?: (numero: string) => void }) {
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -711,7 +882,6 @@ function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | nu
       if (error) throw error;
       onChange(key);
       toast.success("Anexo enviado.");
-      // Tenta extrair automaticamente o número da NF.
       if (onNumeroExtraido) {
         try {
           const base64 = await fileToBase64(file);
@@ -721,7 +891,7 @@ function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | nu
             toast.success("Nº da NF extraído automaticamente.");
           }
         } catch {
-          // silencioso — extração é opcional
+          // silencioso
         }
       }
     } catch (e) {
@@ -731,20 +901,19 @@ function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | nu
     }
   };
 
-
   return (
-    <div className="rounded-md border border-border/60 bg-background/40 p-3 space-y-2">
+    <div className="rounded-lg border border-primary/20 bg-background/40 p-3">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Paperclip className="h-4 w-4 text-primary" />
           <div>
-            <Label className="text-xs font-medium">Anexo da NF-e (PDF ou imagem)</Label>
-            <p className="text-[11px] text-muted-foreground">Opcional — voce tambem pode anexar depois em Notas Fiscais.</p>
+            <p className="text-xs font-medium">Anexo da NF-e</p>
+            <p className="text-[11px] text-muted-foreground">PDF ou imagem — opcional</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {path && (
-            <Badge variant="outline" className="gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+            <Badge variant="outline" className="gap-1 border-success/30 bg-success/10 text-success">
               <Check className="h-3 w-3" /> Anexado
             </Badge>
           )}
@@ -834,19 +1003,19 @@ function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string |
       onPaste={onPaste}
       onDrop={onDrop}
       onDragOver={(e) => e.preventDefault()}
-      className="group relative rounded-lg border border-dashed border-primary/30 bg-primary/5 p-3 outline-none transition focus-visible:border-primary/60 focus-visible:bg-primary/10 hover:border-primary/50"
+      className="group relative overflow-hidden rounded-xl border border-dashed border-primary/30 bg-gradient-to-br from-primary/[0.08] to-fuchsia-500/[0.04] p-3 outline-none transition focus-visible:border-primary/60 focus-visible:bg-primary/10 hover:border-primary/50"
     >
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/15 text-primary">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Preenchimento inteligente</Label>
+            <Label className="text-sm font-semibold">Preenchimento inteligente</Label>
             <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] text-primary">IA</Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Cole (Ctrl+V), arraste ou anexe uma imagem (RG, CNH, print) para extrair <strong>nome</strong> e <strong>CPF</strong>.
+            Cole (Ctrl+V), arraste ou anexe uma imagem para extrair <strong>nome</strong> e <strong>CPF</strong>.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -857,14 +1026,14 @@ function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string |
             className="hidden"
             onChange={(e) => { const f = e.target.files?.[0]; if (f) process(f); e.target.value = ""; }}
           />
-          <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => inputRef.current?.click()}>
+          <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => inputRef.current?.click()} className="rounded-lg">
             <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" /> Anexar
           </Button>
         </div>
       </div>
       {preview && (
-        <div className="mt-3 flex items-center gap-2">
-          <img src={preview} alt="Prévia" className="h-16 w-16 rounded-md border border-border/60 object-cover" />
+        <div className="mt-3 flex items-center gap-2 border-t border-primary/10 pt-3">
+          <img src={preview} alt="Prévia" className="h-14 w-14 rounded-md border border-border/60 object-cover" />
           <p className="text-[11px] text-muted-foreground">A imagem não é salva — usada apenas para extração.</p>
         </div>
       )}

@@ -689,12 +689,14 @@ function Atendimentos() {
                     </div>
                     <Switch
                       checked={!!editing.pago}
-                      onCheckedChange={(v) => setEditing({
-                        ...editing,
-                        pago: v,
-                        data_pagamento: v ? (editing.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
-                        valor_recebido: v ? (editing.valor_recebido ?? editing.valor ?? null) : null,
-                      })}
+                      onCheckedChange={(v) => {
+                        setEditing((cur) => cur ? {
+                          ...cur,
+                          pago: v,
+                          data_pagamento: v ? (cur.data_pagamento ?? new Date().toISOString().slice(0, 10)) : null,
+                          valor_recebido: v ? (cur.valor_recebido ?? cur.valor ?? null) : null,
+                        } : cur);
+                      }}
                     />
                   </div>
                   {editing.pago && (

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T05:37:03.439343+00:00",
+  "generated_at": "2026-10-14T05:39:48.163237+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 37996
+      "bytes": 47571
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",
@@ -2266,6 +2266,10 @@
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",
       "target": "@/hooks/use-auth"
+    },
+    {
+      "source": "src/routes/_authenticated/atendimentos.tsx",
+      "target": "@/lib/utils"
     },
     {
       "source": "src/routes/_authenticated/pendencias.tsx",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T05:28:43.186351+00:00",
+  "generated_at": "2026-10-14T05:37:03.439343+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 36325
+      "bytes": 37996
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",
@@ -2233,7 +2233,15 @@
     },
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",
-      "target": "@/components/data-state"
+      "target": "@/components/page-header"
+    },
+    {
+      "source": "src/routes/_authenticated/atendimentos.tsx",
+      "target": "@/components/list-toolbar"
+    },
+    {
+      "source": "src/routes/_authenticated/atendimentos.tsx",
+      "target": "@/components/feedback-state"
     },
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",

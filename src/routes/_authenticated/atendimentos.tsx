@@ -304,15 +304,23 @@ function Atendimentos() {
     <div className="space-y-6">
       <PageHeader
         title="Atendimentos"
-        subtitle="Cadastre e acompanhe atendimentos clinicos."
+        subtitle="Cadastre, edite e acompanhe os atendimentos clínicos em um só lugar."
+        eyebrow={`${totals.qtd} no período`}
+        meta={[
+          { label: "Mês atual", value: new Date(from).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) },
+          { label: "Faturado", value: brl(totals.faturado) },
+          { label: "Recebido", value: brl(totals.recebido) },
+        ]}
         actions={
-          <Button
-            onClick={startNew}
-            size="lg"
-            className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Novo atendimento
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={startNew}
+              size="lg"
+              className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-5 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Novo atendimento
+            </Button>
+          </div>
         }
       />
 

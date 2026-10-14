@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T23:31:30.984288+00:00",
+  "generated_at": "2026-10-14T05:10:50.798559+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -32,6 +32,10 @@
     {
       "path": ".lovable/project.json",
       "bytes": 71
+    },
+    {
+      "path": ".lovasiri/sync.json",
+      "bytes": 80
     },
     {
       "path": "src/routeTree.gen.ts",
@@ -254,12 +258,16 @@
       "bytes": 3228
     },
     {
+      "path": "src/integrations/supabase/previewAuthStorage.ts",
+      "bytes": 4565
+    },
+    {
       "path": "src/integrations/supabase/types.ts",
-      "bytes": 22192
+      "bytes": 22202
     },
     {
       "path": "src/integrations/supabase/client.ts",
-      "bytes": 2450
+      "bytes": 2481
     },
     {
       "path": "src/integrations/supabase/auth-attacher.ts",
@@ -1118,6 +1126,10 @@
     {
       "source": "src/integrations/supabase/client.ts",
       "target": "./types"
+    },
+    {
+      "source": "src/integrations/supabase/client.ts",
+      "target": "./previewAuthStorage"
     },
     {
       "source": "src/integrations/supabase/client.ts",

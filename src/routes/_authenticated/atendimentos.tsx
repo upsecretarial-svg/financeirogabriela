@@ -10,7 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -18,7 +18,9 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste } from "lucide-react";
-import { TableState } from "@/components/data-state";
+import { PageHeader } from "@/components/page-header";
+import { ListToolbar } from "@/components/list-toolbar";
+import { FeedbackState } from "@/components/feedback-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 import { useServerFn } from "@tanstack/react-start";
 import { extractTutorFromImage } from "@/lib/tutor-extract.functions";
@@ -295,79 +297,128 @@ function Atendimentos() {
     realizado: "bg-muted text-muted-foreground",
   };
 
+  const hasFilters = Boolean(from || to || search);
+
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="bg-gradient-to-r from-foreground via-indigo-600 to-fuchsia-600 bg-clip-text text-2xl font-black tracking-tight text-transparent dark:from-foreground dark:via-indigo-100 dark:to-fuchsia-200">
-            Atendimentos
-          </h1>
-          <p className="text-sm text-muted-foreground">Cadastre e acompanhe atendimentos clínicos.</p>
-        </div>
-        <Button onClick={startNew} size="lg" className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400">
-          <Plus className="mr-2 h-4 w-4" /> Novo atendimento
-        </Button>
-      </header>
+      <PageHeader
+        title="Atendimentos"
+        subtitle="Cadastre e acompanhe atendimentos clinicos."
+        actions={
+          <Button
+            onClick={startNew}
+            size="lg"
+            className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Novo atendimento
+          </Button>
+        }
+      />
 
-      <Card className="border-border/60">
-        <CardHeader>
-          <CardTitle className="text-base">Lista</CardTitle>
-          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por tutor, pet ou nº..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+      <ListToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por tutor, pet ou nº interno..."
+        filters={
+          <>
+            <Input
+              type="month"
+              className="h-11 w-40 rounded-xl border-white/10 bg-white/[0.03] text-xs"
+              onChange={(e) => {
+                if (e.target.value) {
+                  const [y, m] = e.target.value.split("-").map(Number);
+                  setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
+                  setTo(new Date(y, m, 0).toISOString().slice(0, 10));
+                }
+              }}
+            />
             <div className="flex items-center gap-2">
               <Input
-                type="month"
-                className="h-9 w-40 text-xs"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    const [y, m] = e.target.value.split("-").map(Number);
-                    setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
-                    setTo(new Date(y, m, 0).toISOString().slice(0, 10));
-                  }
-                }}
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
               />
-              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 w-36 text-xs" />
-              <span className="text-muted-foreground">até</span>
-              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 w-36 text-xs" />
+              <span className="text-xs text-muted-foreground">ate</span>
+              <Input
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
+              />
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nº</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead>Tutor / Pet</TableHead>
-                <TableHead>Clínica</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
-                <TableHead className="text-center">Pago?</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableState
-                colSpan={8}
-                isLoading={isLoading}
-                isError={isError}
-                error={error as Error | null}
-                onRetry={() => refetch()}
-                isEmpty={!isLoading && !isError && !appts?.length}
-                emptyIcon={ClipboardList}
-                emptyTitle="Nenhum atendimento ainda"
-                emptyDescription="Clique em 'Novo Atendimento' para registrar o primeiro lançamento."
+            {hasFilters && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-11 rounded-xl px-3 text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  setSearch("");
+                  const d = new Date();
+                  setFrom(new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10));
+                  setTo(new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10));
+                }}
+              >
+                <X className="mr-1 h-3.5 w-3.5" /> Limpar
+              </Button>
+            )}
+          </>
+        }
+      />
+
+      <Card className="border-border/60">
+        <CardContent className="overflow-x-auto p-0">
+          {!isLoading && !isError && appts?.length === 0 ? (
+            <div className="p-4">
+              <FeedbackState
+                icon={ClipboardList}
+                title={hasFilters ? "Nenhum resultado para os filtros atuais" : "Nenhum atendimento cadastrado"}
+                description={
+                  hasFilters
+                    ? "Tente ajustar a busca ou o periodo para encontrar o que procura."
+                    : "Clique em 'Novo atendimento' para registrar o primeiro lancamento."
+                }
+                action={hasFilters ? undefined : { label: "Novo atendimento", onClick: startNew }}
               />
-              {!isLoading && !isError && appts?.length ? (
-                appts.map((a) => (
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nº</TableHead>
+                  <TableHead>Data</TableHead>
+                  <TableHead>Tutor / Pet</TableHead>
+                  <TableHead>Clinica</TableHead>
+                  <TableHead className="text-right">Valor</TableHead>
+                  <TableHead className="text-center">Pago?</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={8} className="py-16 text-center text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" /> Carregando atendimentos...
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {isError && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={8} className="py-10">
+                      <FeedbackState
+                        variant="error"
+                        title="Nao foi possivel carregar"
+                        description={(error as Error | null)?.message ?? "Tente novamente em instantes."}
+                        action={{ label: "Tentar novamente", onClick: () => refetch() }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!isLoading && !isError && appts?.map((a) => (
                   <TableRow key={a.id}>
                     <TableCell className="font-mono text-xs">{a.numero_interno}</TableCell>
                     <TableCell className="text-sm">{a.data_atendimento}</TableCell>
@@ -411,10 +462,10 @@ function Atendimentos() {
                       </TableActions>
                     </TableCell>
                   </TableRow>
-                ))
-              ) : null}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
@@ -459,7 +510,7 @@ function Atendimentos() {
                   <Input type="date" value={editing.data_atendimento ?? ""} onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Clínica</Label>
+                  <Label>Clinica</Label>
                   <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
                     <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
                     <SelectContent>
@@ -484,7 +535,7 @@ function Atendimentos() {
                       }
                     }}
                   >
-                    <SelectTrigger><SelectValue placeholder="Selecione um serviço…" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Selecione um servico..." /></SelectTrigger>
                     <SelectContent>
                       {services?.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
@@ -499,7 +550,7 @@ function Atendimentos() {
                   <Input type="number" step="0.01" min="0" value={editing.valor ?? ""} onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })} />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
-                  <Label>Observações</Label>
+                  <Label>Observacoes</Label>
                   <Textarea rows={3} value={editing.observacoes ?? ""} onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })} />
                 </div>
               </div>
@@ -592,7 +643,7 @@ function Atendimentos() {
               </div>
 
               <p className="rounded-md bg-accent/40 p-3 text-xs text-muted-foreground">
-                Dica: você pode <strong>dar baixa</strong> na venda agora e <strong>anexar o PDF da NF-e</strong> depois na página Notas Fiscais — o status será atualizado automaticamente.
+                Dica: voce pode <strong>dar baixa</strong> na venda agora e <strong>anexar o PDF da NF-e</strong> depois na pagina Notas Fiscais — o status sera atualizado automaticamente.
               </p>
             </div>
           )}
@@ -609,7 +660,7 @@ function Atendimentos() {
       <Dialog open={quickServiceOpen} onOpenChange={setQuickServiceOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Novo serviço</DialogTitle>
+            <DialogTitle>Novo servico</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 pt-2">
             <div className="space-y-2">
@@ -617,7 +668,7 @@ function Atendimentos() {
               <Input
                 value={quickService.nome}
                 onChange={(e) => setQuickService({ ...quickService, nome: e.target.value })}
-                placeholder="Ex: Consulta clínica"
+                placeholder="Ex: Consulta clinica"
                 autoFocus
               />
             </div>
@@ -688,7 +739,7 @@ function NfAttachField({ path, onChange, onNumeroExtraido }: { path: string | nu
           <Paperclip className="h-4 w-4 text-primary" />
           <div>
             <Label className="text-xs font-medium">Anexo da NF-e (PDF ou imagem)</Label>
-            <p className="text-[11px] text-muted-foreground">Opcional — você também pode anexar depois em Notas Fiscais.</p>
+            <p className="text-[11px] text-muted-foreground">Opcional — voce tambem pode anexar depois em Notas Fiscais.</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -825,6 +876,3 @@ function formatCpfPreview(digits: string): string {
   const d = digits.replace(/\D/g, "").padEnd(11, "").slice(0, 11);
   return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
 }
-
-
-

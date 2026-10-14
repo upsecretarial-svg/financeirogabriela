@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T05:53:55.184883+00:00",
+  "generated_at": "2026-10-14T05:57:09.436318+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -499,7 +499,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 48041
+      "bytes": 48107
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",

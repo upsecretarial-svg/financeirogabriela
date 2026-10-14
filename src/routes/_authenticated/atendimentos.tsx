@@ -297,7 +297,6 @@ function Atendimentos() {
     sem_valor: "bg-destructive/15 text-destructive border-destructive/30",
     realizado: "bg-muted text-muted-foreground",
   } as Record<string, string>;
-  void totals;
 
   const hasFilters = Boolean(from || to || search);
 

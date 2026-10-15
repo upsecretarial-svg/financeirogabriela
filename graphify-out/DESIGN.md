@@ -1,6 +1,6 @@
 # Design system
 
-Generated: 2026-10-14T05:57:09.436318+00:00
+Generated: 2026-10-15T00:16:05.418280+00:00
 
 ## Tokens
 - --radius-sm: calc(var(--radius) - 4px) (src/styles.css)
@@ -88,6 +88,30 @@ Generated: 2026-10-14T05:57:09.436318+00:00
 - --sidebar-accent-foreground: oklch(0.97 0.01 260) (src/styles.css)
 - --sidebar-border: oklch(1 0 0 / 8%) (src/styles.css)
 - --sidebar-ring: oklch(0.70 0.22 275) (src/styles.css)
+- --radius: 0.5rem (src/styles.css)
+- --background: oklch(0.978 0.003 240) (src/styles.css)
+- --foreground: oklch(0.25 0.015 240) (src/styles.css)
+- --card: oklch(1 0 0) (src/styles.css)
+- --card-foreground: var(--foreground) (src/styles.css)
+- --popover: var(--card) (src/styles.css)
+- --popover-foreground: var(--foreground) (src/styles.css)
+- --primary: oklch(0.48 0.13 225) (src/styles.css)
+- --primary-foreground: oklch(1 0 0) (src/styles.css)
+- --secondary: oklch(0.95 0.007 240) (src/styles.css)
+- --secondary-foreground: var(--foreground) (src/styles.css)
+- --muted: oklch(0.95 0.007 240) (src/styles.css)
+- --muted-foreground: oklch(0.48 0.018 240) (src/styles.css)
+- --accent: oklch(0.94 0.025 225) (src/styles.css)
+- --accent-foreground: var(--primary) (src/styles.css)
+- --destructive: oklch(0.53 0.20 25) (src/styles.css)
+- --destructive-foreground: oklch(1 0 0) (src/styles.css)
+- --success: oklch(0.45 0.12 160) (src/styles.css)
+- --success-foreground: oklch(1 0 0) (src/styles.css)
+- --warning: oklch(0.79 0.15 80) (src/styles.css)
+- --warning-foreground: oklch(0.39 0.085 65) (src/styles.css)
+- --border: oklch(0.88 0.008 240) (src/styles.css)
+- --input: oklch(0.82 0.015 240) (src/styles.css)
+- --ring: var(--primary) (src/styles.css)
 - --background: oklch(0.98 0.005 260) (src/styles.css)
 - --foreground: oklch(0.15 0.02 275) (src/styles.css)
 - --card: oklch(1 0 0) (src/styles.css)
@@ -170,6 +194,7 @@ Generated: 2026-10-14T05:57:09.436318+00:00
 
 ## Project components
 - src/components/app-shell.tsx
+- src/components/appointments-toolbar.tsx
 - src/components/card-3d.tsx
 - src/components/data-state.tsx
 - src/components/feedback-state.tsx

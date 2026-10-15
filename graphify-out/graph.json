@@ -1,13 +1,17 @@
 {
-  "generated_at": "2026-10-14T05:57:09.436318+00:00",
+  "generated_at": "2026-10-15T00:16:05.418280+00:00",
   "files": [
+    {
+      "path": "roadmap.md",
+      "bytes": 277
+    },
     {
       "path": "package-lock.json",
       "bytes": 306472
     },
     {
       "path": "AGENTS.md",
-      "bytes": 480
+      "bytes": 822
     },
     {
       "path": "tsconfig.json",
@@ -23,7 +27,7 @@
     },
     {
       "path": "package.json",
-      "bytes": 3147
+      "bytes": 3144
     },
     {
       "path": "components.json",
@@ -43,7 +47,7 @@
     },
     {
       "path": "src/styles.css",
-      "bytes": 11902
+      "bytes": 14512
     },
     {
       "path": "src/server.ts",
@@ -130,6 +134,10 @@
       "bytes": 2546
     },
     {
+      "path": ".lovable/plan/novo-layout-de-atendimentos-2026-10-15.md",
+      "bytes": 2677
+    },
+    {
       "path": ".lovable/plan/plano-de-implementação-comparativo-de-evolução-mensal-2026-08-19.md",
       "bytes": 1691
     },
@@ -140,6 +148,10 @@
     {
       "path": ".lovable/plan/plano-de-implementação-filtros-temporais-e-organização-mensa-2026-08-19.md",
       "bytes": 2283
+    },
+    {
+      "path": "src/components/appointments-toolbar.tsx",
+      "bytes": 4488
     },
     {
       "path": "src/components/feedback-state.tsx",
@@ -159,7 +171,7 @@
     },
     {
       "path": "src/components/app-shell.tsx",
-      "bytes": 13528
+      "bytes": 13598
     },
     {
       "path": "src/components/data-state.tsx",
@@ -499,7 +511,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 48107
+      "bytes": 45942
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",
@@ -577,7 +589,7 @@
     },
     {
       "source": "src/routeTree.gen.ts",
-      "target": "./routes/reset-password"
+      "target": "./routes/_authenticated/route"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -585,7 +597,7 @@
     },
     {
       "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/route"
+      "target": "./routes/reset-password"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -593,55 +605,7 @@
     },
     {
       "source": "src/routeTree.gen.ts",
-      "target": "./routes/acesso.$token"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/usuarios"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/servicos"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/relatorios"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/recebimentos"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/pendencias"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/painel-contas"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/notas-fiscais"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/lixeira"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/links-acesso"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/formas-pagamento"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/contas-pagar"
-    },
-    {
-      "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/clinicas"
+      "target": "./routes/_authenticated/atendimentos"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -649,7 +613,55 @@
     },
     {
       "source": "src/routeTree.gen.ts",
-      "target": "./routes/_authenticated/atendimentos"
+      "target": "./routes/_authenticated/clinicas"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/contas-pagar"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/formas-pagamento"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/links-acesso"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/lixeira"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/notas-fiscais"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/painel-contas"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/pendencias"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/recebimentos"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/relatorios"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/servicos"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/_authenticated/usuarios"
+    },
+    {
+      "source": "src/routeTree.gen.ts",
+      "target": "./routes/acesso.$token"
     },
     {
       "source": "src/routeTree.gen.ts",
@@ -694,6 +706,22 @@
     {
       "source": "src/start.ts",
       "target": "@/integrations/supabase/auth-attacher"
+    },
+    {
+      "source": "src/components/appointments-toolbar.tsx",
+      "target": "lucide-react"
+    },
+    {
+      "source": "src/components/appointments-toolbar.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/components/appointments-toolbar.tsx",
+      "target": "@/components/ui/input"
+    },
+    {
+      "source": "src/components/appointments-toolbar.tsx",
+      "target": "@/components/ui/label"
     },
     {
       "source": "src/components/feedback-state.tsx",
@@ -2233,11 +2261,7 @@
     },
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",
-      "target": "@/components/page-header"
-    },
-    {
-      "source": "src/routes/_authenticated/atendimentos.tsx",
-      "target": "@/components/list-toolbar"
+      "target": "@/components/appointments-toolbar"
     },
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",

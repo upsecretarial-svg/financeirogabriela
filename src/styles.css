@@ -97,6 +97,83 @@
   --sidebar-ring: oklch(0.70 0.22 275);
 }
 
+/* Route-scoped light palette. Portals opt in to the same theme explicitly. */
+.appointments-theme {
+  color-scheme: light;
+  --radius: 0.5rem;
+  --background: oklch(0.978 0.003 240);
+  --foreground: oklch(0.25 0.015 240);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.48 0.13 225);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.007 240);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.95 0.007 240);
+  --muted-foreground: oklch(0.48 0.018 240);
+  --accent: oklch(0.94 0.025 225);
+  --accent-foreground: var(--primary);
+  --destructive: oklch(0.53 0.20 25);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.45 0.12 160);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.79 0.15 80);
+  --warning-foreground: oklch(0.39 0.085 65);
+  --border: oklch(0.88 0.008 240);
+  --input: oklch(0.82 0.015 240);
+  --ring: var(--primary);
+  color: var(--foreground);
+}
+
+.appointments-theme h1,
+.appointments-theme h2,
+.appointments-theme h3 {
+  color: var(--foreground);
+  letter-spacing: 0;
+}
+
+.appointments-table { min-width: 1040px; }
+.appointments-table th {
+  height: 52px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  padding-inline: 20px;
+}
+.appointments-table td { padding: 18px 20px; }
+.appointments-table td:first-child,
+.appointments-table td:nth-child(2),
+.appointments-table td:nth-child(5),
+.appointments-table td:nth-child(6),
+.appointments-table td:nth-child(7) { white-space: nowrap; }
+.appointments-table tbody tr:hover { background: var(--accent); }
+.appointments-dialog label { font-size: 14px; color: var(--foreground); }
+.appointments-dialog input,
+.appointments-dialog textarea,
+.appointments-dialog [role="combobox"] {
+  background: var(--card);
+  font-size: 14px;
+  border-color: var(--input);
+  box-shadow: none;
+}
+.appointments-dialog section > div > h3 { font-size: 14px; }
+.appointments-dialog section { padding-block: 8px; }
+.appointments-dialog [class*="rounded-xl"] { border-radius: var(--radius); }
+.appointments-dialog [class*="backdrop-blur"] { backdrop-filter: none; }
+.appointments-theme input[type="date"],
+.appointments-theme input[type="month"] { min-width: 0; }
+
+@media (max-width: 640px) {
+  .appointments-page > header { gap: 12px; }
+  .appointments-dialog > div { padding-inline: 16px; }
+  .appointments-dialog [class*="justify-between"] > div { min-width: 0; }
+  .appointments-dialog [class*="items-center"] { flex-wrap: wrap; }
+}
+
 /* Light theme override */
 .light {
   --background: oklch(0.98 0.005 260);

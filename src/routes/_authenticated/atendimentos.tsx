@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste, User, Stethoscope, CalendarDays, Building2, Wallet, ChevronRight, CheckCircle2 } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
-import { ListToolbar } from "@/components/list-toolbar";
+import { AppointmentsToolbar } from "@/components/appointments-toolbar";
 import { FeedbackState } from "@/components/feedback-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 import { useServerFn } from "@tanstack/react-start";
@@ -31,7 +30,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/atendimentos")({
-  head: () => ({ meta: [{ title: "Atendimentos" }] }),
+  head: () => ({ meta: [
+    { title: "Atendimentos | Gabriela Kronhardt" },
+    { name: "description", content: "Registro e acompanhamento de atendimentos clínicos, pagamentos e notas fiscais." },
+    { property: "og:title", content: "Atendimentos | Gabriela Kronhardt" },
+    { property: "og:description", content: "Organização dos atendimentos clínicos e acompanhamento financeiro." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: z.object({ edit: z.string().optional() }),
   component: Atendimentos,
 });
@@ -293,7 +299,7 @@ function Atendimentos() {
     finalizado: "bg-success/15 text-success border-success/30",
     pago: "bg-success/15 text-success border-success/30",
     nf_pendente: "bg-warning/15 text-warning-foreground border-warning/30",
-    aguardando_pagamento: "bg-accent text-accent-foreground",
+    aguardando_pagamento: "bg-warning/10 text-warning-foreground border-warning/30",
     sem_valor: "bg-destructive/15 text-destructive border-destructive/30",
     realizado: "bg-muted text-muted-foreground",
   } as Record<string, string>;
@@ -301,82 +307,13 @@ function Atendimentos() {
   const hasFilters = Boolean(from || to || search);
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Atendimentos"
-        subtitle="Cadastre, edite e acompanhe os atendimentos clínicos em um só lugar."
-        eyebrow={`${totals.qtd} no período`}
-        meta={[
-          { label: "Mês atual", value: new Date(from).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) },
-          { label: "Faturado", value: brl(totals.faturado) },
-          { label: "Recebido", value: brl(totals.recebido) },
-        ]}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={startNew}
-              size="lg"
-              className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-5 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Novo atendimento
-            </Button>
-          </div>
-        }
+    <div className="appointments-theme appointments-page space-y-7">
+      <AppointmentsToolbar
+        search={search} from={from} to={to} count={isLoading ? undefined : appts?.length ?? 0}
+        onSearchChange={setSearch} onFromChange={setFrom} onToChange={setTo} onNew={startNew}
       />
 
-      <ListToolbar
-        search={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Buscar por tutor, pet ou nº interno..."
-        filters={
-          <>
-            <Input
-              type="month"
-              className="h-11 w-40 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              onChange={(e) => {
-                if (e.target.value) {
-                  const [y, m] = e.target.value.split("-").map(Number);
-                  setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
-                  setTo(new Date(y, m, 0).toISOString().slice(0, 10));
-                }
-              }}
-            />
-            <div className="flex items-center gap-2">
-              <Input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              />
-              <span className="text-xs text-muted-foreground">ate</span>
-              <Input
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              />
-            </div>
-            {hasFilters && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-11 rounded-xl px-3 text-xs text-muted-foreground hover:text-foreground"
-                onClick={() => {
-                  setSearch("");
-                  const d = new Date();
-                  setFrom(new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10));
-                  setTo(new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10));
-                }}
-              >
-                <X className="mr-1 h-3.5 w-3.5" /> Limpar
-              </Button>
-            )}
-          </>
-        }
-      />
-
-      <Card className="border-border/60">
+      <Card className="rounded-lg border-border bg-card shadow-none">
         <CardContent className="overflow-x-auto p-0">
           {!isLoading && !isError && appts?.length === 0 ? (
             <div className="p-4">
@@ -392,17 +329,17 @@ function Atendimentos() {
               />
             </div>
           ) : (
-            <Table>
+            <Table className="appointments-table">
               <TableHeader>
                 <TableRow>
                   <TableHead>Nº</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Tutor / Pet</TableHead>
-                  <TableHead>Clinica</TableHead>
+                  <TableHead>Clínica</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
                   <TableHead className="text-center">Pago?</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="w-12"></TableHead>
+                  <TableHead className="w-24"><span className="sr-only">Ações</span></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -429,27 +366,27 @@ function Atendimentos() {
                 )}
                 {!isLoading && !isError && appts?.map((a) => (
                   <TableRow key={a.id}>
-                    <TableCell className="font-mono text-xs">{a.numero_interno}</TableCell>
+                    <TableCell className="font-mono text-xs font-medium text-muted-foreground">{a.numero_interno}</TableCell>
                     <TableCell className="text-sm">{a.data_atendimento}</TableCell>
                     <TableCell className="text-sm">
-                      <div className="font-medium">{a.tutor}</div>
-                      <div className="text-xs text-muted-foreground">{a.pet}</div>
+                      <div className="font-semibold">{a.tutor}</div>
+                      <div className="mt-1 text-sm text-muted-foreground">{a.pet}</div>
                     </TableCell>
-                    <TableCell className="text-sm">{(a as any).clinics?.nome ?? <span className="text-destructive">—</span>}</TableCell>
-                    <TableCell className="text-right text-sm font-medium">{a.valor ? brl(Number(a.valor)) : <span className="text-destructive">—</span>}</TableCell>
+                    <TableCell className="text-sm">{a.clinics?.nome ?? <span className="text-destructive">—</span>}</TableCell>
+                    <TableCell className="text-right text-base font-semibold tabular-nums">{a.valor ? brl(Number(a.valor)) : <span className="text-destructive">—</span>}</TableCell>
                     <TableCell className="text-center">
                       {a.pago ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-success/20 bg-success/10 px-2.5 py-1 text-sm font-medium text-success">
                           <Check className="h-3 w-3" /> Pago
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-warning/30 bg-warning/10 px-2.5 py-1 text-sm font-medium text-warning-foreground">
                           <X className="h-3 w-3" /> Em aberto
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`capitalize ${statusColor[a.status] ?? ""}`}>
+                      <Badge variant="outline" className={cn("rounded-md px-2.5 py-1 text-xs font-semibold capitalize", statusColor[a.status])}>
                         {a.status.replaceAll("_", " ")}
                       </Badge>
                     </TableCell>
@@ -457,12 +394,14 @@ function Atendimentos() {
                       <TableActions>
                         <TableAction
                           label="Editar atendimento"
+                          className="h-10 w-10 border border-border bg-card text-primary hover:bg-primary/10"
                           icon={Pencil}
                           onClick={() => startEdit(a as AppointmentRow)}
                         />
                         {isAdmin && (
                           <TableAction
                             label="Excluir atendimento"
+                            className="h-10 w-10 border border-border bg-card hover:bg-destructive/10"
                             icon={Trash2}
                             tone="destructive"
                             onClick={() => confirm("Excluir atendimento?") && del.mutate(a.id)}
@@ -479,14 +418,12 @@ function Atendimentos() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[94vh] max-w-4xl gap-0 overflow-hidden border-border/60 bg-background p-0 shadow-2xl">
+        <DialogContent className="appointments-theme appointments-dialog max-h-[94vh] w-[calc(100%-2rem)] max-w-4xl gap-0 overflow-hidden border-border bg-background p-0 shadow-lg [&>button]:hidden" aria-describedby={undefined}>
           {/* Header premium com gradiente */}
-          <div className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-indigo-600/30 via-violet-600/20 to-fuchsia-600/20 px-6 py-5">
-            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-fuchsia-500/20 blur-3xl" />
-            <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-indigo-500/20 blur-3xl" />
+          <div className="relative border-b border-border bg-card px-6 py-5">
             <div className="relative flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-lg shadow-indigo-500/30">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                   <ClipboardList className="h-5 w-5" />
                 </div>
                 <div>
@@ -498,22 +435,19 @@ function Atendimentos() {
                       </Badge>
                     )}
                   </div>
-                  <DialogTitle className="mt-0.5 text-xl font-bold text-foreground" style={{ fontFamily: "Urbanist" }}>
+                  <DialogTitle className="mt-0.5 text-2xl font-bold text-foreground">
                     {editing?.id ? `${(editing as AppointmentRow).numero_interno ?? "Atendimento"}` : "Novo atendimento"}
                   </DialogTitle>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    Preencha os dados do atendimento em 3 etapas visuais.
-                  </p>
                 </div>
               </div>
-              <button
+              <Button variant="outline" size="icon"
                 type="button"
                 onClick={() => setOpen(false)}
                 className="grid h-8 w-8 place-items-center rounded-lg border border-border/60 bg-background/40 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
                 aria-label="Fechar"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -536,7 +470,7 @@ function Atendimentos() {
                   <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
                     <span className="text-xs font-bold">1</span>
                   </div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Identificacao</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Identificação</h3>
                   <div className="h-px flex-1 bg-border/60" />
                 </div>
 
@@ -581,7 +515,7 @@ function Atendimentos() {
                         <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
                           <SelectValue placeholder="Selecione a clinica" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="appointments-theme">
                           {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
                         </SelectContent>
                       </Select>
@@ -596,7 +530,7 @@ function Atendimentos() {
                   <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
                     <span className="text-xs font-bold">2</span>
                   </div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Servico e valor</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Serviço e valor</h3>
                   <div className="h-px flex-1 bg-border/60" />
                 </div>
 
@@ -623,7 +557,7 @@ function Atendimentos() {
                     <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
                       <SelectValue placeholder="Selecione um servico..." />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="appointments-theme">
                       {services?.map((s) => (
                         <SelectItem key={s.id} value={s.id}>
                           {s.nome} — {brl(Number(s.valor_final ?? s.valor ?? 0))}
@@ -707,7 +641,7 @@ function Atendimentos() {
                           <SelectTrigger className="h-10 rounded-lg border-success/30 bg-background/60">
                             <SelectValue placeholder="Selecione..." />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="appointments-theme">
                             {methods?.map((m) => <SelectItem key={m.id} value={m.id}>{m.nome}</SelectItem>)}
                           </SelectContent>
                         </Select>
@@ -814,7 +748,7 @@ function Atendimentos() {
                 type="button"
                 disabled={save.isPending}
                 onClick={() => editing && save.mutate(editing)}
-                className="rounded-lg bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 shadow-lg shadow-indigo-500/30 hover:from-indigo-400 hover:to-fuchsia-400"
+                className="h-11 rounded-lg px-6 shadow-none"
               >
                 {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
                 {save.isPending ? "Salvando…" : "Salvar atendimento"}
@@ -825,7 +759,7 @@ function Atendimentos() {
       </Dialog>
 
       <Dialog open={quickServiceOpen} onOpenChange={setQuickServiceOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="appointments-theme appointments-dialog w-[calc(100%-2rem)] max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Novo servico</DialogTitle>
           </DialogHeader>
@@ -1013,7 +947,7 @@ function TutorSmartPaste({ onExtracted }: { onExtracted: (data: { nome: string |
       onPaste={onPaste}
       onDrop={onDrop}
       onDragOver={(e) => e.preventDefault()}
-      className="group relative overflow-hidden rounded-xl border border-dashed border-primary/30 bg-gradient-to-br from-primary/[0.08] to-fuchsia-500/[0.04] p-3 outline-none transition focus-visible:border-primary/60 focus-visible:bg-primary/10 hover:border-primary/50"
+      className="group relative overflow-hidden rounded-xl border border-dashed border-primary/30 bg-primary/5 p-3 outline-none transition focus-visible:border-primary/60 focus-visible:bg-primary/10 hover:border-primary/50"
     >
       <div className="flex items-center gap-3">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">

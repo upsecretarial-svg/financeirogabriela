@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T05:57:09.436318+00:00",
+  "generated_at": "2026-10-15T00:12:13.581426+00:00",
   "files": [
     {
       "path": "package-lock.json",
@@ -28,6 +28,10 @@
     {
       "path": "components.json",
       "bytes": 443
+    },
+    {
+      "path": ".lovable/plan.md",
+      "bytes": 2677
     },
     {
       "path": ".lovable/project.json",

@@ -350,7 +350,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="hidden text-xs text-muted-foreground sm:block">{user?.email}</div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className={cn("flex-1 overflow-y-auto", path === "/atendimentos" && "appointments-theme bg-background")}>
           <motion.div
             key={path}
             className="mx-auto w-full max-w-[88rem] px-4 py-6 md:px-8 md:py-10"

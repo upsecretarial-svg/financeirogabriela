@@ -145,6 +145,11 @@
   padding-inline: 20px;
 }
 .appointments-table td { padding: 18px 20px; }
+.appointments-table td:first-child,
+.appointments-table td:nth-child(2),
+.appointments-table td:nth-child(5),
+.appointments-table td:nth-child(6),
+.appointments-table td:nth-child(7) { white-space: nowrap; }
 .appointments-table tbody tr:hover { background: var(--accent); }
 .appointments-dialog label { font-size: 14px; color: var(--foreground); }
 .appointments-dialog input,

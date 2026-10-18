@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T15:32:12.971176+00:00",
+  "generated_at": "2026-10-18T16:07:37.568960+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -543,7 +543,7 @@
     },
     {
       "path": "src/routes/_authenticated/index.tsx",
-      "bytes": 25876
+      "bytes": 25805
     },
     {
       "path": "src/routes/_authenticated/contas-pagar.tsx",

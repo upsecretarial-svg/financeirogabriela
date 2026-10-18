@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T21:26:49.055967+00:00",
+  "generated_at": "2026-10-18T21:34:04.575157+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -255,7 +255,7 @@
     },
     {
       "path": "src/routes/__root.tsx",
-      "bytes": 5106
+      "bytes": 5246
     },
     {
       "path": "src/routes/README.md",
@@ -507,7 +507,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 51911
+      "bytes": 51918
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",
@@ -1102,10 +1102,6 @@
     {
       "source": "src/routes/__root.tsx",
       "target": "react"
-    },
-    {
-      "source": "src/routes/__root.tsx",
-      "target": "../styles.css?url"
     },
     {
       "source": "src/routes/__root.tsx",

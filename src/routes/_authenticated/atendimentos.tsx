@@ -506,37 +506,34 @@ function Atendimentos() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[94vh] max-w-4xl gap-0 overflow-hidden border-border/60 bg-background p-0 shadow-2xl">
-          {/* Header premium com gradiente */}
-          <div className="relative overflow-hidden border-b border-border/60 bg-gradient-to-br from-indigo-600/30 via-violet-600/20 to-fuchsia-600/20 px-6 py-5">
-            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-fuchsia-500/20 blur-3xl" />
-            <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-indigo-500/20 blur-3xl" />
+        <DialogContent className="max-h-[94vh] max-w-4xl gap-0 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/98 via-card to-background p-0 shadow-2xl backdrop-blur-2xl sm:rounded-2xl dark:border-white/10">
+          {/* Header premium minimalista e refinado */}
+          <div className="relative border-b border-border/60 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent px-7 py-5 dark:border-white/10">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-primary/15 blur-3xl" />
             <div className="relative flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white shadow-lg shadow-indigo-500/30">
+              <div className="flex items-start gap-3.5">
+                <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-fuchsia-600 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
                   <ClipboardList className="h-5 w-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Atendimento</span>
-                    {editing?.id && (
-                      <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] text-primary">
-                        Editando
-                      </Badge>
-                    )}
+                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">Registro Clínico</span>
+                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] font-semibold text-primary">
+                      {editing?.id ? "Edição" : "Novo"}
+                    </Badge>
                   </div>
-                  <DialogTitle className="mt-0.5 text-xl font-bold text-foreground" style={{ fontFamily: "Urbanist" }}>
+                  <DialogTitle className="mt-0.5 text-xl font-bold tracking-tight text-foreground" style={{ fontFamily: "Urbanist" }}>
                     {editing?.id ? `${(editing as AppointmentRow).numero_interno ?? "Atendimento"}` : "Novo atendimento"}
                   </DialogTitle>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    Preencha os dados do atendimento em 3 etapas visuais.
+                    Organize paciente, valores e baixa financeira com precisão.
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="grid h-8 w-8 place-items-center rounded-lg border border-border/60 bg-background/40 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                className="grid h-8 w-8 place-items-center rounded-lg border border-border/60 bg-background/60 text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground"
                 aria-label="Fechar"
               >
                 <X className="h-4 w-4" />
@@ -545,7 +542,37 @@ function Atendimentos() {
           </div>
 
           {editing && (
-            <div className="max-h-[calc(94vh-180px)] space-y-5 overflow-y-auto px-6 py-5">
+            <div className="max-h-[calc(94vh-170px)] space-y-5 overflow-y-auto px-6 py-5">
+              {/* Sumário dinâmico do atendimento */}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/[0.08] via-card/60 to-transparent p-3.5 shadow-sm dark:border-white/10">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Paciente</span>
+                  <p className="truncate text-sm font-bold text-foreground">{editing.pet || "—"}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tutor</span>
+                  <p className="truncate text-sm font-semibold text-foreground">{editing.tutor || "—"}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Valor total</span>
+                  <p className="text-sm font-black text-primary tabular-nums">{brl(Number(editing.valor ?? 0))}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status Baixa</span>
+                  <div className="pt-0.5">
+                    {editing.pago ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-success">
+                        <Check className="h-3 w-3" /> Pago
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-500">
+                        <Clock className="h-3 w-3" /> Em aberto
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {!editing.id && (
                 <TutorSmartPaste
                   onExtracted={(d) => setEditing((cur) => cur ? {
@@ -567,46 +594,46 @@ function Atendimentos() {
                   <div className="h-px flex-1 bg-border/60" />
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3.5 rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm sm:grid-cols-2 dark:border-white/5">
                   <Field label="Tutor" required icon={User}>
                     <Input
                       value={editing.tutor ?? ""}
                       onChange={(e) => setEditing({ ...editing, tutor: e.target.value })}
-                      placeholder="Nome completo"
-                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                      placeholder="Nome completo do tutor"
+                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary"
                     />
                   </Field>
-                  <Field label="CPF do tutor" hint="Para NF-e" icon={User}>
+                  <Field label="CPF do tutor" hint="Para emissão de NF-e" icon={User}>
                     <Input
                       inputMode="numeric"
                       maxLength={14}
                       placeholder="000.000.000-00"
                       value={formatCpf(editing.tutor_cpf ?? "")}
                       onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
-                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                      className="h-10 rounded-lg border-border/70 bg-background/80 font-mono text-sm transition focus:border-primary"
                     />
                   </Field>
-                  <Field label="Pet" required icon={Stethoscope}>
+                  <Field label="Nome do Pet" required icon={Stethoscope}>
                     <Input
                       value={editing.pet ?? ""}
                       onChange={(e) => setEditing({ ...editing, pet: e.target.value })}
-                      placeholder="Nome do pet"
-                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                      placeholder="Ex: Thor, Mel, Luna"
+                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary"
                     />
                   </Field>
-                  <Field label="Data" required icon={CalendarDays}>
+                  <Field label="Data do atendimento" required icon={CalendarDays}>
                     <Input
                       type="date"
                       value={editing.data_atendimento ?? ""}
                       onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })}
-                      className="h-11 rounded-lg border-border/60 bg-background/60"
+                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm transition focus:border-primary"
                     />
                   </Field>
                   <div className="sm:col-span-2">
-                    <Field label="Clinica" icon={Building2}>
+                    <Field label="Clínica parceira" icon={Building2}>
                       <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
-                        <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
-                          <SelectValue placeholder="Selecione a clinica" />
+                        <SelectTrigger className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary">
+                          <SelectValue placeholder="Selecione a clínica conveniada" />
                         </SelectTrigger>
                         <SelectContent>
                           {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
@@ -627,14 +654,14 @@ function Atendimentos() {
                   <div className="h-px flex-1 bg-border/60" />
                 </div>
 
-                <div className="rounded-xl border border-border/60 bg-card/30 p-4 backdrop-blur-sm">
-                  <div className="flex items-center justify-between gap-2 pb-2">
-                    <Label className="flex items-center gap-1.5 text-sm font-medium">
+                                <div className="rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm dark:border-white/5">
+                  <div className="flex items-center justify-between gap-2 pb-2.5">
+                    <Label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       <Stethoscope className="h-3.5 w-3.5 text-primary" />
-                      Servico realizado
+                      Procedimento principal
                     </Label>
-                    <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 rounded-md px-2 text-xs text-primary hover:bg-primary/10" onClick={() => setQuickServiceOpen(true)}>
-                      <Plus className="h-3 w-3" /> Novo servico
+                    <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 rounded-md px-2 text-xs font-semibold text-primary hover:bg-primary/10" onClick={() => setQuickServiceOpen(true)}>
+                      <Plus className="h-3 w-3" /> Cadastrar rápido
                     </Button>
                   </div>
                   <Select
@@ -647,8 +674,8 @@ function Atendimentos() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-11 rounded-lg border-border/60 bg-background/60">
-                      <SelectValue placeholder="Selecione um servico..." />
+                    <SelectTrigger className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary">
+                      <SelectValue placeholder="Selecione um serviço cadastrado..." />
                     </SelectTrigger>
                     <SelectContent>
                       {services?.map((s) => (
@@ -659,26 +686,30 @@ function Atendimentos() {
                     </SelectContent>
                   </Select>
 
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">Valor (R$)</Label>
+                  <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+                        <DollarSign className="h-3.5 w-3.5 text-primary" />
+                        Valor do atendimento (R$)
+                      </Label>
                       <Input
                         type="number"
                         step="0.01"
                         min="0"
                         value={editing.valor ?? ""}
                         onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })}
-                        className="h-11 rounded-lg border-border/60 bg-background/60 text-base font-semibold"
+                        placeholder="0,00"
+                        className="h-10 rounded-lg border-border/70 bg-background/80 font-mono text-base font-semibold text-foreground transition focus:border-primary"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">Observacoes</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium text-muted-foreground">Observações clínicas / internas</Label>
                       <Textarea
                         rows={2}
                         value={editing.observacoes ?? ""}
                         onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })}
-                        placeholder="Anotacoes sobre o atendimento..."
-                        className="rounded-lg border-border/60 bg-background/60 text-sm"
+                        placeholder="Anotações breves sobre o atendimento..."
+                        className="min-h-[40px] resize-none rounded-lg border-border/70 bg-background/80 text-xs transition focus:border-primary"
                       />
                     </div>
                   </div>

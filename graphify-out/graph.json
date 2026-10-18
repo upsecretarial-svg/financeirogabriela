@@ -1,6 +1,10 @@
 {
-  "generated_at": "2026-10-15T00:12:13.581426+00:00",
+  "generated_at": "2026-10-18T15:32:12.971176+00:00",
   "files": [
+    {
+      "path": "roadmap.md",
+      "bytes": 249
+    },
     {
       "path": "package-lock.json",
       "bytes": 306472
@@ -275,7 +279,7 @@
     },
     {
       "path": "src/integrations/supabase/previewAuthStorage.ts",
-      "bytes": 4565
+      "bytes": 5352
     },
     {
       "path": "src/integrations/supabase/types.ts",
@@ -503,7 +507,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 48107
+      "bytes": 48971
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",

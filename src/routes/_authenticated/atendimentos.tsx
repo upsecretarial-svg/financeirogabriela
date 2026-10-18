@@ -112,6 +112,17 @@ function Atendimentos() {
     },
   });
 
+  // Totais do período carregado — derivados da lista já buscada, sem nova query.
+  const totals = {
+    qtd: appts?.length ?? 0,
+    faturado: (appts ?? []).reduce((acc, a) => acc + Number(a.valor ?? 0), 0),
+    recebido: (appts ?? []).reduce(
+      (acc, a) => (a.pago ? acc + Number(a.valor_recebido ?? 0) : acc),
+      0,
+    ),
+  };
+
+
   const { data: clinics } = useQuery({
     queryKey: ["clinics-active"],
     queryFn: async () => (await supabase.from("clinics").select("*").eq("ativo", true).order("nome")).data ?? [],
@@ -305,12 +316,28 @@ function Atendimentos() {
       <PageHeader
         title="Atendimentos"
         subtitle="Cadastre, edite e acompanhe os atendimentos clínicos em um só lugar."
-        eyebrow={`${totals.qtd} no período`}
-        meta={[
-          { label: "Mês atual", value: new Date(from).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) },
+        badge={`${totals.qtd} no período`}
+        stats={[
+          {
+            label: "Mês atual",
+            value: new Date(`${from}T12:00:00`).toLocaleDateString("pt-BR", {
+              month: "long",
+              year: "numeric",
+            }),
+          },
           { label: "Faturado", value: brl(totals.faturado) },
           { label: "Recebido", value: brl(totals.recebido) },
-        ]}
+        ].map((m) => (
+          <div
+            key={m.label}
+            className="rounded-lg border border-border bg-background/60 px-3 py-1.5 text-right"
+          >
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {m.label}
+            </div>
+            <div className="text-sm font-semibold tabular-nums text-foreground">{m.value}</div>
+          </div>
+        ))}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Button

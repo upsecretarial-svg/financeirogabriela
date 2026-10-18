@@ -243,9 +243,8 @@ function Dashboard() {
               <Sparkles className="h-3 w-3" />
               Painel Executivo
             </div>
-            <h1 className="mt-2 text-4xl font-black tracking-tight text-foreground md:text-5xl" style={{ fontFamily: "Urbanist" }}>
-              Performance{" "}
-              <span className="text-gradient-primary">Financeira</span>
+            <h1 className="mt-2 text-4xl font-black tracking-tight text-white md:text-5xl" style={{ fontFamily: "Urbanist" }}>
+              Performance Financeira
             </h1>
             <div className="mt-2 flex items-center gap-3">
               <p className="text-sm font-bold capitalize text-muted-foreground">{mesAtual}</p>

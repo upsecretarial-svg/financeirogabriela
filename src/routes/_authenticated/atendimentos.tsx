@@ -17,7 +17,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste, User, Stethoscope, CalendarDays, Building2, Wallet, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste, User, Stethoscope, CalendarDays, Building2, Wallet, ChevronRight, CheckCircle2, Clock } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { ListToolbar } from "@/components/list-toolbar";
 import { FeedbackState } from "@/components/feedback-state";

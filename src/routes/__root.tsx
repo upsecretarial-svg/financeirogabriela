@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import appCss from "../styles.css?url";
+import "@/styles.css";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { usePasteUppercase } from "../lib/use-paste-uppercase";
 
@@ -51,6 +51,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
+        {error?.message && (
+          <pre className="mt-4 max-h-40 overflow-auto rounded bg-muted/60 p-2 text-left text-xs text-destructive">
+            {error.message}
+          </pre>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -93,7 +98,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c845711a-f7cc-4310-9713-101cd21d6bb4/id-preview-b2b29195--1e6aa35e-ca86-4c8d-af69-aec78674f1f3.lovable.app-1782323376172.png" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

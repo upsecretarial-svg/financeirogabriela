@@ -303,7 +303,7 @@ function Atendimentos() {
   const statusColor: Record<string, string> = {
     finalizado: "bg-success/15 text-success border-success/30",
     pago: "bg-success/15 text-success border-success/30",
-    nf_pendente: "bg-warning/15 text-warning-foreground border-warning/30",
+    nf_pendente: "bg-red-600 text-white border-red-500 font-semibold",
     aguardando_pagamento: "bg-accent text-accent-foreground",
     sem_valor: "bg-destructive/15 text-destructive border-destructive/30",
     realizado: "bg-muted text-muted-foreground",

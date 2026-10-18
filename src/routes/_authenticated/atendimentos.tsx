@@ -31,6 +31,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/atendimentos")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Atendimentos" }] }),
   validateSearch: z.object({ edit: z.string().optional() }),
   component: Atendimentos,
@@ -320,10 +321,12 @@ function Atendimentos() {
         stats={[
           {
             label: "Mês atual",
-            value: new Date(`${from}T12:00:00`).toLocaleDateString("pt-BR", {
-              month: "long",
-              year: "numeric",
-            }),
+            value: from
+              ? new Date(`${from}T12:00:00`).toLocaleDateString("pt-BR", {
+                  month: "long",
+                  year: "numeric",
+                })
+              : "—",
           },
           { label: "Faturado", value: brl(totals.faturado) },
           { label: "Recebido", value: brl(totals.recebido) },

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T16:07:37.568960+00:00",
+  "generated_at": "2026-10-18T16:15:17.964192+00:00",
   "files": [
     {
       "path": "roadmap.md",
@@ -511,7 +511,7 @@
     },
     {
       "path": "src/routes/_authenticated/pendencias.tsx",
-      "bytes": 7607
+      "bytes": 22570
     },
     {
       "path": "src/routes/_authenticated/formas-pagamento.tsx",
@@ -2313,6 +2313,10 @@
     },
     {
       "source": "src/routes/_authenticated/pendencias.tsx",
+      "target": "@/components/ui/button"
+    },
+    {
+      "source": "src/routes/_authenticated/pendencias.tsx",
       "target": "@/components/ui/table"
     },
     {
@@ -2330,6 +2334,10 @@
     {
       "source": "src/routes/_authenticated/pendencias.tsx",
       "target": "sonner"
+    },
+    {
+      "source": "src/routes/_authenticated/pendencias.tsx",
+      "target": "framer-motion"
     },
     {
       "source": "src/routes/_authenticated/formas-pagamento.tsx",

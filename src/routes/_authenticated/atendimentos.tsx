@@ -302,13 +302,13 @@ function Atendimentos() {
   }, [editParam, services]);
 
   const statusColor: Record<string, string> = {
-    finalizado: "bg-success/15 text-success border-success/30",
-    pago: "bg-success/15 text-success border-success/30",
-    nf_pendente: "bg-red-600 text-white border-red-500 font-semibold",
-    aguardando_pagamento: "bg-accent text-accent-foreground",
-    sem_valor: "bg-destructive/15 text-destructive border-destructive/30",
-    realizado: "bg-muted text-muted-foreground",
-  } as Record<string, string>;
+    finalizado: "border-success/30 bg-success/10 text-success",
+    pago: "border-success/30 bg-success/10 text-success",
+    nf_pendente: "border-destructive/30 bg-destructive/10 text-destructive",
+    aguardando_pagamento: "border-warning/30 bg-warning/10 text-warning",
+    sem_valor: "border-destructive/30 bg-destructive/10 text-destructive",
+    realizado: "border-border bg-muted text-muted-foreground",
+  };
 
   const hasFilters = Boolean(from || to || search);
 

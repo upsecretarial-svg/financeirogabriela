@@ -378,7 +378,7 @@ function Atendimentos() {
                 onChange={(e) => setFrom(e.target.value)}
                 className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
               />
-              <span className="text-xs text-muted-foreground">ate</span>
+              <span className="text-xs text-muted-foreground">até</span>
               <Input
                 type="date"
                 value={to}
@@ -415,8 +415,8 @@ function Atendimentos() {
                 title={hasFilters ? "Nenhum resultado para os filtros atuais" : "Nenhum atendimento cadastrado"}
                 description={
                   hasFilters
-                    ? "Tente ajustar a busca ou o periodo para encontrar o que procura."
-                    : "Clique em 'Novo atendimento' para registrar o primeiro lancamento."
+                    ? "Tente ajustar a busca ou o período para encontrar o que procura."
+                    : "Clique em 'Novo atendimento' para registrar o primeiro lançamento."
                 }
                 action={hasFilters ? undefined : { label: "Novo atendimento", onClick: startNew }}
               />
@@ -425,10 +425,9 @@ function Atendimentos() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nº</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Tutor / Pet</TableHead>
-                  <TableHead>Clinica</TableHead>
+                  <TableHead>Clínica</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
                   <TableHead className="text-center">Pago?</TableHead>
                   <TableHead>Status</TableHead>
@@ -438,7 +437,7 @@ function Atendimentos() {
               <TableBody>
                 {isLoading && (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={8} className="py-16 text-center text-sm text-muted-foreground">
+                    <TableCell colSpan={7} className="py-16 text-center text-sm text-muted-foreground">
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin text-primary" /> Carregando atendimentos...
                       </span>
@@ -447,10 +446,10 @@ function Atendimentos() {
                 )}
                 {isError && (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={8} className="py-10">
+                    <TableCell colSpan={7} className="py-10">
                       <FeedbackState
                         variant="error"
-                        title="Nao foi possivel carregar"
+                        title="Não foi possível carregar"
                         description={(error as Error | null)?.message ?? "Tente novamente em instantes."}
                         action={{ label: "Tentar novamente", onClick: () => refetch() }}
                       />
@@ -459,7 +458,6 @@ function Atendimentos() {
                 )}
                 {!isLoading && !isError && appts?.map((a) => (
                   <TableRow key={a.id}>
-                    <TableCell className="font-mono text-xs">{a.numero_interno}</TableCell>
                     <TableCell className="text-sm">{a.data_atendimento}</TableCell>
                     <TableCell className="text-sm">
                       <div className="font-medium">{a.tutor}</div>

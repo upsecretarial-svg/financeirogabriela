@@ -507,66 +507,86 @@ function Atendimentos() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[94vh] max-w-4xl gap-0 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card/98 via-card to-background p-0 shadow-2xl backdrop-blur-2xl sm:rounded-2xl dark:border-white/10">
-          {/* Header premium minimalista e refinado */}
-          <div className="relative border-b border-border/60 bg-gradient-to-r from-primary/15 via-primary/5 to-transparent px-7 py-5 dark:border-white/10">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-primary/15 blur-3xl" />
-            <div className="relative flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3.5">
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-fuchsia-600 text-white shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
+        <DialogContent className="max-h-[94vh] max-w-3xl gap-0 overflow-hidden rounded-3xl border border-white/10 bg-card/95 p-0 shadow-[0_40px_120px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl">
+          {/* Brilho decorativo superior */}
+          <div aria-hidden className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -right-24 top-10 h-48 w-48 rounded-full bg-fuchsia-500/10 blur-3xl" />
+
+          {/* Cabeçalho premium */}
+          <div className="relative border-b border-white/10 px-7 pb-5 pt-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-fuchsia-600 text-white shadow-lg shadow-indigo-500/30 ring-1 ring-white/25">
                   <ClipboardList className="h-5 w-5" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">Registro Clínico</span>
-                    <Badge variant="outline" className="border-primary/30 bg-primary/10 text-[10px] font-semibold text-primary">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-indigo-300">Registro clínico</span>
+                    <span className="rounded-full border border-indigo-400/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-indigo-200">
                       {editing?.id ? "Edição" : "Novo"}
-                    </Badge>
+                    </span>
                   </div>
-                  <DialogTitle className="mt-0.5 text-xl font-bold tracking-tight text-foreground" style={{ fontFamily: "Urbanist" }}>
-                    {editing?.id ? `${(editing as AppointmentRow).numero_interno ?? "Atendimento"}` : "Novo atendimento"}
+                  <DialogTitle className="mt-1 text-2xl font-black tracking-tight text-foreground">
+                    {editing?.id ? "Editar atendimento" : "Novo atendimento"}
                   </DialogTitle>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    Organize paciente, valores e baixa financeira com precisão.
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Paciente, valores e baixa financeira em um único fluxo.
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="grid h-8 w-8 place-items-center rounded-lg border border-border/60 bg-background/60 text-muted-foreground transition hover:border-border hover:bg-muted hover:text-foreground"
+                className="grid size-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5 text-muted-foreground transition hover:border-white/20 hover:bg-white/10 hover:text-foreground"
                 aria-label="Fechar"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {/* Trilha de etapas */}
+            <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {["Identificação", "Serviço e valor", "Financeiro e NF-e"].map((step, i) => (
+                <span key={step} className="flex items-center gap-2">
+                  {i > 0 && <ChevronRight className="h-3 w-3 opacity-40" />}
+                  <span className="flex items-center gap-1.5">
+                    <span className="grid size-4 place-items-center rounded-full bg-indigo-500/20 text-[9px] font-black text-indigo-300">
+                      {i + 1}
+                    </span>
+                    {step}
+                  </span>
+                </span>
+              ))}
+            </div>
           </div>
 
           {editing && (
-            <div className="max-h-[calc(94vh-170px)] space-y-5 overflow-y-auto px-6 py-5">
-              {/* Sumário dinâmico do atendimento */}
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/[0.08] via-card/60 to-transparent p-3.5 shadow-sm dark:border-white/10">
-                <div className="space-y-0.5">
+            <div className="max-h-[calc(94vh-240px)] space-y-6 overflow-y-auto px-7 py-6">
+              {/* Resumo dinâmico */}
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-4">
+                <div className="bg-card/70 px-4 py-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Paciente</span>
-                  <p className="truncate text-sm font-bold text-foreground">{editing.pet || "—"}</p>
+                  <p className="mt-0.5 truncate text-sm font-bold text-foreground">{editing.pet || "—"}</p>
                 </div>
-                <div className="space-y-0.5">
+                <div className="bg-card/70 px-4 py-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tutor</span>
-                  <p className="truncate text-sm font-semibold text-foreground">{editing.tutor || "—"}</p>
+                  <p className="mt-0.5 truncate text-sm font-semibold text-foreground">{editing.tutor || "—"}</p>
                 </div>
-                <div className="space-y-0.5">
+                <div className="bg-card/70 px-4 py-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Valor total</span>
-                  <p className="text-sm font-black text-primary tabular-nums">{brl(Number(editing.valor ?? 0))}</p>
+                  <p className="mt-0.5 bg-gradient-to-r from-indigo-300 to-fuchsia-300 bg-clip-text text-sm font-black tabular-nums text-transparent">
+                    {brl(Number(editing.valor ?? 0))}
+                  </p>
                 </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Status Baixa</span>
-                  <div className="pt-0.5">
+                <div className="bg-card/70 px-4 py-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Baixa</span>
+                  <div className="mt-1">
                     {editing.pago ? (
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-success">
                         <Check className="h-3 w-3" /> Pago
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-500">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-warning">
                         <Clock className="h-3 w-3" /> Em aberto
                       </span>
                     )}
@@ -585,23 +605,21 @@ function Atendimentos() {
                 />
               )}
 
-              {/* ETAPA 1 - Identificacao */}
-              <section className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
-                    <span className="text-xs font-bold">1</span>
-                  </div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Identificacao</h3>
-                  <div className="h-px flex-1 bg-border/60" />
+              {/* ETAPA 1 - Identificação */}
+              <section className="space-y-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[11px] font-black text-white shadow-md shadow-indigo-500/30">1</div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">Identificação</h3>
+                  <div className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" />
                 </div>
 
-                <div className="grid grid-cols-1 gap-3.5 rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm sm:grid-cols-2 dark:border-white/5">
+                <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:grid-cols-2">
                   <Field label="Tutor" required icon={User}>
                     <Input
                       value={editing.tutor ?? ""}
                       onChange={(e) => setEditing({ ...editing, tutor: e.target.value })}
                       placeholder="Nome completo do tutor"
-                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary"
+                      className="h-11 rounded-xl border-white/10 bg-background/60 text-sm font-medium transition focus-visible:ring-indigo-400/40"
                     />
                   </Field>
                   <Field label="CPF do tutor" hint="Para emissão de NF-e" icon={User}>
@@ -611,15 +629,15 @@ function Atendimentos() {
                       placeholder="000.000.000-00"
                       value={formatCpf(editing.tutor_cpf ?? "")}
                       onChange={(e) => setEditing({ ...editing, tutor_cpf: e.target.value.replace(/\D/g, "").slice(0, 11) })}
-                      className="h-10 rounded-lg border-border/70 bg-background/80 font-mono text-sm transition focus:border-primary"
+                      className="h-11 rounded-xl border-white/10 bg-background/60 font-mono text-sm transition focus-visible:ring-indigo-400/40"
                     />
                   </Field>
-                  <Field label="Nome do Pet" required icon={Stethoscope}>
+                  <Field label="Nome do pet" required icon={Stethoscope}>
                     <Input
                       value={editing.pet ?? ""}
                       onChange={(e) => setEditing({ ...editing, pet: e.target.value })}
                       placeholder="Ex: Thor, Mel, Luna"
-                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary"
+                      className="h-11 rounded-xl border-white/10 bg-background/60 text-sm font-medium transition focus-visible:ring-indigo-400/40"
                     />
                   </Field>
                   <Field label="Data do atendimento" required icon={CalendarDays}>
@@ -627,13 +645,13 @@ function Atendimentos() {
                       type="date"
                       value={editing.data_atendimento ?? ""}
                       onChange={(e) => setEditing({ ...editing, data_atendimento: e.target.value })}
-                      className="h-10 rounded-lg border-border/70 bg-background/80 text-sm transition focus:border-primary"
+                      className="h-11 rounded-xl border-white/10 bg-background/60 text-sm transition focus-visible:ring-indigo-400/40"
                     />
                   </Field>
                   <div className="sm:col-span-2">
                     <Field label="Clínica parceira" icon={Building2}>
                       <Select value={editing.clinic_id ?? ""} onValueChange={(v) => setEditing({ ...editing, clinic_id: v })}>
-                        <SelectTrigger className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary">
+                        <SelectTrigger className="h-11 rounded-xl border-white/10 bg-background/60 text-sm font-medium transition focus:ring-indigo-400/40">
                           <SelectValue placeholder="Selecione a clínica conveniada" />
                         </SelectTrigger>
                         <SelectContent>
@@ -645,23 +663,21 @@ function Atendimentos() {
                 </div>
               </section>
 
-              {/* ETAPA 2 - Servico e valor */}
-              <section className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
-                    <span className="text-xs font-bold">2</span>
-                  </div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Servico e valor</h3>
-                  <div className="h-px flex-1 bg-border/60" />
+              {/* ETAPA 2 - Serviço e valor */}
+              <section className="space-y-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[11px] font-black text-white shadow-md shadow-indigo-500/30">2</div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">Serviço e valor</h3>
+                  <div className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" />
                 </div>
 
-                                <div className="rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm dark:border-white/5">
-                  <div className="flex items-center justify-between gap-2 pb-2.5">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                  <div className="flex items-center justify-between gap-2 pb-3">
                     <Label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      <Stethoscope className="h-3.5 w-3.5 text-primary" />
+                      <Stethoscope className="h-3.5 w-3.5 text-indigo-300" />
                       Procedimento principal
                     </Label>
-                    <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 rounded-md px-2 text-xs font-semibold text-primary hover:bg-primary/10" onClick={() => setQuickServiceOpen(true)}>
+                    <Button type="button" variant="ghost" size="sm" className="h-7 gap-1 rounded-lg px-2 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200" onClick={() => setQuickServiceOpen(true)}>
                       <Plus className="h-3 w-3" /> Cadastrar rápido
                     </Button>
                   </div>
@@ -675,7 +691,7 @@ function Atendimentos() {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-10 rounded-lg border-border/70 bg-background/80 text-sm font-medium transition focus:border-primary">
+                    <SelectTrigger className="h-11 rounded-xl border-white/10 bg-background/60 text-sm font-medium transition focus:ring-indigo-400/40">
                       <SelectValue placeholder="Selecione um serviço cadastrado..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -687,10 +703,10 @@ function Atendimentos() {
                     </SelectContent>
                   </Select>
 
-                  <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                        <DollarSign className="h-3.5 w-3.5 text-primary" />
+                        <DollarSign className="h-3.5 w-3.5 text-indigo-300" />
                         Valor do atendimento (R$)
                       </Label>
                       <Input
@@ -700,7 +716,7 @@ function Atendimentos() {
                         value={editing.valor ?? ""}
                         onChange={(e) => setEditing({ ...editing, valor: e.target.value ? Number(e.target.value) : null })}
                         placeholder="0,00"
-                        className="h-10 rounded-lg border-border/70 bg-background/80 font-mono text-base font-semibold text-foreground transition focus:border-primary"
+                        className="h-11 rounded-xl border-white/10 bg-background/60 font-mono text-base font-semibold text-foreground transition focus-visible:ring-indigo-400/40"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -710,34 +726,32 @@ function Atendimentos() {
                         value={editing.observacoes ?? ""}
                         onChange={(e) => setEditing({ ...editing, observacoes: e.target.value })}
                         placeholder="Anotações breves sobre o atendimento..."
-                        className="min-h-[40px] resize-none rounded-lg border-border/70 bg-background/80 text-xs transition focus:border-primary"
+                        className="min-h-[44px] resize-none rounded-xl border-white/10 bg-background/60 text-xs transition focus-visible:ring-indigo-400/40"
                       />
                     </div>
                   </div>
                 </div>
               </section>
 
-              {/* ETAPA 3 - Baixa financeira */}
-              <section className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
-                    <span className="text-xs font-bold">3</span>
-                  </div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Financeiro e NF-e</h3>
-                  <div className="h-px flex-1 bg-border/60" />
+              {/* ETAPA 3 - Financeiro e NF-e */}
+              <section className="space-y-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-[11px] font-black text-white shadow-md shadow-indigo-500/30">3</div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">Financeiro e NF-e</h3>
+                  <div className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" />
                 </div>
 
                 <div className={cn(
-                  "overflow-hidden rounded-xl border transition-all",
-                  editing.pago ? "border-success/40 bg-success/[0.05]" : "border-border/60 bg-card/30",
+                  "overflow-hidden rounded-2xl border transition-all",
+                  editing.pago ? "border-success/40 bg-success/[0.06]" : "border-white/10 bg-white/[0.03]",
                 )}>
                   <div className="flex items-center justify-between gap-4 p-4">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "grid h-10 w-10 place-items-center rounded-lg transition-all",
-                        editing.pago ? "bg-success/20 text-success" : "bg-muted text-muted-foreground",
+                        "grid size-10 place-items-center rounded-xl transition-all",
+                        editing.pago ? "bg-success/20 text-success" : "bg-white/5 text-muted-foreground",
                       )}>
-                        <DollarSign className="h-5 w-5" />
+                        <Wallet className="h-5 w-5" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-foreground">Dar baixa no financeiro</p>
@@ -759,11 +773,11 @@ function Atendimentos() {
                     />
                   </div>
                   {editing.pago && (
-                    <div className="grid grid-cols-1 gap-3 border-t border-success/20 bg-success/[0.03] p-4 sm:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-3 border-t border-success/20 bg-success/[0.04] p-4 sm:grid-cols-3">
                       <div className="space-y-1.5">
                         <Label className="text-xs font-medium text-muted-foreground">Forma</Label>
                         <Select value={editing.payment_method_id ?? ""} onValueChange={(v) => setEditing({ ...editing, payment_method_id: v })}>
-                          <SelectTrigger className="h-10 rounded-lg border-success/30 bg-background/60">
+                          <SelectTrigger className="h-10 rounded-xl border-success/30 bg-background/60">
                             <SelectValue placeholder="Selecione..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -779,7 +793,7 @@ function Atendimentos() {
                           min="0"
                           value={editing.valor_recebido ?? ""}
                           onChange={(e) => setEditing({ ...editing, valor_recebido: e.target.value ? Number(e.target.value) : null })}
-                          className="h-10 rounded-lg border-success/30 bg-background/60 font-semibold text-success"
+                          className="h-10 rounded-xl border-success/30 bg-background/60 font-semibold text-success"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -788,7 +802,7 @@ function Atendimentos() {
                           type="date"
                           value={editing.data_pagamento ?? ""}
                           onChange={(e) => setEditing({ ...editing, data_pagamento: e.target.value })}
-                          className="h-10 rounded-lg border-success/30 bg-background/60"
+                          className="h-10 rounded-xl border-success/30 bg-background/60"
                         />
                       </div>
                     </div>
@@ -797,14 +811,14 @@ function Atendimentos() {
 
                 {/* NF-e */}
                 <div className={cn(
-                  "overflow-hidden rounded-xl border transition-all",
-                  editing.nf_emitida ? "border-primary/40 bg-primary/[0.05]" : "border-border/60 bg-card/30",
+                  "overflow-hidden rounded-2xl border transition-all",
+                  editing.nf_emitida ? "border-indigo-400/40 bg-indigo-500/[0.06]" : "border-white/10 bg-white/[0.03]",
                 )}>
                   <div className="flex items-center justify-between gap-4 p-4">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "grid h-10 w-10 place-items-center rounded-lg transition-all",
-                        editing.nf_emitida ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground",
+                        "grid size-10 place-items-center rounded-xl transition-all",
+                        editing.nf_emitida ? "bg-indigo-500/20 text-indigo-300" : "bg-white/5 text-muted-foreground",
                       )}>
                         <FileText className="h-5 w-5" />
                       </div>
@@ -821,7 +835,7 @@ function Atendimentos() {
                     />
                   </div>
                   {editing.nf_emitida && (
-                    <div className="space-y-3 border-t border-primary/20 bg-primary/[0.03] p-4">
+                    <div className="space-y-3 border-t border-indigo-400/20 bg-indigo-500/[0.04] p-4">
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div className="space-y-1.5">
                           <Label className="text-xs font-medium text-muted-foreground">Nº da NF-e</Label>
@@ -829,13 +843,13 @@ function Atendimentos() {
                             value={editing.nf_numero ?? ""}
                             onChange={(e) => setEditing({ ...editing, nf_numero: e.target.value })}
                             placeholder="Opcional"
-                            className="h-10 rounded-lg border-primary/30 bg-background/60"
+                            className="h-10 rounded-xl border-indigo-400/30 bg-background/60"
                           />
                         </div>
-                        <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-primary/30 bg-background/40 px-3 text-xs text-foreground">
+                        <label className="flex h-10 cursor-pointer items-center gap-2 self-end rounded-xl border border-indigo-400/30 bg-background/40 px-3 text-xs text-foreground">
                           <input
                             type="checkbox"
-                            className="h-4 w-4 cursor-pointer accent-primary"
+                            className="h-4 w-4 cursor-pointer accent-indigo-400"
                             checked={!!editing.nf_enviada}
                             onChange={(e) => setEditing({ ...editing, nf_enviada: e.target.checked })}
                           />
@@ -851,29 +865,30 @@ function Atendimentos() {
                   )}
                 </div>
 
-                <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/[0.04] p-3 text-xs text-muted-foreground">
-                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                <div className="flex items-start gap-2 rounded-xl border border-indigo-400/20 bg-indigo-500/[0.05] p-3 text-xs text-muted-foreground">
+                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-indigo-300" />
                   <p>
-                    Voce pode <strong className="text-foreground">dar baixa</strong> na venda agora e <strong className="text-foreground">anexar o PDF da NF-e</strong> depois na pagina Notas Fiscais — o status sera atualizado automaticamente.
+                    Você pode <strong className="text-foreground">dar baixa</strong> na venda agora e <strong className="text-foreground">anexar o PDF da NF-e</strong> depois na página Notas Fiscais — o status será atualizado automaticamente.
                   </p>
                 </div>
               </section>
             </div>
           )}
 
-          <div className="flex items-center justify-between gap-3 border-t border-border/60 bg-card/40 px-6 py-4 backdrop-blur-sm">
-            <div className="hidden text-xs text-muted-foreground sm:block">
+          {/* Rodapé */}
+          <div className="relative flex items-center justify-between gap-3 border-t border-white/10 bg-card/80 px-7 py-4">
+            <p className="hidden text-xs text-muted-foreground sm:block">
               {editing?.id ? "Atualizando atendimento existente" : "Criando novo atendimento"}
-            </div>
+            </p>
             <div className="flex items-center gap-2">
-              <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="rounded-lg">
-                Fechar
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="rounded-xl">
+                Cancelar
               </Button>
               <Button
                 type="button"
                 disabled={save.isPending}
                 onClick={() => editing && save.mutate(editing)}
-                className="rounded-lg bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 shadow-lg shadow-indigo-500/30 hover:from-indigo-400 hover:to-fuchsia-400"
+                className="h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 font-semibold shadow-lg shadow-indigo-500/30 transition hover:from-indigo-400 hover:to-fuchsia-400"
               >
                 {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
                 {save.isPending ? "Salvando…" : "Salvar atendimento"}

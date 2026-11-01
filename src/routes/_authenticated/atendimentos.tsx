@@ -901,7 +901,7 @@ function Atendimentos() {
       <Dialog open={quickServiceOpen} onOpenChange={setQuickServiceOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Novo servico</DialogTitle>
+            <DialogTitle>Novo serviço</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 pt-2">
             <div className="space-y-2">
@@ -909,7 +909,7 @@ function Atendimentos() {
               <Input
                 value={quickService.nome}
                 onChange={(e) => setQuickService({ ...quickService, nome: e.target.value })}
-                placeholder="Ex: Consulta clinica"
+                placeholder="Ex: Consulta clínica"
                 autoFocus
               />
             </div>

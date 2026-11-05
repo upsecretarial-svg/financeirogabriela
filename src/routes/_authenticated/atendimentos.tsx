@@ -18,8 +18,6 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Search, Pencil, Check, X, Trash2, ClipboardList, DollarSign, FileText, Paperclip, Loader2, Sparkles, ClipboardPaste, User, Stethoscope, CalendarDays, Building2, Wallet, ChevronRight, CheckCircle2, Clock } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
-import { ListToolbar } from "@/components/list-toolbar";
 import { FeedbackState } from "@/components/feedback-state";
 import { TableActions, TableAction } from "@/components/table-actions";
 import { useServerFn } from "@tanstack/react-start";
@@ -64,6 +62,14 @@ function brl(n: number | null | undefined) {
   return (n ?? 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function fmtDate(iso: string) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 function formatCpf(v: string) {
   const d = (v ?? "").replace(/\D/g, "").slice(0, 11);
   return d
@@ -88,6 +94,8 @@ function Atendimentos() {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10);
   });
+  const [clinicFilter, setClinicFilter] = useState("");
+  const [payFilter, setPayFilter] = useState("");
   const [open, setOpen] = useState(false);
   const [serviceId, setServiceId] = useState<string>("");
   const [quickServiceOpen, setQuickServiceOpen] = useState(false);
@@ -113,15 +121,24 @@ function Atendimentos() {
     },
   });
 
-  // Totais do período carregado — derivados da lista já buscada, sem nova query.
+  // Filtros locais (clínica e situação de pagamento) sobre a lista já carregada.
+  const filtered = (appts ?? []).filter((a) => {
+    if (clinicFilter && a.clinic_id !== clinicFilter) return false;
+    if (payFilter === "pagos" && !a.pago) return false;
+    if (payFilter === "aberto" && a.pago) return false;
+    return true;
+  });
+
+  // Totais do período carregado — derivados da lista filtrada, sem nova query.
   const totals = {
-    qtd: appts?.length ?? 0,
-    faturado: (appts ?? []).reduce((acc, a) => acc + Number(a.valor ?? 0), 0),
-    recebido: (appts ?? []).reduce(
+    qtd: filtered.length,
+    faturado: filtered.reduce((acc, a) => acc + Number(a.valor ?? 0), 0),
+    recebido: filtered.reduce(
       (acc, a) => (a.pago ? acc + Number(a.valor_recebido ?? 0) : acc),
       0,
     ),
   };
+  const pendente = totals.faturado - totals.recebido;
 
 
   const { data: clinics } = useQuery({
@@ -310,7 +327,19 @@ function Atendimentos() {
     realizado: "border-border bg-muted text-muted-foreground",
   };
 
-  const hasFilters = Boolean(from || to || search);
+  const nowRef = new Date();
+  const monthStart = new Date(nowRef.getFullYear(), nowRef.getMonth(), 1).toISOString().slice(0, 10);
+  const monthEnd = new Date(nowRef.getFullYear(), nowRef.getMonth() + 1, 0).toISOString().slice(0, 10);
+  const hasFilters = Boolean(
+    search || clinicFilter || payFilter || from !== monthStart || to !== monthEnd,
+  );
+  const clearFilters = () => {
+    setSearch("");
+    setClinicFilter("");
+    setPayFilter("");
+    setFrom(monthStart);
+    setTo(monthEnd);
+  };
 
   return (
     <div className="space-y-6">

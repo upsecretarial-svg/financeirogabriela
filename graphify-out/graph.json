@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T01:17:54.148123+00:00",
+  "generated_at": "2026-11-05T11:51:01.588127+00:00",
   "files": [
     {
       "path": "eslint.config.js",
@@ -527,7 +527,7 @@
     },
     {
       "path": "src/routes/_authenticated/atendimentos.tsx",
-      "bytes": 53045
+      "bytes": 61921
     },
     {
       "path": "src/routes/_authenticated/auditoria.tsx",
@@ -2410,14 +2410,6 @@
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",
       "target": "lucide-react"
-    },
-    {
-      "source": "src/routes/_authenticated/atendimentos.tsx",
-      "target": "@/components/page-header"
-    },
-    {
-      "source": "src/routes/_authenticated/atendimentos.tsx",
-      "target": "@/components/list-toolbar"
     },
     {
       "source": "src/routes/_authenticated/atendimentos.tsx",

@@ -343,101 +343,128 @@ function Atendimentos() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Atendimentos"
-        subtitle="Cadastre, edite e acompanhe os atendimentos clínicos em um só lugar."
-        badge={`${totals.qtd} no período`}
-        stats={[
-          {
-            label: "Mês atual",
-            value: from
-              ? new Date(`${from}T12:00:00`).toLocaleDateString("pt-BR", {
-                  month: "long",
-                  year: "numeric",
-                })
-              : "—",
-          },
-          { label: "Faturado", value: brl(totals.faturado) },
-          { label: "Recebido", value: brl(totals.recebido) },
-        ].map((m) => (
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="bg-gradient-to-r from-foreground via-indigo-200 to-fuchsia-200 bg-clip-text text-3xl font-black tracking-tight text-transparent md:text-4xl">
+            Atendimentos
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Gerencie e acompanhe todos os atendimentos clínicos.
+          </p>
+        </div>
+        <Button
+          onClick={startNew}
+          size="lg"
+          className="h-12 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 font-semibold shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] transition hover:from-indigo-400 hover:to-fuchsia-400"
+        >
+          <Plus className="mr-2 h-4 w-4" /> Novo atendimento
+        </Button>
+      </header>
+
+      {/* Indicadores financeiros do período filtrado */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { label: "Atendimentos", value: String(totals.qtd), icon: ClipboardList, iconClass: "bg-indigo-500/15 text-indigo-300", valueClass: "text-foreground" },
+          { label: "Total faturado", value: brl(totals.faturado), icon: DollarSign, iconClass: "bg-fuchsia-500/15 text-fuchsia-300", valueClass: "text-foreground" },
+          { label: "Total recebido", value: brl(totals.recebido), icon: CheckCircle2, iconClass: "bg-success/15 text-success", valueClass: "text-success" },
+          { label: "Total pendente", value: brl(pendente), icon: Clock, iconClass: "bg-warning/15 text-warning", valueClass: pendente > 0 ? "text-warning" : "text-foreground" },
+        ].map((kpi) => (
           <div
-            key={m.label}
-            className="rounded-lg border border-border bg-background/60 px-3 py-1.5 text-right"
+            key={kpi.label}
+            className="rounded-2xl border border-border bg-card/50 p-4 backdrop-blur-xl transition-colors hover:border-white/20 md:p-5"
           >
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {m.label}
+            <div className="flex items-start justify-between gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {kpi.label}
+              </span>
+              <div className={cn("grid size-8 shrink-0 place-items-center rounded-lg", kpi.iconClass)}>
+                <kpi.icon className="h-4 w-4" />
+              </div>
             </div>
-            <div className="text-sm font-semibold tabular-nums text-foreground">{m.value}</div>
+            <p className={cn("mt-2 text-xl font-black tabular-nums tracking-tight md:text-2xl", kpi.valueClass)}>
+              {kpi.value}
+            </p>
           </div>
         ))}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={startNew}
-              size="lg"
-              className="rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-5 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.6)] hover:from-indigo-400 hover:to-fuchsia-400"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Novo atendimento
-            </Button>
-          </div>
-        }
-      />
+      </div>
 
-      <ListToolbar
-        search={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Buscar por tutor, pet ou nº interno..."
-        filters={
-          <>
+      {/* Barra de filtros */}
+      <div className="rounded-2xl border border-border bg-card/50 p-3 backdrop-blur-xl md:p-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+          <div className="relative min-w-0 flex-1 lg:min-w-60">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              type="month"
-              className="h-11 w-40 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              onChange={(e) => {
-                if (e.target.value) {
-                  const [y, m] = e.target.value.split("-").map(Number);
-                  setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
-                  setTo(new Date(y, m, 0).toISOString().slice(0, 10));
-                }
-              }}
+              className="h-11 rounded-xl border-border bg-background/60 pl-10 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-indigo-400/40"
+              placeholder="Buscar por tutor, pet ou nº interno..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            <div className="flex items-center gap-2">
-              <Input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              />
-              <span className="text-xs text-muted-foreground">até</span>
-              <Input
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                className="h-11 w-36 rounded-xl border-white/10 bg-white/[0.03] text-xs"
-              />
-            </div>
-            {hasFilters && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-11 rounded-xl px-3 text-xs text-muted-foreground hover:text-foreground"
-                onClick={() => {
-                  setSearch("");
-                  const d = new Date();
-                  setFrom(new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10));
-                  setTo(new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().slice(0, 10));
-                }}
-              >
-                <X className="mr-1 h-3.5 w-3.5" /> Limpar
-              </Button>
-            )}
-          </>
-        }
-      />
+          </div>
+          <Select value={clinicFilter || "all"} onValueChange={(v) => setClinicFilter(v === "all" ? "" : v)}>
+            <SelectTrigger className="h-11 w-full rounded-xl border-border bg-background/60 text-sm lg:w-48">
+              <SelectValue placeholder="Todas as clínicas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as clínicas</SelectItem>
+              {clinics?.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={payFilter || "all"} onValueChange={(v) => setPayFilter(v === "all" ? "" : v)}>
+            <SelectTrigger className="h-11 w-full rounded-xl border-border bg-background/60 text-sm lg:w-44">
+              <SelectValue placeholder="Pagamento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os pagamentos</SelectItem>
+              <SelectItem value="pagos">Pagos</SelectItem>
+              <SelectItem value="aberto">Em aberto</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            type="month"
+            aria-label="Mês de referência"
+            className="h-11 w-full rounded-xl border-border bg-background/60 text-xs lg:w-40"
+            onChange={(e) => {
+              if (e.target.value) {
+                const [y, m] = e.target.value.split("-").map(Number);
+                setFrom(new Date(y, m - 1, 1).toISOString().slice(0, 10));
+                setTo(new Date(y, m, 0).toISOString().slice(0, 10));
+              }
+            }}
+          />
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              aria-label="Data inicial"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className="h-11 w-full rounded-xl border-border bg-background/60 text-xs lg:w-36"
+            />
+            <span className="shrink-0 text-xs text-muted-foreground">até</span>
+            <Input
+              type="date"
+              aria-label="Data final"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="h-11 w-full rounded-xl border-border bg-background/60 text-xs lg:w-36"
+            />
+          </div>
+          {hasFilters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-11 rounded-xl px-3 text-xs text-muted-foreground hover:text-foreground"
+              onClick={clearFilters}
+            >
+              <X className="mr-1 h-3.5 w-3.5" /> Limpar
+            </Button>
+          )}
+        </div>
+      </div>
 
-      <Card className="border-border/60">
-        <CardContent className="overflow-x-auto p-0">
-          {!isLoading && !isError && appts?.length === 0 ? (
+      <Card className="overflow-hidden border-border bg-card/50 backdrop-blur-xl">
+        <CardContent className="p-0">
+          {!isLoading && !isError && filtered.length === 0 ? (
             <div className="p-4">
               <FeedbackState
                 icon={ClipboardList}
@@ -451,66 +478,147 @@ function Atendimentos() {
               />
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Tutor / Pet</TableHead>
-                  <TableHead>Clínica</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
-                  <TableHead className="text-center">Pago?</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop e tablet: tabela */}
+              <div className="hidden overflow-x-auto md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/60 hover:bg-transparent">
+                      <TableHead className="px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Data</TableHead>
+                      <TableHead className="py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Tutor / Pet</TableHead>
+                      <TableHead className="py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Clínica</TableHead>
+                      <TableHead className="py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Valor</TableHead>
+                      <TableHead className="py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Pagamento</TableHead>
+                      <TableHead className="py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                      <TableHead className="w-12 py-3.5 pr-5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading && (
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell colSpan={7} className="py-16 text-center text-sm text-muted-foreground">
+                          <span className="inline-flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin text-primary" /> Carregando atendimentos...
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {isError && (
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell colSpan={7} className="py-10">
+                          <FeedbackState
+                            variant="error"
+                            title="Não foi possível carregar"
+                            description={(error as Error | null)?.message ?? "Tente novamente em instantes."}
+                            action={{ label: "Tentar novamente", onClick: () => refetch() }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {!isLoading && !isError && filtered.map((a) => (
+                      <TableRow key={a.id} className="border-border/40 transition-colors hover:bg-white/[0.03]">
+                        <TableCell className="whitespace-nowrap px-5 py-4 text-sm tabular-nums text-muted-foreground">
+                          {fmtDate(a.data_atendimento)}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="text-sm font-semibold text-foreground">{a.tutor}</div>
+                          <div className="text-xs text-muted-foreground">{a.pet}</div>
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-muted-foreground">
+                          {(a as any).clinics?.nome ?? <span className="text-muted-foreground/50">—</span>}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap py-4 text-right text-sm font-bold tabular-nums text-foreground">
+                          {a.valor ? brl(Number(a.valor)) : <span className="font-normal text-muted-foreground/50">—</span>}
+                        </TableCell>
+                        <TableCell className="py-4 text-center">
+                          {a.pago ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-success/25 bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+                              <Check className="h-3 w-3" /> Pago
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning">
+                              <Clock className="h-3 w-3" /> Pendente
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <Badge variant="outline" className={`capitalize ${statusColor[a.status] ?? ""}`}>
+                            {a.status.replaceAll("_", " ")}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-4 pr-5 text-right">
+                          <TableActions>
+                            <TableAction
+                              label="Editar atendimento"
+                              icon={Pencil}
+                              onClick={() => startEdit(a as AppointmentRow)}
+                            />
+                            {isAdmin && (
+                              <TableAction
+                                label="Excluir atendimento"
+                                icon={Trash2}
+                                tone="destructive"
+                                onClick={() => confirm("Excluir atendimento?") && del.mutate(a.id)}
+                              />
+                            )}
+                          </TableActions>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Celular: cards individuais */}
+              <div className="divide-y divide-border/40 md:hidden">
                 {isLoading && (
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={7} className="py-16 text-center text-sm text-muted-foreground">
-                      <span className="inline-flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin text-primary" /> Carregando atendimentos...
-                      </span>
-                    </TableCell>
-                  </TableRow>
+                  <div className="py-16 text-center text-sm text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" /> Carregando atendimentos...
+                    </span>
+                  </div>
                 )}
                 {isError && (
-                  <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={7} className="py-10">
-                      <FeedbackState
-                        variant="error"
-                        title="Não foi possível carregar"
-                        description={(error as Error | null)?.message ?? "Tente novamente em instantes."}
-                        action={{ label: "Tentar novamente", onClick: () => refetch() }}
-                      />
-                    </TableCell>
-                  </TableRow>
+                  <div className="p-4">
+                    <FeedbackState
+                      variant="error"
+                      title="Não foi possível carregar"
+                      description={(error as Error | null)?.message ?? "Tente novamente em instantes."}
+                      action={{ label: "Tentar novamente", onClick: () => refetch() }}
+                    />
+                  </div>
                 )}
-                {!isLoading && !isError && appts?.map((a) => (
-                  <TableRow key={a.id}>
-                    <TableCell className="text-sm">{a.data_atendimento}</TableCell>
-                    <TableCell className="text-sm">
-                      <div className="font-medium">{a.tutor}</div>
-                      <div className="text-xs text-muted-foreground">{a.pet}</div>
-                    </TableCell>
-                    <TableCell className="text-sm">{(a as any).clinics?.nome ?? <span className="text-destructive">—</span>}</TableCell>
-                    <TableCell className="text-right text-sm font-medium">{a.valor ? brl(Number(a.valor)) : <span className="text-destructive">—</span>}</TableCell>
-                    <TableCell className="text-center">
-                      {a.pago ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
-                          <Check className="h-3 w-3" /> Pago
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                          <X className="h-3 w-3" /> Em aberto
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`capitalize ${statusColor[a.status] ?? ""}`}>
-                        {a.status.replaceAll("_", " ")}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
+                {!isLoading && !isError && filtered.map((a) => (
+                  <div key={a.id} className="space-y-3 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">{a.tutor}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {a.pet} · {fmtDate(a.data_atendimento)}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground/70">
+                          {(a as any).clinics?.nome ?? "Sem clínica"}
+                        </p>
+                      </div>
+                      <p className="shrink-0 text-base font-bold tabular-nums text-foreground">
+                        {a.valor ? brl(Number(a.valor)) : "—"}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {a.pago ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/25 bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+                            <Check className="h-3 w-3" /> Pago
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning">
+                            <Clock className="h-3 w-3" /> Pendente
+                          </span>
+                        )}
+                        <Badge variant="outline" className={`capitalize ${statusColor[a.status] ?? ""}`}>
+                          {a.status.replaceAll("_", " ")}
+                        </Badge>
+                      </div>
                       <TableActions>
                         <TableAction
                           label="Editar atendimento"
@@ -526,11 +634,11 @@ function Atendimentos() {
                           />
                         )}
                       </TableActions>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
